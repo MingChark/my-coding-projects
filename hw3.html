@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HW 3: Echo Machine</title>
+
+  <style>
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.65)),
+                  url('family-bg.svg') center / cover no-repeat fixed;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 15px 60px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .page { max-width: 720px; margin: 0 auto; }
+    a.back { color: #1b4f72; font-size: 17px; text-decoration: none; font-weight: bold; }
+    h1 { font-size: 38px; color: #1b4f72; text-align: center; text-shadow: 1px 1px 0 rgba(255,255,255,0.8); }
+
+    .panel {
+      background: rgba(255,255,255,0.94);
+      border-radius: 18px;
+      padding: 22px 26px;
+      margin: 18px 0;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+    .panel h2 { margin-top: 0; font-size: 24px; color: #1b4f72; }
+    code, textarea { font-family: "Menlo", "Consolas", monospace; }
+    code {
+      background: #eef3f8;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #c0392b;
+    }
+    ul { line-height: 1.9; font-size: 17px; }
+    .example {
+      background: #eef9ee;
+      border-left: 5px solid #63c15c;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    textarea {
+      width: 100%;
+      height: 180px;
+      font-size: 16px;
+      padding: 14px;
+      border: 2px solid #b8cbdd;
+      border-radius: 12px;
+      box-sizing: border-box;
+      background: #fbfdff;
+      resize: vertical;
+    }
+    button.run {
+      display: block;
+      margin: 16px auto 0;
+      font-size: 24px;
+      font-family: inherit;
+      padding: 14px 44px;
+      border: none;
+      border-radius: 15px;
+      background: #16a085;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #0e6e5c;
+    }
+    button.run:active { transform: translateY(4px); box-shadow: 0 2px 0 #0e6e5c; }
+
+    .test { font-size: 17px; padding: 8px 12px; border-radius: 8px; margin: 6px 0; }
+    .test.good { background: #eafbea; }
+    .test.bad  { background: #fdeaea; }
+    .score { text-align: center; font-size: 26px; margin-top: 16px; }
+    .score .stars { font-size: 34px; letter-spacing: 4px; }
+    details { margin: 10px 0; font-size: 17px; }
+    summary { cursor: pointer; font-weight: bold; color: #1b4f72; }
+    details p { background: #fff8e6; padding: 10px 14px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="index.html">⬅ Back to homework list</a>
+  <h1>📢 HW 3: Echo Machine</h1>
+
+  <div class="panel">
+    <h2>🎯 Your Mission</h2>
+    <p style="font-size:18px">Write a function called <code>repeatWord</code> that takes a
+      <b>word</b> and a <b>number</b>, and gives back that word glued together that many times.</p>
+    <ul>
+      <li>The function must be named <code>repeatWord</code></li>
+      <li>It must <b>return</b> the repeated word (text)</li>
+      <li><code>repeatWord("ha", 3)</code> gives back <code>"hahaha"</code></li>
+      <li>It must work for ANY word and ANY number — that's what loops are for!</li>
+    </ul>
+    <div class="example">
+      <b>Examples:</b><br>
+      <code>repeatWord("ha", 3)</code> ➜ <code>"hahaha"</code><br>
+      <code>repeatWord("go", 5)</code> ➜ <code>"gogogogogo"</code><br>
+      <code>repeatWord("meow", 1)</code> ➜ <code>"meow"</code>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>👀 See it working</h2>
+    <p>Try the finished version first so you know what you're building:
+      <a href="echo.html"><b>open the Echo Machine demo ➜</b></a></p>
+  </div>
+
+  <div class="panel">
+    <h2>💻 Your Code</h2>
+    <textarea id="code" spellcheck="false">function repeatWord(word, times) {
+  // Write your code here!
+  // Tip: this needs a LOOP - something that
+  // does the same thing again and again
+
+}</textarea>
+    <button class="run" onclick="runTests()">🚀 Test my code!</button>
+  </div>
+
+  <div class="panel">
+    <h2>📊 Results</h2>
+    <div id="results"><i>Press "Test my code!" to see your score.</i></div>
+  </div>
+
+  <div class="panel">
+    <h2>🔍 Stuck? Open a hint</h2>
+    <details><summary>Hint 1</summary>
+      <p>A <b>for loop</b> repeats code a certain number of times:<br>
+      <code>for (let i = 0; i &lt; times; i++) { ... }</code><br>
+      Whatever is inside the { } happens <code>times</code> times!</p>
+    </details>
+    <details><summary>Hint 2</summary>
+      <p>Start with an empty text, and add the word to it each time around the loop:<br>
+      <code>let result = "";</code><br>
+      <code>result = result + word;</code> (inside the loop)<br>
+      Then don't forget to <code>return result;</code> at the end!</p>
+    </details>
+    <details><summary>🆘 Show me one answer</summary>
+      <p><code>function repeatWord(word, times) {<br>
+      &nbsp;&nbsp;let result = "";<br>
+      &nbsp;&nbsp;for (let i = 0; i &lt; times; i++) {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;result = result + word;<br>
+      &nbsp;&nbsp;}<br>
+      &nbsp;&nbsp;return result;<br>
+      }</code></p>
+    </details>
+  </div>
+
+</div>
+
+<script>
+  // A word repeated N times, ignoring any extra spaces
+  function squish(s) { return String(s).replace(/\s+/g, ""); }
+
+  // ===== The tests that grade the homework =====
+  const tests = [
+    {
+      name: "Your function gives back some text",
+      run: (fn) => typeof fn("ha", 3) === "string" && fn("ha", 3).length > 0
+    },
+    {
+      name: 'repeatWord("ha", 3) makes "hahaha"',
+      run: (fn) => squish(fn("ha", 3)) === "hahaha"
+    },
+    {
+      name: "It works with a different word too",
+      run: (fn) => squish(fn("wow", 4)) === "wowwowwowwow"
+    },
+    {
+      name: "Repeating 1 time gives just the word",
+      run: (fn) => squish(fn("meow", 1)) === "meow"
+    },
+    {
+      name: "It can go BIG: 10 times!",
+      run: (fn) => squish(fn("go", 10)) === "go".repeat(10)
+    }
+  ];
+
+  function runTests() {
+    const code = document.getElementById("code").value;
+    const box = document.getElementById("results");
+    box.innerHTML = "";
+
+    // Step 1: try to read the code
+    let fn = null;
+    try {
+      fn = new Function(code + "\n;return (typeof repeatWord !== 'undefined') ? repeatWord : null;")();
+    } catch (e) {
+      box.innerHTML = '<div class="test bad">😵 Oops, the computer could not read your code!<br><b>' + e.message + '</b><br>Check for missing quotes " or brackets { }</div>';
+      return;
+    }
+    if (typeof fn !== "function") {
+      box.innerHTML = '<div class="test bad">🤔 I could not find a function named <b>repeatWord</b>. Keep the first line just like the starter code!</div>';
+      return;
+    }
+
+    // Step 2: run each test
+    let passed = 0;
+    for (const t of tests) {
+      let ok = false;
+      try { ok = !!t.run(fn); } catch (e) { ok = false; }
+      if (ok) passed++;
+      box.innerHTML += '<div class="test ' + (ok ? 'good' : 'bad') + '">' + (ok ? '✅' : '❌') + ' ' + t.name + '</div>';
+    }
+
+    // Step 3: show the grade
+    const stars = "⭐".repeat(passed) + "☆".repeat(tests.length - passed);
+    let msg;
+    if (passed === 5)      msg = "PERFECT SCORE! You did it! 🎉🎉🎉";
+    else if (passed >= 3)  msg = "So close! Look at the ❌ lines and try again 💪";
+    else if (passed >= 1)  msg = "Good start! The hints below can help 🔍";
+    else                   msg = "Every coder starts somewhere — open Hint 1! 🌱";
+    box.innerHTML += '<div class="score"><div class="stars">' + stars + '</div><b>' + passed + ' out of 5</b><br>' + msg + '</div>';
+
+    // Remember the best score for the homework list page
+    const best = Number(localStorage.getItem("hw3-stars") || 0);
+    if (passed > best) localStorage.setItem("hw3-stars", passed);
+  }
+</script>
+
+</body>
+</html>

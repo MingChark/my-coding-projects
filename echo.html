@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Echo Machine</title>
+
+  <style>
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: linear-gradient(135deg, #43cea2, #185a9d);
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    h1 { font-size: 40px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); }
+    p.hint { font-size: 18px; opacity: 0.9; }
+
+    input {
+      font-size: 20px;
+      font-family: inherit;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      margin: 8px;
+      text-align: center;
+    }
+    #word { width: 220px; max-width: 60%; }
+    #times { width: 90px; }
+    button {
+      font-size: 24px;
+      font-family: inherit;
+      padding: 14px 36px;
+      border: none;
+      border-radius: 15px;
+      background: white;
+      color: #185a9d;
+      cursor: pointer;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+      margin-top: 10px;
+    }
+    button:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+
+    #result {
+      background: white;
+      color: #333;
+      font-size: 26px;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 30px auto;
+      max-width: 550px;
+      min-height: 30px;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+    a.back { color: white; display: block; margin-top: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+  <h1>📢 Echo Machine</h1>
+  <p class="hint">Type a word and how many times to repeat it!</p>
+
+  <div>
+    <input id="word" placeholder="a word (ha)">
+    <input id="times" type="number" value="3" min="1" max="50">
+  </div>
+  <button onclick="echo()">Echo it! 📢</button>
+
+  <div id="result">Your echo will show up here...</div>
+
+  <a class="back" href="index.html">⬅ Back to my projects</a>
+
+  <!-- ===== This is the CODE that makes it work ===== -->
+  <script>
+    function echo() {
+      const word = document.getElementById("word").value || "ha";
+      const times = Number(document.getElementById("times").value) || 3;
+
+      // Start with nothing, then add the word again and again with a loop!
+      let result = "";
+      for (let i = 0; i < times; i++) {
+        result = result + word;
+      }
+
+      document.getElementById("result").textContent = result + " 📢";
+    }
+  </script>
+
+</body>
+</html>

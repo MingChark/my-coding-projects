@@ -82,6 +82,12 @@
       <div class="stars" id="hw2-stars">☆☆☆☆☆</div>
     </a>
 
+    <a class="card" href="hw3.html">
+      <div class="emoji">📢</div>
+      <div class="name">HW 3: Echo Machine</div>
+      <div class="stars" id="hw3-stars">☆☆☆☆☆</div>
+    </a>
+
   </div>
 
   <h2>👀 Working Demos</h2>
@@ -97,11 +103,16 @@
       <div class="name">Dice Roller Demo</div>
     </a>
 
+    <a class="card demo" href="echo.html">
+      <div class="emoji">📢</div>
+      <div class="name">Echo Machine Demo</div>
+    </a>
+
   </div>
 
   <script>
     // Show the stars you earned on each homework (saved in your browser)
-    for (const hw of ["hw1", "hw2"]) {
+    for (const hw of ["hw1", "hw2", "hw3"]) {
       const earned = Number(localStorage.getItem(hw + "-stars") || 0);
       document.getElementById(hw + "-stars").textContent =
         "⭐".repeat(earned) + "☆".repeat(5 - earned);
