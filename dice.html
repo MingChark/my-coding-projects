@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dice Roller</title>
+
+  <style>
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: linear-gradient(135deg, #f6d365, #fda085);
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    h1 { font-size: 44px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); }
+
+    /* This is the big dice number */
+    #dice {
+      font-size: 160px;
+      margin: 20px;
+    }
+
+    button {
+      font-size: 26px;
+      font-family: inherit;
+      padding: 15px 40px;
+      border: none;
+      border-radius: 15px;
+      background: white;
+      color: #e67e22;
+      cursor: pointer;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+    }
+    button:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+
+    a.back { color: white; display: block; margin-top: 30px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+  <h1>🎲 Dice Roller</h1>
+  <div id="dice">🎲</div>
+  <button onclick="rollDice()">Roll the dice!</button>
+  <a class="back" href="index.html">⬅ Back to my projects</a>
+
+  <!-- ===== This is the CODE that makes it work ===== -->
+  <script>
+    // These are the 6 dice faces. Try changing them to different emojis!
+    const faces = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+
+    function rollDice() {
+      // Pick a random number from 0 to 5
+      const randomNumber = Math.floor(Math.random() * 6);
+      // Show that dice face on the screen
+      document.getElementById("dice").textContent = faces[randomNumber];
+    }
+  </script>
+
+</body>
+</html>

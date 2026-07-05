@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Coding Projects</title>
+
+  <!-- ===== You can change how everything LOOKS down here ===== -->
+  <style>
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: linear-gradient(135deg, #6dd5ed, #2193b0);
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    h1 {
+      font-size: 48px;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+    }
+    p.subtitle {
+      font-size: 20px;
+      opacity: 0.9;
+    }
+    .projects {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 40px;
+    }
+    .card {
+      background: white;
+      color: #333;
+      text-decoration: none;
+      width: 220px;
+      padding: 30px 20px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      transition: transform 0.15s;
+    }
+    .card:hover {
+      transform: translateY(-8px) scale(1.03);
+    }
+    .card .emoji { font-size: 60px; }
+    .card .name { font-size: 22px; font-weight: bold; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- ===== You can change the WORDS here ===== -->
+  <h1>🚀 My Coding Projects</h1>
+  <p class="subtitle">Things I built with code!</p>
+
+  <div class="projects">
+
+    <!-- Each box below is one project. Copy a box to add a new one! -->
+    <a class="card" href="dice.html">
+      <div class="emoji">🎲</div>
+      <div class="name">Dice Roller</div>
+    </a>
+
+    <a class="card" href="wordmaker.html">
+      <div class="emoji">✍️</div>
+      <div class="name">Word Maker</div>
+    </a>
+
+  </div>
+
+</body>
+</html>

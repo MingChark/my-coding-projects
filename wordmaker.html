@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Maker</title>
+
+  <style>
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    h1 { font-size: 40px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); }
+    p.hint { font-size: 18px; opacity: 0.9; }
+
+    input {
+      font-size: 20px;
+      font-family: inherit;
+      padding: 12px;
+      width: 280px;
+      max-width: 80%;
+      border: none;
+      border-radius: 12px;
+      margin: 8px;
+      text-align: center;
+    }
+    button {
+      font-size: 24px;
+      font-family: inherit;
+      padding: 14px 36px;
+      border: none;
+      border-radius: 15px;
+      background: white;
+      color: #8e44ad;
+      cursor: pointer;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+      margin-top: 10px;
+    }
+    button:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+
+    #result {
+      background: white;
+      color: #333;
+      font-size: 24px;
+      padding: 25px;
+      border-radius: 15px;
+      margin: 30px auto;
+      max-width: 500px;
+      min-height: 30px;
+      line-height: 1.5;
+    }
+    a.back { color: white; display: block; margin-top: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+  <h1>✍️ Word Maker</h1>
+  <p class="hint">Type a few words, then press the button to make a silly sentence!</p>
+
+  <div>
+    <input id="word1" placeholder="an animal (dog)">
+    <input id="word2" placeholder="a place (moon)">
+    <input id="word3" placeholder="an action (danced)">
+  </div>
+  <button onclick="makeSentence()">Make my sentence! ✨</button>
+
+  <div id="result">Your sentence will show up here...</div>
+
+  <a class="back" href="index.html">⬅ Back to my projects</a>
+
+  <!-- ===== This is the CODE that makes it work ===== -->
+  <script>
+    function makeSentence() {
+      // Get the words the user typed
+      const w1 = document.getElementById("word1").value || "cat";
+      const w2 = document.getElementById("word2").value || "school";
+      const w3 = document.getElementById("word3").value || "jumped";
+
+      // Build the sentence. Change these words to make different sentences!
+      const sentence = "One day, a " + w1 + " went to the " + w2 +
+                       " and suddenly " + w3 + " all day long! 🎉";
+
+      // Show it on the screen
+      document.getElementById("result").textContent = sentence;
+    }
+  </script>
+
+</body>
+</html>
