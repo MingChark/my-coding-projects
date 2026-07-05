@@ -294,10 +294,135 @@
     </div>
   </details>
 
+  <!-- ================= PART 2: 3D ================= -->
+  <div class="panel" style="text-align:center; background: linear-gradient(160deg, #1e2a38, #2c3e50); color: white;">
+    <h2 style="color:white; font-size: 30px;">🕶 PART 2: GO 3D!</h2>
+    <p style="font-size:18px">Finished the 2D game? You're ready for the REAL thing:<br>
+    a 3D world you walk around inside, just like actual Minecraft.</p>
+    <p style="font-size:16px; opacity:0.85">Secret weapon: the AI knows a 3D tool called <b>three.js</b>.
+    You don't have to understand it — you just have to be the boss. 😎</p>
+  </div>
+
+  <!-- ================= LEVEL 10 ================= -->
+  <details class="level" data-level="10">
+    <summary>🌐 Level 10: A Whole New Dimension <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> A 3D world you can SEE — a field of grass blocks under a blue sky, like standing in Minecraft.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Create a new file called game3d.html. Use three.js to make a 3D world: a big flat ground made of separate green grass blocks, and a blue sky. Put the camera at standing-person height, so it looks like I am standing in the world.</span></div>
+      <div class="check">👀 <b>Check it:</b> Open game3d.html. Do you see a blocky grass field stretching into the distance, in 3D?</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"The screen is just black." (this happens a LOT in 3D — the AI will know what to check)</i>
+        <i>"The ground looks like one flat green sheet. Make it separate blocks so it looks like Minecraft."</i>
+        <i>"I'm looking at the ground from the sky. Put the camera down at person height."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(10, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 11 ================= -->
+  <details class="level" data-level="11">
+    <summary>🚶 Level 11: Walk the World <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> Look around with the mouse and walk with W A S D — you're IN the game now.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Let me look around by moving the mouse, and walk with the W A S D keys. Space bar jumps, gravity pulls me back down, and I can't fall through the ground. When I click the screen it should grab my mouse for looking around, and the Escape key lets it go.</span></div>
+      <div class="check">👀 <b>Check it:</b> Walk in a big circle. Jump. Look straight up at the sky, then down at your feet.</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"The mouse doesn't turn my head until I click — oh wait, that's how it should work!"</i>
+        <i>"I walk way too fast. Make it a comfy walking speed."</i>
+        <i>"When I jump, I fly up forever and never come down."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(11, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 12 ================= -->
+  <details class="level" data-level="12">
+    <summary>🎯 Level 12: The Crosshair &amp; First 3D Block <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> A crosshair in the middle of the screen, and clicking places a block right where you're looking.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Put a small crosshair in the middle of the screen. When I click, place a dirt block exactly where I am looking. Blocks must snap to the grid so they stack neatly like Minecraft, never floating or overlapping.</span></div>
+      <div class="check">👀 <b>Check it:</b> Build a little tower in front of you, then walk around it and look at it from the other side.</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"The block appears far away, not where the crosshair points."</i>
+        <i>"Blocks go inside each other. Each spot should hold only one block."</i>
+        <i>"I can place a block inside my own body and get stuck!"</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(12, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 13 ================= -->
+  <details class="level" data-level="13">
+    <summary>⛏️ Level 13: 3D Mining <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> Left click breaks blocks, right click places them — and you can see which block you're aiming at.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Make left click break the block I am looking at, and right click place a block. Draw a thin black outline around the block my crosshair is pointing at, so I always know which block I am about to break. The right click must not open the browser menu.</span></div>
+      <div class="check">👀 <b>Check it:</b> Dig a tunnel down into the ground, then look up. You're inside your own world now. 🕳</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"Right click opens a menu on the page instead of placing a block."</i>
+        <i>"I can't tell which block I'm aiming at — the outline doesn't show."</i>
+        <i>"Breaking one block makes blocks near it disappear too. Only break the one I aim at."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(13, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 14 ================= -->
+  <details class="level" data-level="14">
+    <summary>🎨 Level 14: The Hotbar <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> A real Minecraft-style hotbar: press 1–5 to pick your block type.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Add a hotbar at the bottom of the screen with 5 block types: dirt, grass, stone, wood, and leaves. Pressing keys 1 to 5 picks one, and the picked slot lights up. When I place a block, use the picked type.</span></div>
+      <div class="check">👀 <b>Check it:</b> Build a house: stone walls, wood door frame, leaf bushes. Walk inside it.</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"Pressing the number keys does nothing."</i>
+        <i>"All blocks look the same color when placed."</i>
+        <i>"Add glass as slot 6, and make it see-through."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(14, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 15 ================= -->
+  <details class="level" data-level="15">
+    <summary>🏔 Level 15: Hills &amp; Trees in 3D <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> A real landscape — rolling hills and trees, different every time you start.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">When the game starts, generate a world with gentle rolling hills and some trees made of wood trunks and leaf blocks. Make it a little different every time. I should be able to walk up the hills by jumping, and stand on top of them.</span></div>
+      <div class="check">👀 <b>Check it:</b> Find the tallest hill and build a flag on top. Mine a whole tree. Refresh — is the world new?</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"I get stuck when walking up hills."</i>
+        <i>"The trees are floating above the ground."</i>
+        <i>"The world takes forever to load. Make it a bit smaller so it's fast."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(15, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 16 ================= -->
+  <details class="level" data-level="16">
+    <summary>👑 Level 16: The 3D Masterpiece <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> Save your world, then add YOUR idea — you write the prompts now, in your own words.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">First: "Save my world in the browser so it is still there when I come back. Add a New World button that asks are-you-sure first."
+
+Then ideas to steal (or invent your own!):
+- a sun that moves across the sky, with sunset and night
+- clouds drifting overhead
+- a pig or dog made of blocks that wanders around
+- block placing and breaking sounds
+- double-tap space to FLY like creative mode
+- TNT... if you dare 💥</span></div>
+      <div class="check">👀 <b>Check it:</b> Close everything, come back tomorrow — world still there? Then show your masterpiece to the family!</div>
+      <div class="fixit">🛠 <b>Remember the Golden Rules:</b> one small thing at a time. Get the pig standing before you make it walk. 🐷</div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(16, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
   <div class="panel">
     <h2>🚀 Publishing a finished level</h2>
-    <p style="font-size:17px">Every time a level works, ask a grown-up to <b>publish</b> it. Then your game is LIVE at
-    <b>jjaihw.com/game.html</b> — on the real internet, where you can show anyone!</p>
+    <p style="font-size:17px">Every time a level works, ask a grown-up to <b>publish</b> it. Then your games are LIVE at
+    <b>jjaihw.com/game.html</b> (2D) and <b>jjaihw.com/game3d.html</b> (3D) — on the real internet, where you can show anyone!</p>
   </div>
 
   <div class="panel grownups">
@@ -308,6 +433,9 @@
     <p><b>Each level:</b> the agent edits <code>game.html</code> in this folder. Check the result together in the browser.
     When it works: <code>git add -A && git commit -m "Level N" && git push</code> — Netlify puts it on
     <b>jjaihw.com/game.html</b> automatically in ~30 seconds.</p>
+    <p><b>Part 2 (3D):</b> the agent will pull in <code>three.js</code> (usually from a CDN), so the 3D game needs
+    internet to load. If a step goes badly sideways, "please undo that last change" or <code>git checkout game3d.html</code>
+    is your reset button. Levels 10–11 are the rockiest — a black screen is normal; have the kid report it as a bug.</p>
     <p><b>The point:</b> the checkboxes here are self-graded on purpose. The skill being taught is
     <i>describe → look → describe what's wrong → repeat</i>. Let them struggle a little on Level 6 — that's where the learning is.</p>
   </div>
@@ -315,7 +443,8 @@
 </div>
 
 <script>
-  const TOTAL = 9;
+  const TOTAL = 16;
+  const PART1 = [1,2,3,4,5,6,7,8,9];
 
   function getDone() {
     try { return JSON.parse(localStorage.getItem("quest-done") || "[]"); }
@@ -338,8 +467,11 @@
     const bar = document.getElementById("bar");
     bar.style.width = pct + "%";
     bar.textContent = pct > 10 ? pct + "%" : "";
+    const part1Done = PART1.every(n => done.includes(n));
     document.getElementById("bar-label").textContent =
-      done.length === TOTAL ? "🏆 QUEST COMPLETE! You built Minecraft!" : "Level " + done.length + " of " + TOTAL;
+      done.length === TOTAL ? "🏆 QUEST COMPLETE! You built Minecraft in 3D!" :
+      part1Done ? "🎉 2D game complete (" + done.length + " of " + TOTAL + ") — now GO 3D!" :
+      "Level " + done.length + " of " + TOTAL;
     // checkmarks on summaries + checkbox states
     document.querySelectorAll("details.level").forEach(d => {
       const n = Number(d.dataset.level);
