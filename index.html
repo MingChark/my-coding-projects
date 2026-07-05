@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Coding Projects</title>
+  <title>JJ's AI Homework</title>
 
-  <!-- ===== You can change how everything LOOKS down here ===== -->
   <style>
     body {
       font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
-      background: linear-gradient(135deg, #6dd5ed, #2193b0);
-      color: white;
+      /* To use a real family photo: put it in this folder, name it family-bg.jpg,
+         and change 'family-bg.svg' below to 'family-bg.jpg' */
+      background: linear-gradient(rgba(255,255,255,0.35), rgba(255,255,255,0.55)),
+                  url('family-bg.svg') center / cover no-repeat fixed;
+      color: #2c3e50;
       text-align: center;
       margin: 0;
       padding: 40px 20px;
@@ -18,57 +20,93 @@
       box-sizing: border-box;
     }
     h1 {
-      font-size: 48px;
-      text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+      font-size: 52px;
+      color: #1b4f72;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.8);
+      margin-bottom: 5px;
     }
     p.subtitle {
-      font-size: 20px;
-      opacity: 0.9;
+      font-size: 22px;
+      color: #34495e;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
     }
-    .projects {
+    h2 {
+      font-size: 28px;
+      color: #1b4f72;
+      margin-top: 50px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
+    }
+    .cards {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
-      margin-top: 40px;
+      margin-top: 20px;
     }
     .card {
-      background: white;
-      color: #333;
+      background: rgba(255,255,255,0.92);
+      color: #2c3e50;
       text-decoration: none;
-      width: 220px;
-      padding: 30px 20px;
+      width: 240px;
+      padding: 28px 20px;
       border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       transition: transform 0.15s;
     }
-    .card:hover {
-      transform: translateY(-8px) scale(1.03);
-    }
-    .card .emoji { font-size: 60px; }
-    .card .name { font-size: 22px; font-weight: bold; margin-top: 10px; }
+    .card:hover { transform: translateY(-8px) scale(1.03); }
+    .card .emoji { font-size: 56px; }
+    .card .name { font-size: 22px; font-weight: bold; margin-top: 8px; }
+    .card .stars { font-size: 20px; margin-top: 8px; letter-spacing: 2px; }
+    .card.demo { width: 180px; padding: 20px 15px; opacity: 0.95; }
+    .card.demo .emoji { font-size: 40px; }
+    .card.demo .name { font-size: 17px; }
   </style>
 </head>
 <body>
 
-  <!-- ===== You can change the WORDS here ===== -->
-  <h1>🚀 My Coding Projects</h1>
-  <p class="subtitle">Things I built with code!</p>
+  <h1>🏠 JJ's AI Homework</h1>
+  <p class="subtitle">Learn to code, one mission at a time!</p>
 
-  <div class="projects">
+  <h2>📚 Homework Missions</h2>
+  <div class="cards">
 
-    <!-- Each box below is one project. Copy a box to add a new one! -->
-    <a class="card" href="dice.html">
-      <div class="emoji">🎲</div>
-      <div class="name">Dice Roller</div>
+    <a class="card" href="hw1.html">
+      <div class="emoji">✍️</div>
+      <div class="name">HW 1: Sentence Maker</div>
+      <div class="stars" id="hw1-stars">☆☆☆☆☆</div>
     </a>
 
-    <a class="card" href="wordmaker.html">
-      <div class="emoji">✍️</div>
-      <div class="name">Word Maker</div>
+    <a class="card" href="hw2.html">
+      <div class="emoji">🎲</div>
+      <div class="name">HW 2: Dice Roller</div>
+      <div class="stars" id="hw2-stars">☆☆☆☆☆</div>
     </a>
 
   </div>
+
+  <h2>👀 Working Demos</h2>
+  <div class="cards">
+
+    <a class="card demo" href="wordmaker.html">
+      <div class="emoji">✍️</div>
+      <div class="name">Word Maker Demo</div>
+    </a>
+
+    <a class="card demo" href="dice.html">
+      <div class="emoji">🎲</div>
+      <div class="name">Dice Roller Demo</div>
+    </a>
+
+  </div>
+
+  <script>
+    // Show the stars you earned on each homework (saved in your browser)
+    for (const hw of ["hw1", "hw2"]) {
+      const earned = Number(localStorage.getItem(hw + "-stars") || 0);
+      document.getElementById(hw + "-stars").textContent =
+        "⭐".repeat(earned) + "☆".repeat(5 - earned);
+    }
+  </script>
 
 </body>
 </html>

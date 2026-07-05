@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HW 2: Dice Roller</title>
+
+  <style>
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.65)),
+                  url('family-bg.svg') center / cover no-repeat fixed;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 15px 60px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .page { max-width: 720px; margin: 0 auto; }
+    a.back { color: #1b4f72; font-size: 17px; text-decoration: none; font-weight: bold; }
+    h1 { font-size: 38px; color: #1b4f72; text-align: center; text-shadow: 1px 1px 0 rgba(255,255,255,0.8); }
+
+    .panel {
+      background: rgba(255,255,255,0.94);
+      border-radius: 18px;
+      padding: 22px 26px;
+      margin: 18px 0;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+    .panel h2 { margin-top: 0; font-size: 24px; color: #1b4f72; }
+    code, textarea { font-family: "Menlo", "Consolas", monospace; }
+    code {
+      background: #eef3f8;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #c0392b;
+    }
+    ul { line-height: 1.9; font-size: 17px; }
+    .example {
+      background: #eef9ee;
+      border-left: 5px solid #63c15c;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    textarea {
+      width: 100%;
+      height: 180px;
+      font-size: 16px;
+      padding: 14px;
+      border: 2px solid #b8cbdd;
+      border-radius: 12px;
+      box-sizing: border-box;
+      background: #fbfdff;
+      resize: vertical;
+    }
+    button.run {
+      display: block;
+      margin: 16px auto 0;
+      font-size: 24px;
+      font-family: inherit;
+      padding: 14px 44px;
+      border: none;
+      border-radius: 15px;
+      background: #e67e22;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #b35c0e;
+    }
+    button.run:active { transform: translateY(4px); box-shadow: 0 2px 0 #b35c0e; }
+
+    .test { font-size: 17px; padding: 8px 12px; border-radius: 8px; margin: 6px 0; }
+    .test.good { background: #eafbea; }
+    .test.bad  { background: #fdeaea; }
+    .score { text-align: center; font-size: 26px; margin-top: 16px; }
+    .score .stars { font-size: 34px; letter-spacing: 4px; }
+    details { margin: 10px 0; font-size: 17px; }
+    summary { cursor: pointer; font-weight: bold; color: #1b4f72; }
+    details p { background: #fff8e6; padding: 10px 14px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="index.html">⬅ Back to homework list</a>
+  <h1>🎲 HW 2: Dice Roller</h1>
+
+  <div class="panel">
+    <h2>🎯 Your Mission</h2>
+    <p style="font-size:18px">Write a function called <code>rollDice</code> that works like
+      rolling a real dice: every time you call it, it gives back a <b>random whole number
+      from 1 to 6</b>.</p>
+    <ul>
+      <li>The function must be named <code>rollDice</code></li>
+      <li>It must <b>return</b> a number</li>
+      <li>The number is always <b>1, 2, 3, 4, 5, or 6</b> — never 0, never 7, no decimals!</li>
+      <li>It must be <b>random</b> — different rolls give different numbers</li>
+    </ul>
+    <div class="example">
+      <b>Example:</b> <code>rollDice()</code> ➜ <code>4</code> &nbsp;
+      <code>rollDice()</code> ➜ <code>1</code> &nbsp;
+      <code>rollDice()</code> ➜ <code>6</code>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>👀 See it working</h2>
+    <p>Try the finished version first so you know what you're building:
+      <a href="dice.html"><b>open the Dice Roller demo ➜</b></a></p>
+  </div>
+
+  <div class="panel">
+    <h2>💻 Your Code</h2>
+    <textarea id="code" spellcheck="false">function rollDice() {
+  // Write your code here!
+  // Tip: Math.random() gives a random decimal
+  // between 0 and 1, like 0.37 or 0.82
+
+}</textarea>
+    <button class="run" onclick="runTests()">🚀 Test my code!</button>
+  </div>
+
+  <div class="panel">
+    <h2>📊 Results</h2>
+    <div id="results"><i>Press "Test my code!" to see your score.</i></div>
+  </div>
+
+  <div class="panel">
+    <h2>🔍 Stuck? Open a hint</h2>
+    <details><summary>Hint 1</summary>
+      <p><code>Math.random()</code> gives a random decimal between 0 and 1.<br>
+      <code>Math.random() * 6</code> gives a decimal between 0 and 6, like 3.7</p>
+    </details>
+    <details><summary>Hint 2</summary>
+      <p><code>Math.floor(...)</code> chops off the decimal part:<br>
+      <code>Math.floor(3.7)</code> becomes <code>3</code>.<br>
+      So <code>Math.floor(Math.random() * 6)</code> gives 0, 1, 2, 3, 4 or 5.<br>
+      Hmm... how do you turn 0–5 into 1–6? 🤔</p>
+    </details>
+    <details><summary>🆘 Show me one answer</summary>
+      <p><code>function rollDice() {<br>
+      &nbsp;&nbsp;return Math.floor(Math.random() * 6) + 1;<br>
+      }</code></p>
+    </details>
+  </div>
+
+</div>
+
+<script>
+  // ===== The tests that grade the homework =====
+  const tests = [
+    {
+      name: "Your function gives back a number",
+      run: (fn) => typeof fn() === "number" && !Number.isNaN(fn())
+    },
+    {
+      name: "It's a whole number (no decimals)",
+      run: (fn) => {
+        for (let i = 0; i < 50; i++) if (!Number.isInteger(fn())) return false;
+        return true;
+      }
+    },
+    {
+      name: "It's always between 1 and 6 (checked 200 rolls!)",
+      run: (fn) => {
+        for (let i = 0; i < 200; i++) {
+          const v = fn();
+          if (v < 1 || v > 6) return false;
+        }
+        return true;
+      }
+    },
+    {
+      name: "It's random — not the same number every time",
+      run: (fn) => {
+        const seen = new Set();
+        for (let i = 0; i < 100; i++) seen.add(fn());
+        return seen.size >= 3;
+      }
+    },
+    {
+      name: "Every number 1–6 can show up (checked 600 rolls!)",
+      run: (fn) => {
+        const seen = new Set();
+        for (let i = 0; i < 600; i++) seen.add(fn());
+        return [1, 2, 3, 4, 5, 6].every(n => seen.has(n));
+      }
+    }
+  ];
+
+  function runTests() {
+    const code = document.getElementById("code").value;
+    const box = document.getElementById("results");
+    box.innerHTML = "";
+
+    // Step 1: try to read the code
+    let fn = null;
+    try {
+      fn = new Function(code + "\n;return (typeof rollDice !== 'undefined') ? rollDice : null;")();
+    } catch (e) {
+      box.innerHTML = '<div class="test bad">😵 Oops, the computer could not read your code!<br><b>' + e.message + '</b><br>Check for missing quotes " or brackets { }</div>';
+      return;
+    }
+    if (typeof fn !== "function") {
+      box.innerHTML = '<div class="test bad">🤔 I could not find a function named <b>rollDice</b>. Keep the first line just like the starter code!</div>';
+      return;
+    }
+
+    // Step 2: run each test
+    let passed = 0;
+    for (const t of tests) {
+      let ok = false;
+      try { ok = !!t.run(fn); } catch (e) { ok = false; }
+      if (ok) passed++;
+      box.innerHTML += '<div class="test ' + (ok ? 'good' : 'bad') + '">' + (ok ? '✅' : '❌') + ' ' + t.name + '</div>';
+    }
+
+    // Step 3: show the grade
+    const stars = "⭐".repeat(passed) + "☆".repeat(tests.length - passed);
+    let msg;
+    if (passed === 5)      msg = "PERFECT SCORE! You did it! 🎉🎉🎉";
+    else if (passed >= 3)  msg = "So close! Look at the ❌ lines and try again 💪";
+    else if (passed >= 1)  msg = "Good start! The hints below can help 🔍";
+    else                   msg = "Every coder starts somewhere — open Hint 1! 🌱";
+    box.innerHTML += '<div class="score"><div class="stars">' + stars + '</div><b>' + passed + ' out of 5</b><br>' + msg + '</div>';
+
+    // Remember the best score for the homework list page
+    const best = Number(localStorage.getItem("hw2-stars") || 0);
+    if (passed > best) localStorage.setItem("hw2-stars", passed);
+  }
+</script>
+
+</body>
+</html>

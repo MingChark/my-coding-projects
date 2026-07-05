@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HW 1: Sentence Maker</title>
+
+  <style>
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.65)),
+                  url('family-bg.svg') center / cover no-repeat fixed;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 15px 60px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .page { max-width: 720px; margin: 0 auto; }
+    a.back { color: #1b4f72; font-size: 17px; text-decoration: none; font-weight: bold; }
+    h1 { font-size: 38px; color: #1b4f72; text-align: center; text-shadow: 1px 1px 0 rgba(255,255,255,0.8); }
+
+    .panel {
+      background: rgba(255,255,255,0.94);
+      border-radius: 18px;
+      padding: 22px 26px;
+      margin: 18px 0;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+    .panel h2 { margin-top: 0; font-size: 24px; color: #1b4f72; }
+    code, textarea {
+      font-family: "Menlo", "Consolas", monospace;
+    }
+    code {
+      background: #eef3f8;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #c0392b;
+    }
+    ul { line-height: 1.9; font-size: 17px; }
+    .example {
+      background: #eef9ee;
+      border-left: 5px solid #63c15c;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    textarea {
+      width: 100%;
+      height: 180px;
+      font-size: 16px;
+      padding: 14px;
+      border: 2px solid #b8cbdd;
+      border-radius: 12px;
+      box-sizing: border-box;
+      background: #fbfdff;
+      resize: vertical;
+    }
+    button.run {
+      display: block;
+      margin: 16px auto 0;
+      font-size: 24px;
+      font-family: inherit;
+      padding: 14px 44px;
+      border: none;
+      border-radius: 15px;
+      background: #4a90d9;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #2e6da4;
+    }
+    button.run:active { transform: translateY(4px); box-shadow: 0 2px 0 #2e6da4; }
+
+    .test { font-size: 17px; padding: 8px 12px; border-radius: 8px; margin: 6px 0; }
+    .test.good { background: #eafbea; }
+    .test.bad  { background: #fdeaea; }
+    .score { text-align: center; font-size: 26px; margin-top: 16px; }
+    .score .stars { font-size: 34px; letter-spacing: 4px; }
+    details { margin: 10px 0; font-size: 17px; }
+    summary { cursor: pointer; font-weight: bold; color: #1b4f72; }
+    details p { background: #fff8e6; padding: 10px 14px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="index.html">⬅ Back to homework list</a>
+  <h1>✍️ HW 1: Sentence Maker</h1>
+
+  <div class="panel">
+    <h2>🎯 Your Mission</h2>
+    <p style="font-size:18px">Write a function called <code>makeSentence</code> that takes
+      <b>3 words</b> — an <b>animal</b>, a <b>place</b>, and an <b>action</b> —
+      and gives back one fun sentence that uses all three words.</p>
+    <ul>
+      <li>The function must be named <code>makeSentence</code></li>
+      <li>It must <b>return</b> a sentence (text)</li>
+      <li>The sentence must include all 3 words you were given</li>
+      <li>Add your own extra words to make it a real sentence!</li>
+    </ul>
+    <div class="example">
+      <b>Example:</b> <code>makeSentence("dog", "moon", "danced")</code><br>
+      could give back: <i>"One day, a dog flew to the moon and danced all night!"</i>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>👀 See it working</h2>
+    <p>Try the finished version first so you know what you're building:
+      <a href="wordmaker.html"><b>open the Word Maker demo ➜</b></a></p>
+  </div>
+
+  <div class="panel">
+    <h2>💻 Your Code</h2>
+    <textarea id="code" spellcheck="false">function makeSentence(animal, place, action) {
+  // Write your code here!
+  // Tip: glue words together with +
+  // like: "I saw a " + animal
+
+}</textarea>
+    <button class="run" onclick="runTests()">🚀 Test my code!</button>
+  </div>
+
+  <div class="panel">
+    <h2>📊 Results</h2>
+    <div id="results"><i>Press "Test my code!" to see your score.</i></div>
+  </div>
+
+  <div class="panel">
+    <h2>🔍 Stuck? Open a hint</h2>
+    <details><summary>Hint 1</summary>
+      <p>You can glue text and words together with <code>+</code> like this:<br>
+      <code>"A " + animal + " went to the " + place</code></p>
+    </details>
+    <details><summary>Hint 2</summary>
+      <p>Your function must <b>give the sentence back</b> using the word <code>return</code>:<br>
+      <code>return "A " + animal + " ...";</code></p>
+    </details>
+    <details><summary>🆘 Show me one answer</summary>
+      <p><code>function makeSentence(animal, place, action) {<br>
+      &nbsp;&nbsp;return "One day, a " + animal + " went to the " + place + " and " + action + " all day!";<br>
+      }</code><br>
+      Type it in, make it pass, then change the sentence to your own!</p>
+    </details>
+  </div>
+
+</div>
+
+<script>
+  // ===== The tests that grade the homework =====
+  const tests = [
+    {
+      name: "Your function gives back some text",
+      run: (fn) => typeof fn("dog", "park", "jumped") === "string" && fn("dog", "park", "jumped").length > 0
+    },
+    {
+      name: "The sentence uses the ANIMAL word",
+      run: (fn) => String(fn("zebra", "park", "jumped")).toLowerCase().includes("zebra")
+    },
+    {
+      name: "The sentence uses the PLACE word",
+      run: (fn) => String(fn("dog", "volcano", "jumped")).toLowerCase().includes("volcano")
+    },
+    {
+      name: "The sentence uses the ACTION word",
+      run: (fn) => String(fn("dog", "park", "wiggled")).toLowerCase().includes("wiggled")
+    },
+    {
+      name: "You added your own extra words too",
+      run: (fn) => {
+        const s = String(fn("cat", "zoo", "ran")).toLowerCase();
+        const extra = s.replace("cat", "").replace("zoo", "").replace("ran", "").replace(/[^a-z]/g, "");
+        return extra.length >= 8; // at least a few extra letters beyond the 3 words
+      }
+    }
+  ];
+
+  function runTests() {
+    const code = document.getElementById("code").value;
+    const box = document.getElementById("results");
+    box.innerHTML = "";
+
+    // Step 1: try to read the code
+    let fn = null;
+    try {
+      fn = new Function(code + "\n;return (typeof makeSentence !== 'undefined') ? makeSentence : null;")();
+    } catch (e) {
+      box.innerHTML = '<div class="test bad">😵 Oops, the computer could not read your code!<br><b>' + e.message + '</b><br>Check for missing quotes " or brackets { }</div>';
+      return;
+    }
+    if (typeof fn !== "function") {
+      box.innerHTML = '<div class="test bad">🤔 I could not find a function named <b>makeSentence</b>. Keep the first line just like the starter code!</div>';
+      return;
+    }
+
+    // Step 2: run each test
+    let passed = 0;
+    for (const t of tests) {
+      let ok = false;
+      try { ok = !!t.run(fn); } catch (e) { ok = false; }
+      if (ok) passed++;
+      box.innerHTML += '<div class="test ' + (ok ? 'good' : 'bad') + '">' + (ok ? '✅' : '❌') + ' ' + t.name + '</div>';
+    }
+
+    // Step 3: show the grade
+    const stars = "⭐".repeat(passed) + "☆".repeat(tests.length - passed);
+    let msg;
+    if (passed === 5)      msg = "PERFECT SCORE! You did it! 🎉🎉🎉";
+    else if (passed >= 3)  msg = "So close! Look at the ❌ lines and try again 💪";
+    else if (passed >= 1)  msg = "Good start! The hints below can help 🔍";
+    else                   msg = "Every coder starts somewhere — open Hint 1! 🌱";
+    box.innerHTML += '<div class="score"><div class="stars">' + stars + '</div><b>' + passed + ' out of 5</b><br>' + msg + '</div>';
+
+    // Remember the best score for the homework list page
+    const best = Number(localStorage.getItem("hw1-stars") || 0);
+    if (passed > best) localStorage.setItem("hw1-stars", passed);
+  }
+</script>
+
+</body>
+</html>
