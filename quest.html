@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Big Quest: Build Minecraft</title>
+
+  <style>
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.65)),
+                  url('family-bg.svg') center / cover no-repeat fixed;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 15px 60px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .page { max-width: 760px; margin: 0 auto; }
+    a.back { color: #1b4f72; font-size: 17px; text-decoration: none; font-weight: bold; }
+    h1 { font-size: 36px; color: #1b4f72; text-align: center; text-shadow: 1px 1px 0 rgba(255,255,255,0.8); margin-bottom: 4px; }
+    p.tagline { text-align: center; font-size: 19px; margin-top: 0; }
+
+    .panel {
+      background: rgba(255,255,255,0.95);
+      border-radius: 18px;
+      padding: 22px 26px;
+      margin: 18px 0;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+    .panel h2 { margin-top: 0; font-size: 23px; color: #1b4f72; }
+
+    /* Progress bar */
+    .progress-wrap { background: #dfe9f2; border-radius: 20px; height: 30px; overflow: hidden; }
+    .progress-bar {
+      background: linear-gradient(90deg, #63c15c, #2e9e4f);
+      height: 100%; width: 0%;
+      border-radius: 20px;
+      transition: width 0.5s;
+      display: flex; align-items: center; justify-content: flex-end;
+      color: white; font-weight: bold; font-size: 15px; padding-right: 10px; box-sizing: border-box;
+      min-width: 0;
+    }
+    .progress-label { text-align: center; font-size: 17px; margin-top: 8px; }
+
+    /* Golden rules */
+    .rules li { font-size: 17px; line-height: 1.8; margin-bottom: 6px; }
+
+    /* Levels */
+    details.level {
+      background: rgba(255,255,255,0.95);
+      border-radius: 18px;
+      margin: 14px 0;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    details.level summary {
+      cursor: pointer;
+      font-size: 21px;
+      font-weight: bold;
+      color: #1b4f72;
+      padding: 18px 22px;
+      list-style: none;
+    }
+    details.level summary::-webkit-details-marker { display: none; }
+    details.level summary .done-mark { float: right; font-size: 22px; }
+    details.level .body { padding: 0 24px 22px; }
+
+    .goal {
+      background: #eef9ee;
+      border-left: 5px solid #63c15c;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 17px;
+      margin-bottom: 14px;
+    }
+    .prompt-box {
+      background: #1e2a38;
+      color: #d9e7f5;
+      font-family: "Menlo", "Consolas", monospace;
+      font-size: 15px;
+      line-height: 1.6;
+      padding: 16px;
+      border-radius: 12px;
+      position: relative;
+      white-space: pre-wrap;
+    }
+    .prompt-box .say { color: #8fd6ff; font-family: inherit; }
+    button.copy {
+      position: absolute; top: 8px; right: 8px;
+      font-family: inherit; font-size: 13px;
+      background: #4a90d9; color: white;
+      border: none; border-radius: 8px;
+      padding: 6px 12px; cursor: pointer;
+    }
+    button.copy:active { background: #2e6da4; }
+    .check {
+      background: #fff8e6;
+      border-left: 5px solid #f0b429;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      margin: 14px 0;
+    }
+    .fixit {
+      background: #fdeeee;
+      border-left: 5px solid #e2574c;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      margin: 14px 0;
+    }
+    .fixit i { display: block; margin-top: 6px; }
+    label.done {
+      display: block;
+      background: #eef3f8;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      margin-top: 14px;
+    }
+    label.done input { transform: scale(1.6); margin-right: 10px; vertical-align: middle; }
+
+    .grownups { font-size: 16px; line-height: 1.7; }
+    .grownups code {
+      font-family: "Menlo", "Consolas", monospace;
+      background: #eef3f8; padding: 2px 7px; border-radius: 6px; font-size: 14px; color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="index.html">⬅ Back to homework list</a>
+  <h1>🏔 The Big Quest: Build Minecraft</h1>
+  <p class="tagline">You won't write the code. You'll be the <b>boss</b> — and tell an AI what to build!</p>
+
+  <div class="panel">
+    <h2>📈 Your Progress</h2>
+    <div class="progress-wrap"><div class="progress-bar" id="bar"></div></div>
+    <div class="progress-label" id="bar-label">Level 0 of 9</div>
+  </div>
+
+  <div class="panel">
+    <h2>⭐ The Golden Rules of Being the Boss</h2>
+    <ol class="rules">
+      <li>🐜 Ask for <b>ONE small thing</b> at a time. Small steps win.</li>
+      <li>👀 If it's wrong, say <b>exactly what you see</b>: "the player sinks into the ground" is way better than "it's broken."</li>
+      <li>🔁 It's okay to say: <b>"That's not what I wanted, please undo it."</b></li>
+      <li>🤔 Ask <b>"why?"</b> and <b>"how does that work?"</b> — the AI loves explaining.</li>
+      <li>🎉 When a level works — <b>celebrate and publish it</b> to your website!</li>
+    </ol>
+  </div>
+
+  <!-- ================= LEVEL 1 ================= -->
+  <details class="level" data-level="1">
+    <summary>🌍 Level 1: Make the World <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> An empty world — blue sky on top, green ground on the bottom.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Create a file called game.html. Make a game screen that fills the whole page. The top part is blue sky and the bottom part is green ground. No blocks yet, just the empty world.</span></div>
+      <div class="check">👀 <b>Check it:</b> Open game.html in the browser. Do you see sky and ground filling the whole window?</div>
+      <div class="fixit">🛠 <b>If it's not right, tell the AI what you see:</b>
+        <i>"The page has a white edge around it. Make the world fill everything."</i>
+        <i>"The ground is too small. Make it about a quarter of the screen."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(1, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 2 ================= -->
+  <details class="level" data-level="2">
+    <summary>🔲 Level 2: The Block Grid <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> The world becomes a grid of squares — every square can hold one block.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Divide the whole world into a grid of squares, about 40 pixels each. Draw very light lines so I can see the squares.</span></div>
+      <div class="check">👀 <b>Check it:</b> Can you see faint grid lines over the sky and ground?</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"The lines are too dark. Make them lighter."</i>
+        <i>"I only see lines on the ground. I want them everywhere."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(2, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 3 ================= -->
+  <details class="level" data-level="3">
+    <summary>🧱 Level 3: Place Your First Block <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> Click an empty square → a dirt block appears. Your first building power!</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">When I click on an empty square, put a brown dirt block there. The block should exactly fill the square.</span></div>
+      <div class="check">👀 <b>Check it:</b> Click around — can you build a dirt tower? A wall? Write your name in blocks?</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"The block appears in the wrong square, not the one I clicked."</i>
+        <i>"The blocks are just plain brown. Can you give them a little texture so they look like Minecraft dirt?"</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(3, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 4 ================= -->
+  <details class="level" data-level="4">
+    <summary>⛏️ Level 4: Mining! <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> Click a block that's already there → it breaks and disappears. Now you can build AND mine.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">If I click a square that already has a block, break the block and make it disappear — like mining in Minecraft.</span></div>
+      <div class="check">👀 <b>Check it:</b> Build a wall, then mine a door-shaped hole in it.</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"When I click a block it places another one instead of breaking it."</i>
+        <i>"Can the block make a little crumble effect when it breaks?"</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(4, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 5 ================= -->
+  <details class="level" data-level="5">
+    <summary>🎨 Level 5: More Kinds of Blocks <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> A toolbar to choose between dirt, grass, stone, and wood — like the Minecraft hotbar.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Add a toolbar at the bottom with 4 block types: dirt (brown), grass (green top), stone (gray), and wood (dark brown stripes). Let me click one to choose it, and show which one is chosen. When I place a block, use the one I chose.</span></div>
+      <div class="check">👀 <b>Check it:</b> Build a stone castle with a wooden door and grass on top.</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"I can't tell which block type is selected. Make the chosen one glow."</i>
+        <i>"Add water as a fifth block type. Make it a bit see-through."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(5, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 6 ================= -->
+  <details class="level" data-level="6">
+    <summary>🧍 Level 6: The Player <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> A little character who walks, jumps, falls, and lands on your blocks. This is the biggest level — it might take a few tries. That's normal!</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Add a small player character standing on the ground. Arrow keys move him left and right, and the space bar makes him jump. Gravity pulls him down, and he lands on top of blocks instead of falling through them. He can't walk through blocks either.</span></div>
+      <div class="check">👀 <b>Check it:</b> Build a staircase of blocks and jump to the top. Then dig under yourself — do you fall into the hole?</div>
+      <div class="fixit">🛠 <b>If it's not right (this level LOVES to go wrong 😄):</b>
+        <i>"The player falls through the blocks."</i>
+        <i>"The player gets stuck inside blocks when walking."</i>
+        <i>"He jumps too high — make the jump about two blocks high."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(6, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 7 ================= -->
+  <details class="level" data-level="7">
+    <summary>🌳 Level 7: A Living World <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> The world starts with hills and trees already there, instead of being empty.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">When the game starts, generate a world that already has some grassy hills, and a few trees made of wood blocks with green leaf blocks on top. Make it a little different every time.</span></div>
+      <div class="check">👀 <b>Check it:</b> Refresh the page a few times — is the world a bit different each time? Can you mine a tree?</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"The trees are floating in the air. They should grow from the ground."</i>
+        <i>"The hills are too pointy. Make them smoother."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(7, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 8 ================= -->
+  <details class="level" data-level="8">
+    <summary>💾 Level 8: Save Your World <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> Your world is still there when you come back tomorrow — plus a "New World" button.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Save my world in the browser so that when I close the game and open it again, all my blocks are still there. Also add a "New World" button that asks "are you sure?" and then starts a fresh world.</span></div>
+      <div class="check">👀 <b>Check it:</b> Build something, close the browser completely, open the game again. Is your building still there?</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"My world disappears when I refresh the page."</i>
+        <i>"The New World button erased my world without asking. Add the are-you-sure question."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(8, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 9 ================= -->
+  <details class="level" data-level="9">
+    <summary>👑 Level 9: Make It YOURS <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> No instructions this time. YOU decide what your game needs — and you write the prompt yourself, in your own words.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Ideas to steal (or invent your own!):
+- a day and night button
+- clouds that float by
+- a pet dog that follows the player
+- TNT blocks that explode
+- sounds when you place and break blocks
+- a creeper... if you dare</span></div>
+      <div class="check">👀 <b>Check it:</b> Does your game make YOU laugh? Then it's perfect. Show somebody!</div>
+      <div class="fixit">🛠 <b>Remember:</b> one small thing at a time. Get the dog walking before you make him bark. 🐕</div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(9, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <div class="panel">
+    <h2>🚀 Publishing a finished level</h2>
+    <p style="font-size:17px">Every time a level works, ask a grown-up to <b>publish</b> it. Then your game is LIVE at
+    <b>jjaihw.com/game.html</b> — on the real internet, where you can show anyone!</p>
+  </div>
+
+  <div class="panel grownups">
+    <h2>👨‍👩‍👦 Note for grown-ups</h2>
+    <p><b>Setup (once):</b> open Terminal, go to the website folder and start the coding agent — e.g.
+    <code>cd ~/Desktop/Projects/my-coding-projects</code> then <code>claude</code> (Claude Code), or any agent you prefer.
+    The kid types (or dictates) the prompts — resist the urge to type for them!</p>
+    <p><b>Each level:</b> the agent edits <code>game.html</code> in this folder. Check the result together in the browser.
+    When it works: <code>git add -A && git commit -m "Level N" && git push</code> — Netlify puts it on
+    <b>jjaihw.com/game.html</b> automatically in ~30 seconds.</p>
+    <p><b>The point:</b> the checkboxes here are self-graded on purpose. The skill being taught is
+    <i>describe → look → describe what's wrong → repeat</i>. Let them struggle a little on Level 6 — that's where the learning is.</p>
+  </div>
+
+</div>
+
+<script>
+  const TOTAL = 9;
+
+  function getDone() {
+    try { return JSON.parse(localStorage.getItem("quest-done") || "[]"); }
+    catch { return []; }
+  }
+
+  function toggleLevel(n, box) {
+    let done = getDone();
+    if (box.checked && !done.includes(n)) done.push(n);
+    if (!box.checked) done = done.filter(x => x !== n);
+    localStorage.setItem("quest-done", JSON.stringify(done));
+    localStorage.setItem("quest-count", done.length);
+    render();
+  }
+
+  function render() {
+    const done = getDone();
+    // progress bar
+    const pct = Math.round(done.length / TOTAL * 100);
+    const bar = document.getElementById("bar");
+    bar.style.width = pct + "%";
+    bar.textContent = pct > 10 ? pct + "%" : "";
+    document.getElementById("bar-label").textContent =
+      done.length === TOTAL ? "🏆 QUEST COMPLETE! You built Minecraft!" : "Level " + done.length + " of " + TOTAL;
+    // checkmarks on summaries + checkbox states
+    document.querySelectorAll("details.level").forEach(d => {
+      const n = Number(d.dataset.level);
+      d.querySelector(".done-mark").textContent = done.includes(n) ? "✅" : "";
+      d.querySelector("input[type=checkbox]").checked = done.includes(n);
+    });
+  }
+
+  function copyPrompt(btn) {
+    const text = btn.parentElement.querySelector(".say").innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = "✅ Copied!";
+      setTimeout(() => btn.textContent = "📋 Copy", 1500);
+    });
+  }
+
+  render();
+</script>
+
+</body>
+</html>

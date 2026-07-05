@@ -57,6 +57,11 @@
     .card .emoji { font-size: 56px; }
     .card .name { font-size: 22px; font-weight: bold; margin-top: 8px; }
     .card .stars { font-size: 20px; margin-top: 8px; letter-spacing: 2px; }
+    .card.quest {
+      width: 320px;
+      background: linear-gradient(160deg, #fffef5, #e8f7e4);
+      border: 3px solid #63c15c;
+    }
     .card.demo { width: 180px; padding: 20px 15px; opacity: 0.95; }
     .card.demo .emoji { font-size: 40px; }
     .card.demo .name { font-size: 17px; }
@@ -67,7 +72,18 @@
   <h1>🏠 JJ's AI Homework</h1>
   <p class="subtitle">Learn to code, one mission at a time!</p>
 
-  <h2>📚 Homework Missions</h2>
+  <h2>🏔 The Big Quest</h2>
+  <div class="cards">
+
+    <a class="card quest" href="quest.html">
+      <div class="emoji">⛏️</div>
+      <div class="name">Build Your Own Minecraft</div>
+      <div class="stars" id="quest-progress">Level 0 of 9</div>
+    </a>
+
+  </div>
+
+  <h2>📚 Warm-up Missions</h2>
   <div class="cards">
 
     <a class="card" href="hw1.html">
@@ -117,6 +133,10 @@
       document.getElementById(hw + "-stars").textContent =
         "⭐".repeat(earned) + "☆".repeat(5 - earned);
     }
+    // Show Big Quest progress
+    const lvl = Number(localStorage.getItem("quest-count") || 0);
+    document.getElementById("quest-progress").textContent =
+      lvl >= 9 ? "🏆 QUEST COMPLETE!" : "Level " + lvl + " of 9";
   </script>
 
 </body>
