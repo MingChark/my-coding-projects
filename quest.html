@@ -419,6 +419,69 @@ Then ideas to steal (or invent your own!):
     </div>
   </details>
 
+  <!-- ================= PART 3 ================= -->
+  <div class="panel" style="text-align:center; background: linear-gradient(160deg, #7b2d8b, #b83280); color: white;">
+    <h2 style="color:white; font-size: 30px;">🎬 PART 3: YOUR WORLD, YOUR STARS</h2>
+    <p style="font-size:18px">Your world works. Now make it feel ALIVE — with a village,
+    villagers... and the stars of the <b>Miky &amp; JJ</b> channel playing the game! 🌟</p>
+  </div>
+
+  <!-- ================= LEVEL 17 ================= -->
+  <details class="level" data-level="17">
+    <summary>🏘 Level 17: Build a Village <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> Your world starts with a little village — houses you can actually walk into.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">When the world is generated, also build a small village near where I start: 3 or 4 little houses made of wood and stone, each with a doorway I can walk through and windows. Connect the houses with dirt paths. Put the village on flat ground.</span></div>
+      <div class="check">👀 <b>Check it:</b> Walk down the path, go through a doorway, and look out a window from inside.</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"The houses are half-buried in a hill. Put the village on flat ground."</i>
+        <i>"I can't fit through the doorway. Make it two blocks tall."</i>
+        <i>"The houses have no roofs — add pointy roofs like real Minecraft villages."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(17, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 18 ================= -->
+  <details class="level" data-level="18">
+    <summary>🧑‍🌾 Level 18: The Villagers <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> Blocky villagers who wander around the village and notice you.</div>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Add a few blocky villagers who slowly walk around the village. They stay on the ground, don't walk through walls or each other, and stay near the village. When I get close to a villager, it turns to look at me.</span></div>
+      <div class="check">👀 <b>Check it:</b> Follow a villager around. Then walk right up to one — does it turn and look at you? 👀</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"The villagers walk straight through the house walls."</i>
+        <i>"They wander far away and get lost. Keep them near the village."</i>
+        <i>"Make one villager wave its arm at me when I get close."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(18, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
+  <!-- ================= LEVEL 19 ================= -->
+  <details class="level" data-level="19">
+    <summary>🌟 Level 19: Play as JJ or Miky! <span class="done-mark"></span></summary>
+    <div class="body">
+      <div class="goal">🎯 <b>Goal:</b> A "Choose Your Character" screen with the stars of the Miky &amp; JJ channel — and you play as the one you pick!</div>
+      <p style="font-size:16px">⚠️ <b>Important:</b> the AI has never seen you two! Fill in the blanks below with
+      what you REALLY look like — hair, favorite shirt colors, anything special. The better you describe, the better
+      your characters look. That's what great prompting is!</p>
+      <div class="prompt-box"><button class="copy" onclick="copyPrompt(this)">📋 Copy</button><span class="say">Before the game starts, show a "Choose Your Character" screen with the two stars of the Miky &amp; JJ YouTube channel. Make them as blocky Minecraft-style characters:
+- JJ: [describe JJ! example: short black hair, a red shirt, blue pants, a big smile]
+- Miky: [describe Miky! example: brown hair, a yellow shirt with a star, black pants]
+Show both characters side by side so I can click the one I want to play as.
+After I choose, that character is me in the game. Add a V key that switches between first-person view and a behind-the-back view, so I can see my character walking and jumping.</span></div>
+      <div class="check">👀 <b>Check it:</b> Pick Miky, press V, and watch him run and jump. Then start a new game and pick JJ. Do they look like you two?</div>
+      <div class="fixit">🛠 <b>If it's not right:</b>
+        <i>"The behind-the-back camera is inside my character's head. Move it back and up a little."</i>
+        <i>"JJ's hair is wrong — it should be [say how it really is]."</i>
+        <i>"The character slides without moving his legs. Make arms and legs swing when walking."</i>
+        <i>"Write 'Miky &amp; JJ' at the top of the choose screen like our channel logo."</i>
+      </div>
+      <label class="done"><input type="checkbox" onchange="toggleLevel(19, this)"> I did it! ✅</label>
+    </div>
+  </details>
+
   <div class="panel">
     <h2>🚀 Publishing a finished level</h2>
     <p style="font-size:17px">Every time a level works, ask a grown-up to <b>publish</b> it. Then your games are LIVE at
@@ -443,8 +506,9 @@ Then ideas to steal (or invent your own!):
 </div>
 
 <script>
-  const TOTAL = 16;
+  const TOTAL = 19;
   const PART1 = [1,2,3,4,5,6,7,8,9];
+  const PART2 = [10,11,12,13,14,15,16];
 
   function getDone() {
     try { return JSON.parse(localStorage.getItem("quest-done") || "[]"); }
@@ -468,8 +532,10 @@ Then ideas to steal (or invent your own!):
     bar.style.width = pct + "%";
     bar.textContent = pct > 10 ? pct + "%" : "";
     const part1Done = PART1.every(n => done.includes(n));
+    const part2Done = PART2.every(n => done.includes(n));
     document.getElementById("bar-label").textContent =
-      done.length === TOTAL ? "🏆 QUEST COMPLETE! You built Minecraft in 3D!" :
+      done.length === TOTAL ? "🏆 QUEST COMPLETE! Miky & JJ built Minecraft!" :
+      part1Done && part2Done ? "🎬 3D world complete (" + done.length + " of " + TOTAL + ") — now add your stars!" :
       part1Done ? "🎉 2D game complete (" + done.length + " of " + TOTAL + ") — now GO 3D!" :
       "Level " + done.length + " of " + TOTAL;
     // checkmarks on summaries + checkbox states
