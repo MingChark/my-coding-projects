@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Class — 15 Aug 2026</title>
+  <style>
+    html { background: #d3ecfb; }
+    /* Background lives in a fixed, composited layer.
+       Using background-attachment:fixed on the body element repaints the
+       viewport every scroll frame (jank), and rescales when a mobile
+       URL bar collapses (jump). It also left the white wash on the
+       default 'scroll' attachment while the image stayed put, so the
+       two layers slid against each other. */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.62)),
+                  url('family-bg.svg') center / cover no-repeat;
+    }
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: transparent;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 18px 70px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      line-height: 1.5;
+    }
+    .page { max-width: 900px; margin: 0 auto; }
+    a.back {
+      display: inline-block; text-decoration: none; color: #1b4f72;
+      font-size: 17px; background: rgba(255,255,255,.9);
+      padding: 7px 16px; border-radius: 18px; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    }
+    h1 {
+      font-size: 40px; color: #1b4f72; margin: 22px 0 4px;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.85);
+    }
+    p.subtitle {
+      font-size: 19px; color: #34495e; margin: 0 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .badge { background: #1b4f72; color: #fff; font-size: 14px; padding: 5px 13px; border-radius: 14px; }
+    .badge.alt { background: #63c15c; }
+    .badge.coach { background: #8e44ad; }
+
+    h2 {
+      font-size: 27px; color: #1b4f72; margin: 44px 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.94);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      padding: 22px 24px;
+      margin: 18px 0;
+    }
+    .card.star { border: 3px solid #63c15c; background: linear-gradient(160deg,#fffef5,#eaf8e6); }
+
+    .rulehead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .num { font-size: 30px; color: #63c15c; font-weight: bold; line-height: 1; }
+    .ruletitle { font-size: 23px; color: #1b4f72; font-weight: bold; }
+    .why { font-size: 17px; margin: 10px 0 0; }
+
+    .said {
+      margin-top: 14px; padding: 12px 16px;
+      background: #f4ecfa; border-left: 6px solid #8e44ad;
+      border-radius: 0 12px 12px 0;
+    }
+    .said .cn {
+      font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      font-size: 18px; color: #4a235a;
+    }
+    .said .en { font-size: 16px; color: #5b2c6f; font-style: italic; margin-top: 3px; }
+    .said .when { font-size: 13px; color: #7d3c98; margin-top: 6px; }
+
+    .strip { display: flex; gap: 12px; margin-top: 18px; }
+    .strip figure { flex: 1 1 0; min-width: 0; margin: 0; text-align: center; }
+    .strip img {
+      width: 100%; height: auto; display: block;
+      border-radius: 10px; border: 3px solid #d5dbdb;
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
+    }
+    .strip figure.key img { border-color: #63c15c; }
+    .strip figcaption { font-size: 14px; margin-top: 7px; }
+    .strip figure.key figcaption { font-weight: bold; color: #217a1f; }
+    .step {
+      display: inline-block; background: #d5dbdb; color: #2c3e50;
+      font-size: 12px; padding: 2px 9px; border-radius: 10px; margin-bottom: 5px;
+    }
+    .strip figure.key .step { background: #63c15c; color: #fff; }
+
+    .movelist {
+      font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+      font-size: 15px; background: #eef3f7; border-radius: 12px;
+      padding: 14px 16px; margin-top: 14px; overflow-x: auto;
+      line-height: 1.9; color: #1b4f72;
+    }
+    .tip { font-size: 17px; margin-top: 12px; }
+    .tip strong { color: #1b4f72; }
+
+    @media (max-width: 700px) {
+      .strip { flex-wrap: wrap; }
+      .strip figure { flex: 1 1 44%; }
+      h1 { font-size: 31px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="chess.html">← All chess records</a>
+
+  <h1>♟️ Saturday Chess Class</h1>
+  <p class="subtitle">First class of the new semester</p>
+  <div class="badges">
+    <span class="badge">📅 Sat 15 Aug 2026</span>
+    <span class="badge coach">👨‍🏫 Coach IM Li Wenliang (李文良)</span>
+    <span class="badge alt">Class 1 of 15</span>
+  </div>
+
+  <!-- ===== house rules ===== -->
+  <h2>📌 The rules for this term</h2>
+  <div class="card">
+    <p class="why">Coach opened with how the class runs. Worth knowing, because two of these are things you can lose marks on without realising.</p>
+    <ul style="font-size:17px">
+      <li><b>Hand up to speak</b>, hands empty, eyes on the board.</li>
+      <li><b>Bring your homework to class.</b> He named two students who always do, as the example to copy.</li>
+      <li><b>The face-to-face game matters</b> — he watches how you handle yourself, not just the moves.</li>
+      <li><b>One online game every week</b>, played <b>within the week</b> and sent to Coach Dong promptly, or you lose that week's review.</li>
+    </ul>
+    <div class="said">
+      <div class="cn">“不是 test，是让你们学习 —— 通过作业的方式学习，怎么样解题，怎么样发现 combination，怎么样学习 tactic。”</div>
+      <div class="en">It isn't a test — it's how you learn. The homework is how you learn to solve, to spot combinations, to learn tactics.</div>
+      <div class="when">📅 15 Aug 2026 · class, 00:40</div>
+    </div>
+  </div>
+
+  <!-- ===== term plan ===== -->
+  <h2>🗺️ What this term is about</h2>
+  <div class="card">
+    <p class="tip"><strong>Main theme: openings — and how to study them.</strong> Not just memorising moves, but how to build a line you can call your own.</p>
+    <p class="tip"><strong>World champions continue.</strong> Last term ended with Spassky. So this term starts with the man who beat him: <b>Bobby Fischer</b>.</p>
+  </div>
+
+  <!-- ===== homework ===== -->
+  <h2>📝 Homework 425–427 — queen sacrifice for mate</h2>
+  <div class="card">
+    <div class="said">
+      <div class="cn">“Queen sacrifice 是战术组合、tactics 里面最难的。”</div>
+      <div class="en">The queen sacrifice is the hardest thing in all of tactics.</div>
+      <div class="when">📅 15 Aug 2026 · class, 06:20</div>
+    </div>
+    <p class="tip"><b>425</b> — a queen sacrifice for mate: refuse it and you're lost anyway; accept it and you're mated.</p>
+    <p class="tip"><b>426 — the one worth remembering.</b> The obvious flashy move looks like mate, but the opponent has <b>a check first</b>, and it all falls apart. You have to play the quiet knight move before the pretty one.</p>
+    <p class="tip"><strong>The habit:</strong> before you commit to a beautiful tactic, look for your opponent's checks. This exact mistake came up again later in the class.</p>
+  </div>
+
+  <!-- ===== Carlsen ===== -->
+  <h2>👑 Carlsen's queen sacrifice</h2>
+  <div class="card">
+    <p class="tip">Coach had watched the <b>Esports World Cup chess final that same morning</b> — Carlsen won it again, and $250,000 — and played the clip because Carlsen finished with a queen sacrifice.</p>
+    <p class="tip">But he was careful to separate two different things:</p>
+    <ul style="font-size:17px">
+      <li>The <b>homework</b> queen sacs are <b>direct</b> — give the queen, deliver mate, done.</li>
+      <li>Carlsen's was a <b>positional</b> queen sacrifice — no mate in sight, you just judge that the pieces you get are worth more than the queen. Much harder.</li>
+    </ul>
+  </div>
+
+  <!-- ===== Fischer game ===== -->
+  <h2>⭐ The game: Fischer beats a grandmaster in a simul</h2>
+  <div class="card star">
+    <div class="ruletitle">Fischer – Bisguier, 1–0</div>
+    <p class="why">C59 Two Knights Defence · Poughkeepsie 1963 · a <b>simultaneous exhibition</b> — Fischer playing many boards at once. In 1963 he was already US champion; he wouldn't be world champion until 1972.</p>
+    <p class="tip">His opponent refused to trade pieces at all, because he wanted to <em>beat</em> Fischer rather than draw with him. It didn't work.</p>
+
+    <p class="tip"><strong>1. Read what your opponent wants — before you move.</strong> This is the big one, and Coach spent the most time on it. Fischer was doing this instantly, on every board, while walking between them.</p>
+    <div class="said">
+      <div class="cn">“当对方走出一步棋之后，他马上飞速的就想到对方想干什么 … 你们下棋的时候也要，当对方走出一步棋，你先反应他干什么 —— 这就叫预防性思维。”</div>
+      <div class="en">The moment his opponent played a move, he instantly worked out what they were trying to do. You have to do this too: when your opponent moves, first work out what they want. That's prophylactic thinking.</div>
+      <div class="when">📅 15 Aug 2026 · class, 40:47</div>
+    </div>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/2026-08-15-f3a.jpg" alt="Position with the coach's green arrows showing Black's threats">
+        <figcaption>Coach's green arrows = what Black wants</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">Read it</span>
+        <img src="chess-img/2026-08-15-f3b.jpg" alt="The same position a move later, threats still marked">
+        <figcaption>Answer the plan, not just the move</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/2026-08-15-f3c.jpg" alt="Position after Fischer meets the plan">
+        <figcaption>Fischer is already a step ahead</figcaption>
+      </figure>
+    </div>
+
+    <p class="tip"><strong>2. Two bishops want open lines.</strong> Coach liked <b>Kh1</b> — a quiet king move that prepares to blow the position open so the bishops get to work.</p>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/2026-08-15-f2a.jpg" alt="Closed position before Kh1">
+        <figcaption>Position still closed</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">Quiet move</span>
+        <img src="chess-img/2026-08-15-f2b.jpg" alt="Kh1 played">
+        <figcaption><b>Kh1</b> — tidy up first</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/2026-08-15-f2c.jpg" alt="Position beginning to open">
+        <figcaption>Now open it up</figcaption>
+      </figure>
+    </div>
+    <p class="tip">He also repeated Teacher Gao's line about knights on the edge — <em>“马到边上去吃草”</em>, the knight has wandered off to graze. Keep them central where they do something.</p>
+
+    <p class="tip"><strong>3. The finish — and the trap the class fell into.</strong> Coach asked for the simple move that wins material. Several kids went for a flashy discovered double attack with the bishop. It loses on the spot to a knight check and mate. The answer was the quiet one:</p>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/2026-08-15-f1a.jpg" alt="Position before 27.Be5">
+        <figcaption>White to play and win material</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The move</span>
+        <img src="chess-img/2026-08-15-f1b.jpg" alt="Position after 27.Be5">
+        <figcaption><b>27.Be5!</b> — simple, and winning</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/2026-08-15-f1c.jpg" alt="Position after the follow-up rook exchanges">
+        <figcaption>Rxf5, Rxe5 — Black resigned</figcaption>
+      </figure>
+    </div>
+    <div class="said">
+      <div class="cn">“贪吃小兵，一步棋就输了。”</div>
+      <div class="en">Get greedy over a little pawn and you lose in one move.</div>
+      <div class="when">📅 15 Aug 2026 · class, 41:59</div>
+    </div>
+  </div>
+
+  <!-- ===== next week ===== -->
+  <h2>➡️ What came next</h2>
+  <div class="card">
+    <p class="tip">Coach closed by saying he'd show White's various tries against the <b>Two Knights Defence</b>, and his own recommended line, the following week — and he did. That's in the <a href="chess-2026-08-22.html">22 Aug record</a>.</p>
+  </div>
+
+</div>
+</body>
+</html>
