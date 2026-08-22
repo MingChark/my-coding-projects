@@ -6,10 +6,25 @@
   <title>The Big Quest: Build Minecraft</title>
 
   <style>
+    html { background: #d3ecfb; }
+    /* Background lives in a fixed, composited layer.
+       Using background-attachment:fixed on <body> repaints the whole
+       viewport every scroll frame (jank), and rescales when a mobile
+       URL bar collapses (jump). It also left the white wash on the
+       default 'scroll' attachment while the image stayed put, so the
+       two layers slid against each other. */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.65)),
+                  url('family-bg.svg') center / cover no-repeat;
+    }
     body {
       font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
-      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.65)),
-                  url('family-bg.svg') center / cover no-repeat fixed;
+      background: transparent;
       color: #2c3e50;
       margin: 0;
       padding: 30px 15px 60px;
