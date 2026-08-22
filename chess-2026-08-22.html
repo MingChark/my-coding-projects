@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Class — 22 Aug 2026</title>
+  <style>
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.62)),
+                  url('family-bg.svg') center / cover no-repeat fixed;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 18px 70px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      line-height: 1.5;
+    }
+    .page { max-width: 900px; margin: 0 auto; }
+    a.back {
+      display: inline-block; text-decoration: none; color: #1b4f72;
+      font-size: 17px; background: rgba(255,255,255,.9);
+      padding: 7px 16px; border-radius: 18px; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    }
+    h1 {
+      font-size: 40px; color: #1b4f72; margin: 22px 0 4px;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.85);
+    }
+    p.subtitle {
+      font-size: 19px; color: #34495e; margin: 0 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .badge { background: #1b4f72; color: #fff; font-size: 14px; padding: 5px 13px; border-radius: 14px; }
+    .badge.alt { background: #63c15c; }
+    .badge.coach { background: #8e44ad; }
+
+    h2 {
+      font-size: 27px; color: #1b4f72; margin: 44px 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.94);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      padding: 22px 24px;
+      margin: 18px 0;
+    }
+    .card.star { border: 3px solid #63c15c; background: linear-gradient(160deg,#fffef5,#eaf8e6); }
+
+    .rulehead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .num { font-size: 30px; color: #63c15c; font-weight: bold; line-height: 1; }
+    .ruletitle { font-size: 23px; color: #1b4f72; font-weight: bold; }
+    .why { font-size: 17px; margin: 10px 0 0; }
+
+    .said {
+      margin-top: 14px; padding: 12px 16px;
+      background: #f4ecfa; border-left: 6px solid #8e44ad;
+      border-radius: 0 12px 12px 0;
+    }
+    .said .cn {
+      font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      font-size: 18px; color: #4a235a;
+    }
+    .said .en { font-size: 16px; color: #5b2c6f; font-style: italic; margin-top: 3px; }
+    .said .when { font-size: 13px; color: #7d3c98; margin-top: 6px; }
+
+    .strip { display: flex; gap: 12px; margin-top: 18px; }
+    .strip figure { flex: 1 1 0; min-width: 0; margin: 0; text-align: center; }
+    .strip img {
+      width: 100%; height: auto; display: block;
+      border-radius: 10px; border: 3px solid #d5dbdb;
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
+    }
+    .strip figure.key img { border-color: #63c15c; }
+    .strip figcaption { font-size: 14px; margin-top: 7px; }
+    .strip figure.key figcaption { font-weight: bold; color: #217a1f; }
+    .step {
+      display: inline-block; background: #d5dbdb; color: #2c3e50;
+      font-size: 12px; padding: 2px 9px; border-radius: 10px; margin-bottom: 5px;
+    }
+    .strip figure.key .step { background: #63c15c; color: #fff; }
+
+    .movelist {
+      font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+      font-size: 15px; background: #eef3f7; border-radius: 12px;
+      padding: 14px 16px; margin-top: 14px; overflow-x: auto;
+      line-height: 1.9; color: #1b4f72;
+    }
+    .tip { font-size: 17px; margin-top: 12px; }
+    .tip strong { color: #1b4f72; }
+
+    @media (max-width: 700px) {
+      .strip { flex-wrap: wrap; }
+      .strip figure { flex: 1 1 44%; }
+      h1 { font-size: 31px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="chess.html">← All chess records</a>
+
+  <h1>♟️ Saturday Chess Class</h1>
+  <p class="subtitle">Coach's game review and class notes</p>
+  <div class="badges">
+    <span class="badge">📅 Sat 22 Aug 2026</span>
+    <span class="badge coach">👨‍🏫 Coach IM Li Wenliang (李文良)</span>
+    <span class="badge alt">JasonJJ2017 · 1553</span>
+  </div>
+
+  <!-- ===== JJ's game ===== -->
+  <h2>⭐ Your game this week</h2>
+  <div class="card star">
+    <div class="ruletitle">JasonJJ2017 (1553) vs opponent (1115) — you won 1–0</div>
+    <p class="why">C45 Scotch Game · Rapid 30 min · played 16 Aug 2026 · you had White</p>
+    <div class="movelist">
+      1.e4 e5 2.Nf3 Nc6 3.d4 exd4 4.Nxd4 Nxd4? 5.Qxd4 d6 6.Nc3 Nf6 7.Bf4 Be7 8.0-0-0 0-0<br>
+      9.f3 c5 10.Qd2&plusmn; Be6 11.Bxd6 Bxd6 12.Qxd6 Qxd6 13.Rxd6 b6 14.Bb5 Rfd8 15.Rhd1 Rxd6<br>
+      16.Rxd6 h6 17.Bc6 Rb8 <b>18.Nb5+&minus;</b> a6 19.Nc7 Bxa2 20.b3+&minus; &hellip; 35.Nc3 <b>1&ndash;0</b>
+    </div>
+
+    <div class="said">
+      <div class="cn">“Jason 这盘棋下的还是很不错的。”</div>
+      <div class="en">Jason played this game quite well.</div>
+      <div class="when">📅 22 Aug 2026 · game review, 10:55</div>
+    </div>
+
+    <p class="tip"><strong>Coach found nothing to fix.</strong> Out of the ten games he reviewed, yours was the only one with no correction. Your knight tour got the biggest cheer in the whole video:</p>
+
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/r8a.jpg" alt="White bishop arriving on c6">
+        <figcaption>17.Bc6</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The move</span>
+        <img src="chess-img/r8b.jpg" alt="White knight on b5">
+        <figcaption>18.Nb5 — “哇，真是一步好棋!”</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/r8c.jpg" alt="White knight on c7">
+        <figcaption>19.Nc7 — the fork lands</figcaption>
+      </figure>
+    </div>
+
+    <p class="tip"><strong>Next step:</strong> keep playing the Scotch. Now learn what to do when Black replies <b>properly</b> — 4&hellip;Nf6, 4&hellip;Bc5 or 4&hellip;Qf6. That's the real test.</p>
+  </div>
+
+  <!-- ===== the six rules ===== -->
+  <h2>📋 Six things Coach wants you to practise</h2>
+
+  <div class="card">
+    <div class="rulehead"><span class="num">1</span><span class="ruletitle">Don't give away the centre</span></div>
+    <p class="why">When they push a pawn at you, don't just take it — develop a piece instead. Whoever ends up with pawns in the middle is better.</p>
+    <div class="said">
+      <div class="cn">“吃到之后，你的中心给对手。”</div>
+      <div class="en">Once you capture, you give your opponent the centre.</div>
+      <div class="when">📅 22 Aug 2026 · game review, 11:11</div>
+    </div>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/r1a.jpg" alt="Position after 3...exd4">
+        <figcaption>3&hellip;exd4 — the pawn is offered</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The choice</span>
+        <img src="chess-img/r1b.jpg" alt="Position after 4.Nxd4">
+        <figcaption>4.Nxd4 — Black must <b>not</b> take</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/r1c.jpg" alt="Position after 4...Nxd4 5.Qxd4">
+        <figcaption>4&hellip;Nxd4 5.Qxd4 — White owns it</figcaption>
+      </figure>
+    </div>
+    <p class="tip">This happened in <strong>your own game</strong> — and it's why you won. Your opponent took, and handed you the whole middle.</p>
+  </div>
+
+  <div class="card">
+    <div class="rulehead"><span class="num">2</span><span class="ruletitle">Before you push a pawn, check your pieces are safe</span></div>
+    <p class="why">One glance. This is the cheapest habit on the list and it saves whole games.</p>
+    <div class="said">
+      <div class="cn">“我们小朋友在冲兵之前，一定要注意你的子有没有受到危险。”</div>
+      <div class="en">Kids, before you push a pawn, always check whether your pieces are in any danger.</div>
+      <div class="when">📅 22 Aug 2026 · game review, 25:07</div>
+    </div>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/r2a.jpg" alt="Position before the d4 pawn push">
+        <figcaption>Quiet — everything defended</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The push</span>
+        <img src="chess-img/r2b.jpg" alt="The d4 pawn push highlighted in green">
+        <figcaption>d4 pushed (green square)</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/r2c.jpg" alt="Position after the exchanges following d4">
+        <figcaption>After the trades — a weak pawn</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="rulehead"><span class="num">3</span><span class="ruletitle">If you sacrifice, work out what happens when they <em>don't</em> take</span></div>
+    <p class="why">Everyone calculates the capture. The line where they refuse is where the surprises live.</p>
+    <div class="said">
+      <div class="cn">“要注意对方不吃的变化，你要把它算进去。”</div>
+      <div class="en">Watch out for the line where your opponent declines — you have to include it in your calculation.</div>
+      <div class="when">📅 24 Aug 2025 · class, 02:39</div>
+    </div>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/r3a.jpg" alt="Homework puzzle starting position">
+        <figcaption>The puzzle — White to play</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The sacrifice</span>
+        <img src="chess-img/r3b.jpg" alt="The sacrifice being played, with the coach's red arrow">
+        <figcaption>The offer (Coach's red arrow)</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/r3c.jpg" alt="The finishing move of the combination">
+        <figcaption>&hellip;and the finish</figcaption>
+      </figure>
+    </div>
+    <p class="tip">Coach's biggest theme this term: <strong>the queen sacrifice</strong> — <em>“国际象棋里只有一个棋子不能牺牲 —— 王”</em> (every piece can be sacrificed except the king).</p>
+  </div>
+
+  <div class="card">
+    <div class="rulehead"><span class="num">4</span><span class="ruletitle">Drill skewers</span></div>
+    <p class="why">The one tactic Coach named out loud as a weakness in the group. Learn to spot the shape: <b>king in front, big piece behind, same line.</b></p>
+    <div class="said">
+      <div class="cn">“两个小朋友对于这个 Skewer 这个战术都需要再加强一些。”</div>
+      <div class="en">Both kids need to strengthen skewer tactics.</div>
+      <div class="when">📅 22 Aug 2026 · game review, 19:49</div>
+    </div>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/r4a.jpg" alt="White rook on the seventh rank">
+        <figcaption>Rook on the 7th</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">Set up</span>
+        <img src="chess-img/r4b.jpg" alt="White rook swinging to h7">
+        <figcaption>Rh7 — lining it up</figcaption>
+      </figure>
+      <figure>
+        <span class="step">The idea</span>
+        <img src="chess-img/r4c.jpg" alt="King and rook on the same rank, ready to be skewered">
+        <figcaption>Rh8+ next — and the rook falls</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="rulehead"><span class="num">5</span><span class="ruletitle">Never trade just because you can</span></div>
+    <p class="why">Especially when you're winning — every trade dissolves a bit of your advantage. Have a reason.</p>
+    <div class="said">
+      <div class="cn">“为什么要换呢？不要换。”</div>
+      <div class="en">Why trade? Don't trade.</div>
+      <div class="when">📅 22 Aug 2026 · game review, 08:29</div>
+    </div>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/r5a.jpg" alt="Rooks facing each other on the d-file">
+        <figcaption>Rooks nose to nose, White winning</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The trade</span>
+        <img src="chess-img/r5b.jpg" alt="The rooks being exchanged">
+        <figcaption>Traded &mdash; for no reason</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/r5c.jpg" alt="Simplified position after the exchange">
+        <figcaption>Simplified — the grip is gone</figcaption>
+      </figure>
+    </div>
+    <p class="tip">You already got this right! At <b>15.Rhd1</b> you kept the rooks on to hold the open file — exactly what Coach wanted: <em>“不换，不主动换，因为我要战线”</em>.</p>
+  </div>
+
+  <div class="card">
+    <div class="rulehead"><span class="num">6</span><span class="ruletitle">In the endgame, march your king up and make a passed pawn</span></div>
+    <p class="why">The king is a fighting piece once the queens are gone. And when it's simply winning, Coach says just push: <em>“无脑冲兵就可以”</em>.</p>
+    <div class="said">
+      <div class="cn">“把你的王走上 &hellip; 无脑冲兵就可以。”</div>
+      <div class="en">Bring your king up … then just push the pawn, no thinking needed.</div>
+      <div class="when">📅 22 Aug 2026 · game review, 21:23</div>
+    </div>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/r6a.jpg" alt="King and pawn endgame starting position">
+        <figcaption>King marches up</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">Push</span>
+        <img src="chess-img/r6b.jpg" alt="The pawn advancing">
+        <figcaption>Pawn goes forward</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/r6c.jpg" alt="The pawn has promoted to a queen">
+        <figcaption>New queen! 👑</figcaption>
+      </figure>
+    </div>
+
+    <p class="tip"><strong>Bonus — bishop beats knight.</strong> A bishop can waste a move; a knight cannot. That's how you squeeze: <em>“象有等招，马没有等招”</em>.</p>
+    <div class="said">
+      <div class="cn">“象有等招，马没有等招。”</div>
+      <div class="en">The bishop has waiting moves; the knight does not.</div>
+      <div class="when">📅 24 Aug 2025 · class, 34:49</div>
+    </div>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/r7a.jpg" alt="Bishop versus knight endgame">
+        <figcaption>Bishop vs knight, pawn on a7</figcaption>
+      </figure>
+      <figure>
+        <span class="step">Squeeze</span>
+        <img src="chess-img/r7b.jpg" alt="The black king forced forward">
+        <figcaption>Black is running out of moves</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The trick</span>
+        <img src="chess-img/r7c.jpg" alt="The bishop making a waiting move along the diagonal">
+        <figcaption>Bishop just waits — zugzwang</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- ===== homework ===== -->
+  <h2>📝 Homework</h2>
+  <div class="card">
+    <div class="said">
+      <div class="cn">“这九道题远远不够，你要自己加料。”</div>
+      <div class="en">These nine problems are nowhere near enough — you have to add your own.</div>
+      <div class="when">📅 11 Aug 2025 · orientation, and repeated since</div>
+    </div>
+    <p class="tip">Do extra on <strong>Chess.com Puzzles</strong> in <strong>untimed mode</strong> — no clock, no rushing. Coach also likes a <strong>3-minute Puzzle Battle</strong> against your opponent right before your game as a warm-up: <em>“热身完了之后，你的下棋的质量可能会更好一点”</em>.</p>
+    <p class="tip"><strong>Remember the deadline:</strong> the week's game has to be played <strong>by Thursday</strong>, or Coach Dong has no time to review it.</p>
+  </div>
+
+</div>
+</body>
+</html>
