@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coach Dong — Openings to go over</title>
+<style>
+  html { background: #d3ecfb; }
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.7)),
+                url('family-bg.svg') center / cover no-repeat;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+    background: transparent; color: #2c3e50;
+    margin: 0; padding: 26px 16px 70px; min-height: 100vh; line-height: 1.5;
+  }
+  .page { max-width: 1120px; margin: 0 auto; }
+  a.back {
+    display: inline-block; text-decoration: none; color: #1b4f72; font-size: 17px;
+    background: rgba(255,255,255,.9); padding: 7px 16px; border-radius: 18px;
+    box-shadow: 0 3px 8px rgba(0,0,0,.15);
+  }
+  h1 { font-size: 38px; color: #1b4f72; margin: 20px 0 4px; text-shadow: 2px 2px 0 rgba(255,255,255,.85); }
+  p.subtitle { font-size: 18px; color: #34495e; margin: 0; text-shadow: 1px 1px 0 rgba(255,255,255,.85); }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .badge { background: #1b4f72; color: #fff; font-size: 14px; padding: 5px 13px; border-radius: 14px; }
+  .badge.coach { background: #b9770e; }
+  .badge.alt { background: #63c15c; }
+
+  /* ---- opening tabs ---- */
+  .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 26px 0 0; }
+  .tab {
+    font-family: inherit; font-size: 17px; cursor: pointer;
+    background: rgba(255,255,255,.9); color: #1b4f72;
+    border: 3px solid transparent; border-radius: 16px; padding: 10px 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.13); text-align: left;
+  }
+  .tab .eco { font-size: 12px; color: #7d3c98; display: block; }
+  .tab[aria-selected="true"] { border-color: #63c15c; background: #fffef5; }
+  .tab:focus-visible { outline: 3px solid #1b4f72; outline-offset: 2px; }
+
+  /* ---- ChessBase-style two-pane ---- */
+  .board-app {
+    display: flex; gap: 18px; align-items: flex-start;
+    background: rgba(255,255,255,.94); border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.18); padding: 18px; margin-top: 16px;
+  }
+  .left { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; }
+
+  .board-frame { background: #3f5a80; padding: 9px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,.25); }
+  .board { display: grid; grid-template-columns: 22px repeat(8, 1fr); grid-template-rows: repeat(8, 1fr) 20px; }
+  .sq {
+    position: relative; aspect-ratio: 1 / 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: min(6.6vw, 46px); line-height: 1; user-select: none;
+  }
+  .sq.light { background: #eef1f5; }
+  .sq.dark  { background: #8ca9cf; }
+  .sq.from::after, .sq.to::after {
+    content: ""; position: absolute; inset: 0;
+    background: rgba(255, 214, 61, .45); pointer-events: none;
+  }
+  .pc { position: relative; z-index: 1; }
+  /* solid glyphs for both colours, differentiated by fill + outline */
+  .pc.w { color: #fff; text-shadow: 0 0 1px #1a1a1a, 1px 0 1px #1a1a1a, -1px 0 1px #1a1a1a,
+                                    0 1px 1px #1a1a1a, 0 -1px 1px #1a1a1a, 1px 1px 1px #1a1a1a,
+                                    -1px -1px 1px #1a1a1a, 1px -1px 1px #1a1a1a, -1px 1px 1px #1a1a1a; }
+  .pc.b { color: #1a1a1a; text-shadow: 0 0 1px #fff, 1px 0 1px #fff, -1px 0 1px #fff, 0 1px 1px #fff, 0 -1px 1px #fff; }
+  .rank, .file {
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Trebuchet MS", sans-serif; font-size: 11px; color: #eaf0f7;
+  }
+
+  .controls { display: flex; gap: 8px; justify-content: center; }
+  .controls button {
+    font-family: inherit; font-size: 19px; cursor: pointer;
+    background: #1b4f72; color: #fff; border: 0; border-radius: 12px;
+    padding: 8px 16px; box-shadow: 0 3px 8px rgba(0,0,0,.2); min-width: 52px;
+  }
+  .controls button:hover:not(:disabled) { background: #2a6f9e; }
+  .controls button:disabled { opacity: .4; cursor: default; }
+  .controls button:focus-visible { outline: 3px solid #63c15c; outline-offset: 2px; }
+  .status {
+    text-align: center; font-size: 15px; color: #34495e; min-height: 1.4em;
+  }
+  .status b { color: #1b4f72; }
+
+  /* ---- notation panel ---- */
+  .right { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+  .panel-head {
+    background: linear-gradient(#f4f7fa, #e4ebf3);
+    border: 1px solid #bfcbd9; border-bottom: 0; border-radius: 6px 6px 0 0;
+    padding: 7px 12px; font-family: "Trebuchet MS", sans-serif; font-size: 13px; color: #2c3e50;
+  }
+  .panel-head .tabsrow { display: flex; gap: 14px; color: #5b6b7c; }
+  .panel-head .tabsrow span:first-child { color: #1b4f72; font-weight: bold; }
+  .notation {
+    border: 1px solid #bfcbd9; border-radius: 0 0 6px 6px; background: #fff;
+    padding: 14px 16px; font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 16.5px; line-height: 2.05; min-height: 300px;
+    overflow-y: auto; max-height: 560px;
+  }
+  .gametitle { text-align: center; font-weight: bold; font-size: 18px; color: #1a1a1a; margin-bottom: 2px; }
+  .gameeco { text-align: center; font-size: 15px; color: #444; margin-bottom: 12px; }
+  .gameeco b { color: #1a1a1a; }
+
+  .mv {
+    cursor: pointer; padding: 1px 3px; border-radius: 3px;
+    font-weight: bold; color: #12263a; white-space: nowrap;
+  }
+  .mv:hover { background: #dbe8f5; }
+  .mv.on { background: #12263a; color: #fff; }
+  .mv:focus-visible { outline: 2px solid #63c15c; }
+  .no { color: #12263a; font-weight: bold; }
+  .varblock {
+    display: block; margin: 2px 0 2px 14px; padding-left: 10px;
+    border-left: 3px solid #cfe0f0; font-size: 15px; line-height: 1.95;
+  }
+  .varblock .mv { font-weight: normal; color: #1f5fa8; }
+  .varblock .mv.on { background: #1f5fa8; color: #fff; }
+  .varblock .no { color: #1f5fa8; font-weight: normal; }
+  .varlabel { display: block; font-size: 13px; color: #7d3c98; margin-bottom: 1px; }
+  .brk { color: #8899aa; }
+  .evalmark { font-weight: bold; color: #12263a; }
+
+  .notes { background: rgba(255,255,255,.94); border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,.18);
+           padding: 20px 24px; margin-top: 18px; }
+  .notes h2 { font-size: 22px; color: #1b4f72; margin: 0 0 8px; }
+  .notes ul { margin: 0; padding-left: 22px; font-size: 17px; }
+  .notes li { margin-bottom: 5px; }
+  .hint { font-size: 14px; color: #5b6b7c; margin-top: 8px; }
+
+  @media (max-width: 900px) {
+    .board-app { flex-direction: column; }
+    .left { width: 100%; }
+    .board-frame { max-width: 460px; margin: 0 auto; }
+    .right { width: 100%; }
+    .sq { font-size: min(10vw, 44px); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="dong.html">← All Coach Dong records</a>
+
+  <h1>♟️ Two openings to go over</h1>
+  <p class="subtitle">From Coach Dong's class — click any move to jump there</p>
+  <div class="badges">
+    <span class="badge">📅 Sat 22 Aug 2026</span>
+    <span class="badge coach">👨‍🏫 Coach Dong (董老师)</span>
+    <span class="badge alt">2 openings</span>
+  </div>
+
+  <div class="tabs" id="tabs" role="tablist" aria-label="Choose an opening"></div>
+
+  <div class="board-app">
+    <div class="left">
+      <div class="board-frame"><div class="board" id="board"></div></div>
+      <div class="controls">
+        <button id="bStart" title="Start position">⏮</button>
+        <button id="bPrev"  title="Previous move">◀</button>
+        <button id="bNext"  title="Next move">▶</button>
+        <button id="bEnd"   title="Last move">⏭</button>
+        <button id="bFlip"  title="Flip the board">⤢</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="right">
+      <div class="panel-head">
+        <div class="tabsrow"><span>Notation</span><span>Reference</span><span>Table</span><span>Training</span><span>Score sheet</span></div>
+      </div>
+      <div class="notation" id="notation"></div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h2>How to use this</h2>
+    <ul>
+      <li>Pick an opening above, then step through with <b>◀ ▶</b> — or the <b>left/right arrow keys</b>.</li>
+      <li><b>Click any move</b> in the notation to jump straight to that position.</li>
+      <li>The indented blue lines are <b>variations</b> — the other things the opponent can try. Click into them the same way.</li>
+      <li>The yellow squares show the move that was just played.</li>
+    </ul>
+    <p class="hint">Positions are generated from the move list, so every one is a legal, verified position — not a hand-drawn picture.</p>
+  </div>
+
+</div>
+
+<script>
+const LINES = [{"id": "alapin", "title": "Sicilian, 2.c3 \u2014 the d6 line", "eco": "B22", "start": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "note": "\u221e", "main": [{"san": "e4", "from": "e2", "to": "e4", "ply": 1, "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"}, {"san": "c5", "from": "c7", "to": "c5", "ply": 2, "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"}, {"san": "c3", "from": "c2", "to": "c3", "ply": 3, "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/2P5/PP1P1PPP/RNBQKBNR b KQkq - 0 2"}, {"san": "d6", "from": "d7", "to": "d6", "ply": 4, "fen": "rnbqkbnr/pp2pppp/3p4/2p5/4P3/2P5/PP1P1PPP/RNBQKBNR w KQkq - 0 3"}, {"san": "d4", "from": "d2", "to": "d4", "ply": 5, "fen": "rnbqkbnr/pp2pppp/3p4/2p5/3PP3/2P5/PP3PPP/RNBQKBNR b KQkq - 0 3"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 6, "fen": "rnbqkb1r/pp2pppp/3p1n2/2p5/3PP3/2P5/PP3PPP/RNBQKBNR w KQkq - 1 4"}, {"san": "Bd3", "from": "f1", "to": "d3", "ply": 7, "fen": "rnbqkb1r/pp2pppp/3p1n2/2p5/3PP3/2PB4/PP3PPP/RNBQK1NR b KQkq - 2 4"}, {"san": "g6", "from": "g7", "to": "g6", "ply": 8, "fen": "rnbqkb1r/pp2pp1p/3p1np1/2p5/3PP3/2PB4/PP3PPP/RNBQK1NR w KQkq - 0 5"}, {"san": "Nf3", "from": "g1", "to": "f3", "ply": 9, "fen": "rnbqkb1r/pp2pp1p/3p1np1/2p5/3PP3/2PB1N2/PP3PPP/RNBQK2R b KQkq - 1 5"}, {"san": "Bg7", "from": "f8", "to": "g7", "ply": 10, "fen": "rnbqk2r/pp2ppbp/3p1np1/2p5/3PP3/2PB1N2/PP3PPP/RNBQK2R w KQkq - 2 6"}, {"san": "O-O", "from": "e1", "to": "g1", "ply": 11, "fen": "rnbqk2r/pp2ppbp/3p1np1/2p5/3PP3/2PB1N2/PP3PPP/RNBQ1RK1 b kq - 3 6"}, {"san": "O-O", "from": "e8", "to": "g8", "ply": 12, "fen": "rnbq1rk1/pp2ppbp/3p1np1/2p5/3PP3/2PB1N2/PP3PPP/RNBQ1RK1 w - - 4 7"}, {"san": "h3", "from": "h2", "to": "h3", "ply": 13, "fen": "rnbq1rk1/pp2ppbp/3p1np1/2p5/3PP3/2PB1N1P/PP3PP1/RNBQ1RK1 b - - 0 7"}, {"san": "Qc7", "from": "d8", "to": "c7", "ply": 14, "fen": "rnb2rk1/ppq1ppbp/3p1np1/2p5/3PP3/2PB1N1P/PP3PP1/RNBQ1RK1 w - - 1 8"}, {"san": "Re1", "from": "f1", "to": "e1", "ply": 15, "fen": "rnb2rk1/ppq1ppbp/3p1np1/2p5/3PP3/2PB1N1P/PP3PP1/RNBQR1K1 b - - 2 8"}, {"san": "Nc6", "from": "b8", "to": "c6", "ply": 16, "fen": "r1b2rk1/ppq1ppbp/2np1np1/2p5/3PP3/2PB1N1P/PP3PP1/RNBQR1K1 w - - 3 9"}, {"san": "d5", "from": "d4", "to": "d5", "ply": 17, "fen": "r1b2rk1/ppq1ppbp/2np1np1/2pP4/4P3/2PB1N1P/PP3PP1/RNBQR1K1 b - - 0 9"}, {"san": "Ne5", "from": "c6", "to": "e5", "ply": 18, "fen": "r1b2rk1/ppq1ppbp/3p1np1/2pPn3/4P3/2PB1N1P/PP3PP1/RNBQR1K1 w - - 1 10"}, {"san": "Nxe5", "from": "f3", "to": "e5", "ply": 19, "fen": "r1b2rk1/ppq1ppbp/3p1np1/2pPN3/4P3/2PB3P/PP3PP1/RNBQR1K1 b - - 0 10"}, {"san": "dxe5", "from": "d6", "to": "e5", "ply": 20, "fen": "r1b2rk1/ppq1ppbp/5np1/2pPp3/4P3/2PB3P/PP3PP1/RNBQR1K1 w - - 0 11"}, {"san": "Nd2", "from": "b1", "to": "d2", "ply": 21, "fen": "r1b2rk1/ppq1ppbp/5np1/2pPp3/4P3/2PB3P/PP1N1PP1/R1BQR1K1 b - - 1 11"}, {"san": "e6", "from": "e7", "to": "e6", "ply": 22, "fen": "r1b2rk1/ppq2pbp/4pnp1/2pPp3/4P3/2PB3P/PP1N1PP1/R1BQR1K1 w - - 0 12"}], "variations": [{"after": 4, "label": "2\u2026d5 \u2014 the main alternative", "nodes": [{"san": "d5", "from": "d7", "to": "d5", "ply": 4, "fen": "rnbqkbnr/pp2pppp/8/2pp4/4P3/2P5/PP1P1PPP/RNBQKBNR w KQkq - 0 3"}, {"san": "exd5", "from": "e4", "to": "d5", "ply": 5, "fen": "rnbqkbnr/pp2pppp/8/2pP4/8/2P5/PP1P1PPP/RNBQKBNR b KQkq - 0 3"}, {"san": "Qxd5", "from": "d8", "to": "d5", "ply": 6, "fen": "rnb1kbnr/pp2pppp/8/2pq4/8/2P5/PP1P1PPP/RNBQKBNR w KQkq - 0 4"}, {"san": "d4", "from": "d2", "to": "d4", "ply": 7, "fen": "rnb1kbnr/pp2pppp/8/2pq4/3P4/2P5/PP3PPP/RNBQKBNR b KQkq - 0 4"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 8, "fen": "rnb1kb1r/pp2pppp/5n2/2pq4/3P4/2P5/PP3PPP/RNBQKBNR w KQkq - 1 5"}, {"san": "Nf3", "from": "g1", "to": "f3", "ply": 9, "fen": "rnb1kb1r/pp2pppp/5n2/2pq4/3P4/2P2N2/PP3PPP/RNBQKB1R b KQkq - 2 5"}, {"san": "e6", "from": "e7", "to": "e6", "ply": 10, "fen": "rnb1kb1r/pp3ppp/4pn2/2pq4/3P4/2P2N2/PP3PPP/RNBQKB1R w KQkq - 0 6"}, {"san": "Na3", "from": "b1", "to": "a3", "ply": 11, "fen": "rnb1kb1r/pp3ppp/4pn2/2pq4/3P4/N1P2N2/PP3PPP/R1BQKB1R b KQkq - 1 6"}, {"san": "Nc6", "from": "b8", "to": "c6", "ply": 12, "fen": "r1b1kb1r/pp3ppp/2n1pn2/2pq4/3P4/N1P2N2/PP3PPP/R1BQKB1R w KQkq - 2 7"}, {"san": "Nb5", "from": "a3", "to": "b5", "ply": 13, "fen": "r1b1kb1r/pp3ppp/2n1pn2/1Npq4/3P4/2P2N2/PP3PPP/R1BQKB1R b KQkq - 3 7"}, {"san": "Qd8", "from": "d5", "to": "d8", "ply": 14, "fen": "r1bqkb1r/pp3ppp/2n1pn2/1Np5/3P4/2P2N2/PP3PPP/R1BQKB1R w KQkq - 4 8"}, {"san": "dxc5", "from": "d4", "to": "c5", "ply": 15, "fen": "r1bqkb1r/pp3ppp/2n1pn2/1NP5/8/2P2N2/PP3PPP/R1BQKB1R b KQkq - 0 8"}, {"san": "Bxc5", "from": "f8", "to": "c5", "ply": 16, "fen": "r1bqk2r/pp3ppp/2n1pn2/1Nb5/8/2P2N2/PP3PPP/R1BQKB1R w KQkq - 0 9"}, {"san": "Qxd8+", "from": "d1", "to": "d8", "ply": 17, "fen": "r1bQk2r/pp3ppp/2n1pn2/1Nb5/8/2P2N2/PP3PPP/R1B1KB1R b KQkq - 0 9"}, {"san": "Kxd8", "from": "e8", "to": "d8", "ply": 18, "fen": "r1bk3r/pp3ppp/2n1pn2/1Nb5/8/2P2N2/PP3PPP/R1B1KB1R w KQ - 0 10"}]}, {"after": 4, "label": "2\u2026d5, then 5\u2026Bg4", "nodes": [{"san": "d5", "from": "d7", "to": "d5", "ply": 4, "fen": "rnbqkbnr/pp2pppp/8/2pp4/4P3/2P5/PP1P1PPP/RNBQKBNR w KQkq - 0 3"}, {"san": "exd5", "from": "e4", "to": "d5", "ply": 5, "fen": "rnbqkbnr/pp2pppp/8/2pP4/8/2P5/PP1P1PPP/RNBQKBNR b KQkq - 0 3"}, {"san": "Qxd5", "from": "d8", "to": "d5", "ply": 6, "fen": "rnb1kbnr/pp2pppp/8/2pq4/8/2P5/PP1P1PPP/RNBQKBNR w KQkq - 0 4"}, {"san": "d4", "from": "d2", "to": "d4", "ply": 7, "fen": "rnb1kbnr/pp2pppp/8/2pq4/3P4/2P5/PP3PPP/RNBQKBNR b KQkq - 0 4"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 8, "fen": "rnb1kb1r/pp2pppp/5n2/2pq4/3P4/2P5/PP3PPP/RNBQKBNR w KQkq - 1 5"}, {"san": "Nf3", "from": "g1", "to": "f3", "ply": 9, "fen": "rnb1kb1r/pp2pppp/5n2/2pq4/3P4/2P2N2/PP3PPP/RNBQKB1R b KQkq - 2 5"}, {"san": "Bg4", "from": "c8", "to": "g4", "ply": 10, "fen": "rn2kb1r/pp2pppp/5n2/2pq4/3P2b1/2P2N2/PP3PPP/RNBQKB1R w KQkq - 3 6"}, {"san": "Be2", "from": "f1", "to": "e2", "ply": 11, "fen": "rn2kb1r/pp2pppp/5n2/2pq4/3P2b1/2P2N2/PP2BPPP/RNBQK2R b KQkq - 4 6"}, {"san": "e6", "from": "e7", "to": "e6", "ply": 12, "fen": "rn2kb1r/pp3ppp/4pn2/2pq4/3P2b1/2P2N2/PP2BPPP/RNBQK2R w KQkq - 0 7"}]}, {"after": 6, "label": "3\u2026cxd4", "nodes": [{"san": "cxd4", "from": "c5", "to": "d4", "ply": 6, "fen": "rnbqkbnr/pp2pppp/3p4/8/3pP3/2P5/PP3PPP/RNBQKBNR w KQkq - 0 4"}, {"san": "cxd4", "from": "c3", "to": "d4", "ply": 7, "fen": "rnbqkbnr/pp2pppp/3p4/8/3PP3/8/PP3PPP/RNBQKBNR b KQkq - 0 4"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 8, "fen": "rnbqkb1r/pp2pppp/3p1n2/8/3PP3/8/PP3PPP/RNBQKBNR w KQkq - 1 5"}, {"san": "Nc3", "from": "b1", "to": "c3", "ply": 9, "fen": "rnbqkb1r/pp2pppp/3p1n2/8/3PP3/2N5/PP3PPP/R1BQKBNR b KQkq - 2 5"}, {"san": "g6", "from": "g7", "to": "g6", "ply": 10, "fen": "rnbqkb1r/pp2pp1p/3p1np1/8/3PP3/2N5/PP3PPP/R1BQKBNR w KQkq - 0 6"}, {"san": "Nf3", "from": "g1", "to": "f3", "ply": 11, "fen": "rnbqkb1r/pp2pp1p/3p1np1/8/3PP3/2N2N2/PP3PPP/R1BQKB1R b KQkq - 1 6"}, {"san": "Bg7", "from": "f8", "to": "g7", "ply": 12, "fen": "rnbqk2r/pp2ppbp/3p1np1/8/3PP3/2N2N2/PP3PPP/R1BQKB1R w KQkq - 2 7"}, {"san": "h3", "from": "h2", "to": "h3", "ply": 13, "fen": "rnbqk2r/pp2ppbp/3p1np1/8/3PP3/2N2N1P/PP3PP1/R1BQKB1R b KQkq - 0 7"}, {"san": "O-O", "from": "e8", "to": "g8", "ply": 14, "fen": "rnbq1rk1/pp2ppbp/3p1np1/8/3PP3/2N2N1P/PP3PP1/R1BQKB1R w KQ - 1 8"}, {"san": "Be2", "from": "f1", "to": "e2", "ply": 15, "fen": "rnbq1rk1/pp2ppbp/3p1np1/8/3PP3/2N2N1P/PP2BPP1/R1BQK2R b KQ - 2 8"}, {"san": "Bd7", "from": "c8", "to": "d7", "ply": 16, "fen": "rn1q1rk1/pp1bppbp/3p1np1/8/3PP3/2N2N1P/PP2BPP1/R1BQK2R w KQ - 3 9"}]}, {"after": 7, "label": "4.dxc5", "nodes": [{"san": "dxc5", "from": "d4", "to": "c5", "ply": 7, "fen": "rnbqkb1r/pp2pppp/3p1n2/2P5/4P3/2P5/PP3PPP/RNBQKBNR b KQkq - 0 4"}, {"san": "Nc6", "from": "b8", "to": "c6", "ply": 8, "fen": "r1bqkb1r/pp2pppp/2np1n2/2P5/4P3/2P5/PP3PPP/RNBQKBNR w KQkq - 1 5"}, {"san": "cxd6", "from": "c5", "to": "d6", "ply": 9, "fen": "r1bqkb1r/pp2pppp/2nP1n2/8/4P3/2P5/PP3PPP/RNBQKBNR b KQkq - 0 5"}, {"san": "Nxe4", "from": "f6", "to": "e4", "ply": 10, "fen": "r1bqkb1r/pp2pppp/2nP4/8/4n3/2P5/PP3PPP/RNBQKBNR w KQkq - 0 6"}, {"san": "dxe7", "from": "d6", "to": "e7", "ply": 11, "fen": "r1bqkb1r/pp2Pppp/2n5/8/4n3/2P5/PP3PPP/RNBQKBNR b KQkq - 0 6"}, {"san": "Qxd1+", "from": "d8", "to": "d1", "ply": 12, "fen": "r1b1kb1r/pp2Pppp/2n5/8/4n3/2P5/PP3PPP/RNBqKBNR w KQkq - 0 7"}, {"san": "Kxd1", "from": "e1", "to": "d1", "ply": 13, "fen": "r1b1kb1r/pp2Pppp/2n5/8/4n3/2P5/PP3PPP/RNBK1BNR b kq - 0 7"}, {"san": "Bxe7", "from": "f8", "to": "e7", "ply": 14, "fen": "r1b1k2r/pp2bppp/2n5/8/4n3/2P5/PP3PPP/RNBK1BNR w kq - 0 8"}]}, {"after": 7, "label": "4.dxc5, then 5.Qc2", "nodes": [{"san": "dxc5", "from": "d4", "to": "c5", "ply": 7, "fen": "rnbqkb1r/pp2pppp/3p1n2/2P5/4P3/2P5/PP3PPP/RNBQKBNR b KQkq - 0 4"}, {"san": "Nc6", "from": "b8", "to": "c6", "ply": 8, "fen": "r1bqkb1r/pp2pppp/2np1n2/2P5/4P3/2P5/PP3PPP/RNBQKBNR w KQkq - 1 5"}, {"san": "Qc2", "from": "d1", "to": "c2", "ply": 9, "fen": "r1bqkb1r/pp2pppp/2np1n2/2P5/4P3/2P5/PPQ2PPP/RNB1KBNR b KQkq - 2 5"}, {"san": "dxc5", "from": "d6", "to": "c5", "ply": 10, "fen": "r1bqkb1r/pp2pppp/2n2n2/2p5/4P3/2P5/PPQ2PPP/RNB1KBNR w KQkq - 0 6"}]}]}, {"id": "qga", "title": "Queen's Gambit Accepted, 3.Nc3", "eco": "D20", "start": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "note": "", "main": [{"san": "d4", "from": "d2", "to": "d4", "ply": 1, "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1"}, {"san": "d5", "from": "d7", "to": "d5", "ply": 2, "fen": "rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2"}, {"san": "c4", "from": "c2", "to": "c4", "ply": 3, "fen": "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2"}, {"san": "dxc4", "from": "d5", "to": "c4", "ply": 4, "fen": "rnbqkbnr/ppp1pppp/8/8/2pP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3"}, {"san": "Nc3", "from": "b1", "to": "c3", "ply": 5, "fen": "rnbqkbnr/ppp1pppp/8/8/2pP4/2N5/PP2PPPP/R1BQKBNR b KQkq - 1 3"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 6, "fen": "rnbqkb1r/ppp1pppp/5n2/8/2pP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4"}, {"san": "Nf3", "from": "g1", "to": "f3", "ply": 7, "fen": "rnbqkb1r/ppp1pppp/5n2/8/2pP4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 3 4"}, {"san": "Nc6", "from": "b8", "to": "c6", "ply": 8, "fen": "r1bqkb1r/ppp1pppp/2n2n2/8/2pP4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 4 5"}, {"san": "e4", "from": "e2", "to": "e4", "ply": 9, "fen": "r1bqkb1r/ppp1pppp/2n2n2/8/2pPP3/2N2N2/PP3PPP/R1BQKB1R b KQkq - 0 5"}, {"san": "Bg4", "from": "c8", "to": "g4", "ply": 10, "fen": "r2qkb1r/ppp1pppp/2n2n2/8/2pPP1b1/2N2N2/PP3PPP/R1BQKB1R w KQkq - 1 6"}, {"san": "Be3", "from": "c1", "to": "e3", "ply": 11, "fen": "r2qkb1r/ppp1pppp/2n2n2/8/2pPP1b1/2N1BN2/PP3PPP/R2QKB1R b KQkq - 2 6"}, {"san": "e6", "from": "e7", "to": "e6", "ply": 12, "fen": "r2qkb1r/ppp2ppp/2n1pn2/8/2pPP1b1/2N1BN2/PP3PPP/R2QKB1R w KQkq - 0 7"}, {"san": "Bxc4", "from": "f1", "to": "c4", "ply": 13, "fen": "r2qkb1r/ppp2ppp/2n1pn2/8/2BPP1b1/2N1BN2/PP3PPP/R2QK2R b KQkq - 0 7"}, {"san": "Bb4", "from": "f8", "to": "b4", "ply": 14, "fen": "r2qk2r/ppp2ppp/2n1pn2/8/1bBPP1b1/2N1BN2/PP3PPP/R2QK2R w KQkq - 1 8"}, {"san": "Qc2", "from": "d1", "to": "c2", "ply": 15, "fen": "r2qk2r/ppp2ppp/2n1pn2/8/1bBPP1b1/2N1BN2/PPQ2PPP/R3K2R b KQkq - 2 8"}, {"san": "O-O", "from": "e8", "to": "g8", "ply": 16, "fen": "r2q1rk1/ppp2ppp/2n1pn2/8/1bBPP1b1/2N1BN2/PPQ2PPP/R3K2R w KQ - 3 9"}, {"san": "Rd1", "from": "a1", "to": "d1", "ply": 17, "fen": "r2q1rk1/ppp2ppp/2n1pn2/8/1bBPP1b1/2N1BN2/PPQ2PPP/3RK2R b K - 4 9"}, {"san": "Qe7", "from": "d8", "to": "e7", "ply": 18, "fen": "r4rk1/ppp1qppp/2n1pn2/8/1bBPP1b1/2N1BN2/PPQ2PPP/3RK2R w K - 5 10"}, {"san": "Be2", "from": "c4", "to": "e2", "ply": 19, "fen": "r4rk1/ppp1qppp/2n1pn2/8/1b1PP1b1/2N1BN2/PPQ1BPPP/3RK2R b K - 6 10"}, {"san": "e5", "from": "e6", "to": "e5", "ply": 20, "fen": "r4rk1/ppp1qppp/2n2n2/4p3/1b1PP1b1/2N1BN2/PPQ1BPPP/3RK2R w K - 0 11"}, {"san": "d5", "from": "d4", "to": "d5", "ply": 21, "fen": "r4rk1/ppp1qppp/2n2n2/3Pp3/1b2P1b1/2N1BN2/PPQ1BPPP/3RK2R b K - 0 11"}, {"san": "Nd4", "from": "c6", "to": "d4", "ply": 22, "fen": "r4rk1/ppp1qppp/5n2/3Pp3/1b1nP1b1/2N1BN2/PPQ1BPPP/3RK2R w K - 1 12"}, {"san": "Nxd4", "from": "f3", "to": "d4", "ply": 23, "fen": "r4rk1/ppp1qppp/5n2/3Pp3/1b1NP1b1/2N1B3/PPQ1BPPP/3RK2R b K - 0 12"}, {"san": "exd4", "from": "e5", "to": "d4", "ply": 24, "fen": "r4rk1/ppp1qppp/5n2/3P4/1b1pP1b1/2N1B3/PPQ1BPPP/3RK2R w K - 0 13"}, {"san": "Rxd4", "from": "d1", "to": "d4", "ply": 25, "fen": "r4rk1/ppp1qppp/5n2/3P4/1b1RP1b1/2N1B3/PPQ1BPPP/4K2R b K - 0 13"}, {"san": "Bxe2", "from": "g4", "to": "e2", "ply": 26, "fen": "r4rk1/ppp1qppp/5n2/3P4/1b1RP3/2N1B3/PPQ1bPPP/4K2R w K - 0 14"}, {"san": "Kxe2", "from": "e1", "to": "e2", "ply": 27, "fen": "r4rk1/ppp1qppp/5n2/3P4/1b1RP3/2N1B3/PPQ1KPPP/7R b - - 0 14"}], "variations": []}];
+const GLYPH = {k:"♚", q:"♛", r:"♜", b:"♝", n:"♞", p:"♟"};
+const FILES = "abcdefgh";
+
+let opening = 0, flipped = false;
+let lineKey = "main", idx = -1;   // idx -1 == the line's base position
+
+function lineOf(key) {
+  const o = LINES[opening];
+  if (key === "main") return {nodes: o.main, base: o.start};
+  const v = o.variations[Number(key.slice(1))];
+  const before = v.after - 2;     // node index of the move before the branch
+  return {nodes: v.nodes, base: before >= 0 ? o.main[before].fen : o.start};
+}
+
+function currentState() {
+  const L = lineOf(lineKey);
+  if (idx < 0) return {fen: L.base, from: null, to: null};
+  const n = L.nodes[idx];
+  return {fen: n.fen, from: n.from, to: n.to};
+}
+
+/* ---------- board ---------- */
+function drawBoard() {
+  const {fen, from, to} = currentState();
+  const rows = fen.split(" ")[0].split("/");
+  const grid = {};
+  rows.forEach((row, r) => {
+    let f = 0;
+    for (const ch of row) {
+      if (/\d/.test(ch)) { f += Number(ch); continue; }
+      grid[FILES[f] + (8 - r)] = ch;
+      f++;
+    }
+  });
+
+  const ranks = flipped ? [1,2,3,4,5,6,7,8] : [8,7,6,5,4,3,2,1];
+  const files = flipped ? [...FILES].reverse() : [...FILES];
+  const board = document.getElementById("board");
+  board.textContent = "";
+
+  for (const rk of ranks) {
+    const lab = document.createElement("div");
+    lab.className = "rank"; lab.textContent = rk;
+    board.appendChild(lab);
+    for (const fl of files) {
+      const name = fl + rk;
+      const sq = document.createElement("div");
+      const dark = (FILES.indexOf(fl) + rk) % 2 === 0;
+      sq.className = "sq " + (dark ? "dark" : "light");
+      if (name === from) sq.classList.add("from");
+      if (name === to)   sq.classList.add("to");
+      const p = grid[name];
+      if (p) {
+        const s = document.createElement("span");
+        s.className = "pc " + (p === p.toUpperCase() ? "w" : "b");
+        s.textContent = GLYPH[p.toLowerCase()];
+        sq.appendChild(s);
+      }
+      board.appendChild(sq);
+    }
+  }
+  board.appendChild(document.createElement("div"));
+  for (const fl of files) {
+    const lab = document.createElement("div");
+    lab.className = "file"; lab.textContent = fl.toUpperCase();
+    board.appendChild(lab);
+  }
+}
+
+/* ---------- notation ---------- */
+function moveNo(ply) { return Math.ceil(ply / 2); }
+
+function tokenFor(node, i, key, forceNo) {
+  const frag = document.createDocumentFragment();
+  const white = node.ply % 2 === 1;
+  if (white || forceNo) {
+    const n = document.createElement("span");
+    n.className = "no";
+    n.textContent = moveNo(node.ply) + (white ? "." : "…");
+    frag.appendChild(n);
+  }
+  const b = document.createElement("span");
+  b.className = "mv";
+  b.tabIndex = 0;
+  b.dataset.line = key;
+  b.dataset.i = i;
+  b.textContent = node.san;
+  frag.appendChild(b);
+  frag.appendChild(document.createTextNode(" "));
+  return frag;
+}
+
+function drawNotation() {
+  const o = LINES[opening];
+  const box = document.getElementById("notation");
+  box.textContent = "";
+
+  const t = document.createElement("div");
+  t.className = "gametitle"; t.textContent = o.title;
+  box.appendChild(t);
+  const e = document.createElement("div");
+  e.className = "gameeco";
+  e.innerHTML = "<b>" + o.eco + "</b> Coach Dong · opening to go over";
+  box.appendChild(e);
+
+  const body = document.createElement("div");
+  let resumeNo = false;   // ChessBase restates the move number when the line resumes after a variation
+  o.main.forEach((node, i) => {
+    body.appendChild(tokenFor(node, i, "main", i === 0 || resumeNo));
+    resumeNo = false;
+    if (o.note && i === o.main.length - 1) {
+      const m = document.createElement("span");
+      m.className = "evalmark"; m.textContent = o.note;
+      body.appendChild(m);
+    }
+    // variations that replace the move just written
+    o.variations.forEach((v, vi) => {
+      if (v.after !== node.ply) return;
+      const blk = document.createElement("span");
+      blk.className = "varblock";
+      const lbl = document.createElement("span");
+      lbl.className = "varlabel"; lbl.textContent = v.label;
+      blk.appendChild(lbl);
+      const open = document.createElement("span");
+      open.className = "brk"; open.textContent = "[ ";
+      blk.appendChild(open);
+      v.nodes.forEach((vn, j) => blk.appendChild(tokenFor(vn, j, "v" + vi, j === 0)));
+      const close = document.createElement("span");
+      close.className = "brk"; close.textContent = "]";
+      blk.appendChild(close);
+      body.appendChild(blk);
+      resumeNo = true;
+    });
+  });
+  box.appendChild(body);
+  markCurrent();
+}
+
+function markCurrent() {
+  document.querySelectorAll(".mv.on").forEach(el => el.classList.remove("on"));
+  if (idx < 0) return;
+  const el = document.querySelector('.mv[data-line="' + lineKey + '"][data-i="' + idx + '"]');
+  if (el) {
+    el.classList.add("on");
+    const box = document.getElementById("notation");
+    const r = el.getBoundingClientRect(), br = box.getBoundingClientRect();
+    if (r.top < br.top || r.bottom > br.bottom) el.scrollIntoView({block: "nearest"});
+  }
+}
+
+function drawStatus() {
+  const L = lineOf(lineKey);
+  const s = document.getElementById("status");
+  if (idx < 0) {
+    s.innerHTML = lineKey === "main"
+      ? "<b>Start position</b> — press ▶"
+      : "<b>Before the variation</b> — press ▶";
+    return;
+  }
+  const n = L.nodes[idx];
+  const who = n.ply % 2 === 1 ? "White" : "Black";
+  const where = lineKey === "main" ? "main line" : "variation";
+  s.innerHTML = "<b>" + moveNo(n.ply) + (n.ply % 2 ? "." : "…") + " " + n.san +
+                "</b> · " + who + " · move " + (idx + 1) + " of " + L.nodes.length + " (" + where + ")";
+}
+
+function render() {
+  drawBoard(); markCurrent(); drawStatus();
+  const L = lineOf(lineKey);
+  document.getElementById("bPrev").disabled  = idx < 0;
+  document.getElementById("bStart").disabled = idx < 0;
+  document.getElementById("bNext").disabled  = idx >= L.nodes.length - 1;
+  document.getElementById("bEnd").disabled   = idx >= L.nodes.length - 1;
+}
+
+/* ---------- tabs ---------- */
+function drawTabs() {
+  const box = document.getElementById("tabs");
+  box.textContent = "";
+  LINES.forEach((o, i) => {
+    const b = document.createElement("button");
+    b.className = "tab"; b.type = "button";
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", i === opening ? "true" : "false");
+    b.innerHTML = '<span class="eco">' + o.eco + '</span>' + o.title;
+    b.addEventListener("click", () => {
+      opening = i; lineKey = "main"; idx = -1;
+      drawTabs(); drawNotation(); render();
+    });
+    box.appendChild(b);
+  });
+}
+
+/* ---------- events ---------- */
+document.getElementById("notation").addEventListener("click", ev => {
+  const el = ev.target.closest(".mv");
+  if (!el) return;
+  lineKey = el.dataset.line; idx = Number(el.dataset.i);
+  render();
+});
+document.getElementById("notation").addEventListener("keydown", ev => {
+  if (ev.key !== "Enter" && ev.key !== " ") return;
+  const el = ev.target.closest(".mv");
+  if (!el) return;
+  ev.preventDefault();
+  lineKey = el.dataset.line; idx = Number(el.dataset.i);
+  render();
+});
+document.getElementById("bNext").onclick  = () => { const L = lineOf(lineKey); if (idx < L.nodes.length - 1) { idx++; render(); } };
+document.getElementById("bPrev").onclick  = () => { if (idx >= 0) { idx--; render(); } };
+document.getElementById("bStart").onclick = () => { idx = -1; render(); };
+document.getElementById("bEnd").onclick   = () => { idx = lineOf(lineKey).nodes.length - 1; render(); };
+document.getElementById("bFlip").onclick  = () => { flipped = !flipped; drawBoard(); };
+document.addEventListener("keydown", ev => {
+  if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+  if (ev.key === "ArrowRight") { ev.preventDefault(); document.getElementById("bNext").click(); }
+  if (ev.key === "ArrowLeft")  { ev.preventDefault(); document.getElementById("bPrev").click(); }
+  if (ev.key === "Home")       { ev.preventDefault(); document.getElementById("bStart").click(); }
+  if (ev.key === "End")        { ev.preventDefault(); document.getElementById("bEnd").click(); }
+});
+
+drawTabs(); drawNotation(); render();
+</script>
+</body>
+</html>

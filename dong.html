@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coach Dong's Class Records</title>
+  <style>
+    html { background: #d3ecfb; }
+    body::before {
+      content: "";
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,0.35), rgba(255,255,255,0.55)),
+                  url('family-bg.svg') center / cover no-repeat;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: transparent; color: #2c3e50; text-align: center;
+      margin: 0; padding: 30px 20px 70px; min-height: 100vh;
+    }
+    a.back {
+      display: inline-block; text-decoration: none; color: #1b4f72; font-size: 17px;
+      background: rgba(255,255,255,.9); padding: 7px 16px; border-radius: 18px;
+      box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    }
+    h1 { font-size: 44px; color: #1b4f72; margin: 24px 0 5px; text-shadow: 2px 2px 0 rgba(255,255,255,.8); }
+    p.subtitle { font-size: 20px; color: #34495e; margin: 0; text-shadow: 1px 1px 0 rgba(255,255,255,.8); }
+    h2 { font-size: 27px; color: #1b4f72; margin-top: 46px; text-shadow: 1px 1px 0 rgba(255,255,255,.8); }
+    .cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
+    .card {
+      background: rgba(255,255,255,.93); color: #2c3e50; text-decoration: none;
+      width: 300px; padding: 24px 20px; border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.2); transition: transform .15s; text-align: left;
+    }
+    a.card:hover { transform: translateY(-8px) scale(1.03); }
+    .card .emoji { font-size: 46px; text-align: center; }
+    .card .date { font-size: 14px; color: #7d3c98; margin-top: 6px; }
+    .card .name { font-size: 20px; font-weight: bold; margin-top: 4px; color: #1b4f72; }
+    .card .what { font-size: 15px; margin-top: 8px; }
+    .card.live { border: 3px solid #b9770e; background: linear-gradient(160deg,#fffdf3,#fdf0d9); }
+    .howto {
+      background: rgba(255,255,255,.9); border-radius: 18px; max-width: 660px;
+      margin: 28px auto 0; padding: 18px 24px; text-align: left; font-size: 15px; color: #34495e;
+    }
+    .howto b { color: #1b4f72; }
+  </style>
+</head>
+<body>
+
+  <a class="back" href="index.html">← Back home</a>
+
+  <h1>♟️ Coach Dong's Class</h1>
+  <p class="subtitle">董老师 — openings and game review</p>
+
+  <h2>📅 Records</h2>
+  <div class="cards">
+
+    <a class="card live" href="dong-openings.html">
+      <div class="emoji">🔁</div>
+      <div class="date">Sat 22 Aug 2026</div>
+      <div class="name">Two openings to go over</div>
+      <div class="what">A <b>playable board</b> for both lines — the Sicilian 2.c3 with 2…d6, and the Queen's Gambit Accepted with 3.Nc3. Click any move to jump there.</div>
+    </a>
+
+  </div>
+
+  <div class="howto">
+    <p><b>Who's who.</b> Coach Li (李文良) runs the Saturday class and the weekly game-review video. <b>Coach Dong (董老师)</b> reviews the online game JJ plays each week, and covers openings.</p>
+    <p><b>Don't forget:</b> the weekly online game has to be played <b>by Thursday</b> and sent to Coach Dong, or there's no time for him to review it.</p>
+    <p>Coach Li's records live over at <a href="chess.html">Chess Class</a>.</p>
+  </div>
+
+</body>
+</html>
