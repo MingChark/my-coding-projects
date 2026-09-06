@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Class — 5 Sep 2026</title>
+  <style>
+    html { background: #d3ecfb; }
+    /* Background lives in a fixed, composited layer.
+       Using background-attachment:fixed on the body element repaints the
+       viewport every scroll frame (jank), and rescales when a mobile
+       URL bar collapses (jump). It also left the white wash on the
+       default 'scroll' attachment while the image stayed put, so the
+       two layers slid against each other. */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.62)),
+                  url('family-bg.svg') center / cover no-repeat;
+    }
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: transparent;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 18px 70px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      line-height: 1.5;
+    }
+    .page { max-width: 900px; margin: 0 auto; }
+    a.back {
+      display: inline-block; text-decoration: none; color: #1b4f72;
+      font-size: 17px; background: rgba(255,255,255,.9);
+      padding: 7px 16px; border-radius: 18px; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    }
+    h1 {
+      font-size: 40px; color: #1b4f72; margin: 22px 0 4px;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.85);
+    }
+    p.subtitle {
+      font-size: 19px; color: #34495e; margin: 0 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .badge { background: #1b4f72; color: #fff; font-size: 14px; padding: 5px 13px; border-radius: 14px; }
+    .badge.alt { background: #63c15c; }
+    .badge.coach { background: #8e44ad; }
+
+    h2 {
+      font-size: 27px; color: #1b4f72; margin: 44px 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.94);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      padding: 22px 24px;
+      margin: 18px 0;
+    }
+    .card.star { border: 3px solid #63c15c; background: linear-gradient(160deg,#fffef5,#eaf8e6); }
+
+    .rulehead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .num { font-size: 30px; color: #63c15c; font-weight: bold; line-height: 1; }
+    .ruletitle { font-size: 23px; color: #1b4f72; font-weight: bold; }
+    .why { font-size: 17px; margin: 10px 0 0; }
+
+    .said {
+      margin-top: 14px; padding: 12px 16px;
+      background: #f4ecfa; border-left: 6px solid #8e44ad;
+      border-radius: 0 12px 12px 0;
+    }
+    .said .cn {
+      font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      font-size: 18px; color: #4a235a;
+    }
+    .said .en { font-size: 16px; color: #5b2c6f; font-style: italic; margin-top: 3px; }
+    .said .when { font-size: 13px; color: #7d3c98; margin-top: 6px; }
+
+    .strip { display: flex; gap: 12px; margin-top: 18px; }
+    .strip figure { flex: 1 1 0; min-width: 0; margin: 0; text-align: center; }
+    .strip img {
+      width: 100%; height: auto; display: block;
+      border-radius: 10px; border: 3px solid #d5dbdb;
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
+    }
+    .strip figure.key img { border-color: #63c15c; }
+    .strip figcaption { font-size: 14px; margin-top: 7px; }
+    .strip figure.key figcaption { font-weight: bold; color: #217a1f; }
+    .step {
+      display: inline-block; background: #d5dbdb; color: #2c3e50;
+      font-size: 12px; padding: 2px 9px; border-radius: 10px; margin-bottom: 5px;
+    }
+    .strip figure.key .step { background: #63c15c; color: #fff; }
+
+    .movelist {
+      font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+      font-size: 15px; background: #eef3f7; border-radius: 12px;
+      padding: 14px 16px; margin-top: 14px; overflow-x: auto;
+      line-height: 1.9; color: #1b4f72;
+    }
+    .tip { font-size: 17px; margin-top: 12px; }
+    .tip strong { color: #1b4f72; }
+
+    @media (max-width: 700px) {
+      .strip { flex-wrap: wrap; }
+      .strip figure { flex: 1 1 44%; }
+      h1 { font-size: 31px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="chess.html">← All chess records</a>
+
+  <h1>♟️ Saturday Chess Class</h1>
+  <p class="subtitle">“Chess is the art of grabbing time”</p>
+  <div class="badges">
+    <span class="badge">📅 Sat 5 Sep 2026</span>
+    <span class="badge coach">👨‍🏫 Coach IM Li Wenliang (李文良)</span>
+    <span class="badge alt">JJ's own Saturday class</span>
+  </div>
+
+  <!-- ===== the theme ===== -->
+  <div class="card star">
+    <p class="tip"><strong>The whole class runs on one idea.</strong> Coach opened with Fischer's most famous line about chess and then spent the rest of the lesson showing it three different ways — in a Fischer game, in the homework, and in an opening you will actually meet.</p>
+    <div class="said">
+      <div class="cn">“国际象棋是抢时间的艺术。”</div>
+      <div class="en">Chess is the art of grabbing time.</div>
+      <div class="when">📅 5 Sep 2026 · class, 13:40 · Bobby Fischer</div>
+    </div>
+    <p class="tip">Speed and the initiative decide games. If you're both attacking, it's a hundred-metre sprint — the only question is who gets there first.</p>
+  </div>
+
+  <!-- ===== puzzle streak ===== -->
+  <h2>👀 Coach checked your puzzle streak</h2>
+  <div class="card">
+    <p class="tip">Before anything else, he went through <b>everyone's Chess.com puzzle activity</b>.</p>
+    <div class="said">
+      <div class="cn">“有的小朋友几天不做了，有的小朋友五个小时前还在做。要 everyday 都要做。”</div>
+      <div class="en">Some of you haven't done any for days. One of you was doing them five hours ago. You need to do them <b>every day</b>.</div>
+      <div class="when">📅 5 Sep 2026 · class, 00:30</div>
+    </div>
+    <p class="tip">He can see it, so this one is easy to act on.</p>
+  </div>
+
+  <!-- ===== homework ===== -->
+  <h2>📝 Homework 19–24</h2>
+  <div class="card">
+    <p class="tip">Six problems, still on the <b>queen sacrifice / forced mate</b> theme. Three students got all six.</p>
+    <ul style="font-size:17px">
+      <li><b>19 — Rxh7+!</b> is the best move. Qh5 also wins but it's messier, and Coach walked through why.</li>
+      <li><b>20 — Nxg6</b>, then <b>Nf8</b>. <em>“唯一的答案，没有第二个变化”</em> — the only answer, no second line.</li>
+      <li><b>21 — Nh5</b>, a <b>decoy</b>: pull the defending knight away, then mate on h7.</li>
+      <li><b>22</b> — the hard one. The finish threatens <b>two</b> mates at once and they can't both be stopped.</li>
+      <li><b>23 — Bg7</b>, another queen sacrifice.</li>
+      <li><b>24 — Rb3</b>, a deflection, then the two rooks finish it. Another move also wins, but Coach preferred this one because it's <b>more forcing</b>.</li>
+    </ul>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/2026-09-05-h1a.jpg" alt="Homework puzzle 20 starting position">
+        <figcaption>Puzzle 20 — White to play</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The move</span>
+        <img src="chess-img/2026-09-05-h1b.jpg" alt="Nxg6 played">
+        <figcaption><b>Nxg6</b> — the only answer</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/2026-09-05-h1c.jpg" alt="Nf8 finishing">
+        <figcaption><b>Nf8</b> and it's over</figcaption>
+      </figure>
+    </div>
+    <p class="tip"><strong>If you didn't get them all:</strong> <em>“说明你们在计算中出现了一定的问题，及时地总结”</em> — it means something went wrong in your calculation. Go back and work out what, straight away.</p>
+  </div>
+
+  <!-- ===== the game ===== -->
+  <h2>⭐ Fischer – Geller, Bled 1961</h2>
+  <div class="card star">
+    <p class="why">C72 Ruy Lopez, Deferred Steinitz · Bled 30th Anniversary, round 6 · 10 Sep 1961 · Fischer had White</p>
+    <p class="tip"><strong>Who Geller was.</strong> A very strong Soviet attacking player with excellent openings — and one of the few people who held his own against Fischer. Across their ten-plus games the score was roughly even. Coach made the point that this makes the win worth more, not less.</p>
+
+    <p class="tip"><strong>The sprint.</strong> Fischer gave up a pawn to attack the king stuck in the centre. Geller was all smiles, took it, and judged that the centre pawn mattered more than Fischer's play.</p>
+    <div class="said">
+      <div class="cn">“我们比比 100 米赛跑 —— 是我攻你中心的王快，还是你王翼的进攻快？”</div>
+      <div class="en">Let's race the hundred metres: is my attack on your king in the centre faster, or your attack on my kingside?</div>
+      <div class="when">📅 5 Sep 2026 · class, 22:10</div>
+    </div>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/2026-09-05-g1a.jpg" alt="Ruy Lopez position before h3">
+        <figcaption>5…Bg4?! — Coach marks it dubious</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The move</span>
+        <img src="chess-img/2026-09-05-g1b.jpg" alt="6.h3 played">
+        <figcaption><b>6.h3!</b> — question the bishop at once</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/2026-09-05-g1c.jpg" alt="Position a few moves later">
+        <figcaption>Black's pieces are coming out too slowly</figcaption>
+      </figure>
+    </div>
+    <p class="tip"><strong>Then Geller stopped smiling.</strong> He sat and thought for <b>thirty minutes</b> and realised his own attack simply wasn't fast enough — and that his king had nowhere safe to go. Castling short lost material; castling long left the king too exposed.</p>
+    <div class="said">
+      <div class="cn">“你一步棋 checkmate 我，我先 checkmate 你 —— 就比你多一步棋。”</div>
+      <div class="en">You're one move from mating me; I mate you first. I'm just one move ahead of you.</div>
+      <div class="when">📅 5 Sep 2026 · class, 26:50</div>
+    </div>
+    <p class="tip"><strong>The mistake to learn from:</strong> later on, Geller should have <b>traded queens</b>. The endgame would have been unpleasant but not lost. Instead he kept dreaming about mating Fischer — and lost the race.</p>
+  </div>
+
+  <!-- ===== the week-later story ===== -->
+  <h2>📖 The best bit: what Fischer did a week later</h2>
+  <div class="card">
+    <p class="tip">Coach's point about work ethic, and it's a good one:</p>
+    <div class="said">
+      <div class="cn">“有的小朋友赢完棋之后，第二天就忘了 —— 反正赢了，高兴。”</div>
+      <div class="en">Some of you win a game and by the next day you've forgotten it. You won, you're happy, and that's that.</div>
+      <div class="when">📅 5 Sep 2026 · class, 24:30</div>
+    </div>
+    <p class="tip"><strong>Fischer won this game — and a week after the whole tournament had finished, he sat down and went through it again.</strong> And he found something better than what he'd actually played: a <b>queen sacrifice</b>, <code>16.Qxc6+!!</code>, mating. He wrote it up in the tournament bulletin.</p>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/2026-09-05-g2a.jpg" alt="Position before Qa4">
+        <figcaption>The line starts <b>12.Qa4!</b></figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The find</span>
+        <img src="chess-img/2026-09-05-g2b.jpg" alt="The Qxc6+ queen sacrifice">
+        <figcaption><b>16.Qxc6+!!</b> — found a week later</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/2026-09-05-g2c.jpg" alt="The mating finish">
+        <figcaption>17.Nf6+ Kd8 <b>18.Re8#</b></figcaption>
+      </figure>
+    </div>
+    <p class="tip">Coach also showed Tal's suggestion at move 18, what Fischer actually chose, and what <b>Stockfish 17</b> prefers — so you can see a human idea, a world-champion's idea, and the engine's, side by side.</p>
+    <p class="tip"><strong>Also worth knowing:</strong> next in the world-champion series is <b>Anatoly Karpov</b>. Coach has met every champion after Fischer, plus Smyslov and Botvinnik — but never Fischer, Tal or Petrosian. He was in Bled himself in <b>2002</b>, as coach of the Chinese Olympiad team. He says the lake is beautiful and they walked round it every evening after the games.</p>
+  </div>
+
+  <!-- ===== Danish Gambit ===== -->
+  <h2>🇩🇰 How to meet the Danish Gambit</h2>
+  <div class="card">
+    <p class="tip">Before you ever get to the Spanish, the Italian or the Four Knights, you'll run into the <b>Centre Game</b>, the <b>Danish Gambit</b> and the <b>Ponziani</b>. Coach: you can't afford not to know these.</p>
+    <p class="tip">The Danish is White throwing pawn after pawn at you to develop fast — Fischer's "grabbing time" in gambit form. <strong>He does not recommend playing it as White</strong> (if you want a gambit, the Scotch or Evans has more in it). He taught the <b>Black</b> side.</p>
+    <div class="movelist">
+      1.e4 e5 2.d4 exd4 3.c3 dxc3 4.Bc4 cxb2 5.Bxb2 <b>d5!</b> 6.Bxd5 Nf6 7.Bxf7+ Kxf7<br>
+      8.Qxd8 Bb4+ 9.Qd2 Bxd2+ 10.Nxd2 Re8 11.f3 Nc6 12.Ne2 Nb4 <b>=</b>
+    </div>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/2026-09-05-d1a.jpg" alt="Danish Gambit position">
+        <figcaption>White has given up two pawns</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The answer</span>
+        <img src="chess-img/2026-09-05-d1b.jpg" alt="d5 played">
+        <figcaption><b>5…d5!</b> — hand a pawn back</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/2026-09-05-d1c.jpg" alt="Position after the exchanges">
+        <figcaption>Queens come off, and it's equal</figcaption>
+      </figure>
+    </div>
+    <div class="said">
+      <div class="cn">“你不要贪吃 —— 像盖利尔贪吃中心兵，速度落了下风。”</div>
+      <div class="en">Don't be greedy. Geller got greedy over the centre pawn, and fell behind on speed.</div>
+      <div class="when">📅 5 Sep 2026 · class, 36:20</div>
+    </div>
+    <p class="tip"><strong>Why giving material back works:</strong> he paid pawns for attack and speed. Once the queens are traded, <em>“他的心情坏了一半，没有进攻了”</em> — half his mood is ruined and there's no attack left. Equal game, and you go play the endgame.</p>
+    <p class="tip">Coach learned this <b>d5</b> answer forty-five years ago and says it still holds up.</p>
+  </div>
+
+  <!-- ===== takeaways ===== -->
+  <h2>🎯 What to take away</h2>
+  <div class="card">
+    <ul style="font-size:17px">
+      <li><b>Do a puzzle every day.</b> He's checking.</li>
+      <li><b>Speed is a real thing.</b> When both sides attack, count the moves — it's a race.</li>
+      <li><b>Don't be greedy.</b> Grabbing a pawn while behind in development is how Geller lost.</li>
+      <li><b>Against a gambit, give the material back</b> and trade queens. The attack dies with them.</li>
+      <li><b>Review your own games — especially the ones you won.</b> Fischer went back to this one a week after the tournament ended and found something better.</li>
+      <li><b>Trade queens when your position is worse.</b> A bad endgame beats getting mated.</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>
