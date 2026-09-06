@@ -80,9 +80,29 @@
     .card.demo { width: 180px; padding: 20px 15px; opacity: 0.95; }
     .card.demo .emoji { font-size: 40px; }
     .card.demo .name { font-size: 17px; }
+    /* Home camera button — pinned top-right, quick access to cam.jjaihw.com */
+    .cam-btn {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 10;
+      background: #e74c3c;
+      color: #fff;
+      text-decoration: none;
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      font-weight: bold;
+      font-size: 18px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      transition: transform 0.15s;
+    }
+    .cam-btn:hover { transform: scale(1.06); }
   </style>
 </head>
 <body>
+
+  <a class="cam-btn" href="https://cam.jjaihw.com" target="_blank" rel="noopener">📹 CAM</a>
 
   <h1>🏠 JJ's AI Homework</h1>
   <p class="subtitle">Learn to code, one mission at a time!</p>
