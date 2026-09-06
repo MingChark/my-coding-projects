@@ -104,7 +104,7 @@
     <a class="card" href="chess.html">
       <div class="emoji">♟️</div>
       <div class="name">Coach Li: Notes &amp; Records</div>
-      <div class="stars">2 weeks</div>
+      <div class="stars" id="chess-count">4 weeks</div>
     </a>
 
     <a class="card" href="dong.html">
@@ -175,6 +175,22 @@
     const lvl = Number(localStorage.getItem("quest-count") || 0);
     document.getElementById("quest-progress").textContent =
       lvl >= 19 ? "🏆 QUEST COMPLETE!" : "Level " + lvl + " of 19";
+
+    // Count the chess records so this card never goes stale.
+    // The number written in the HTML is the fallback if this can't run.
+    fetch("chess.html", { cache: "no-cache" })   // revalidate, or a new record shows a stale count
+      .then(r => r.ok ? r.text() : Promise.reject(r.status))
+      .then(html => {
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const n = new Set(
+          [...doc.querySelectorAll('a[href^="chess-"]')].map(a => a.getAttribute("href"))
+        ).size;
+        if (n > 0) {
+          document.getElementById("chess-count").textContent =
+            n + (n === 1 ? " week" : " weeks");
+        }
+      })
+      .catch(() => {});   // keep the fallback
   </script>
 
 </body>
