@@ -202,8 +202,13 @@
       .then(r => r.ok ? r.text() : Promise.reject(r.status))
       .then(html => {
         const doc = new DOMParser().parseFromString(html, "text/html");
+        // Netlify serves pretty URLs, so the same link is "chess-2026-09-05.html"
+        // locally but "/chess-2026-09-05" live. Accept both, count distinct dates.
         const n = new Set(
-          [...doc.querySelectorAll('a[href^="chess-"]')].map(a => a.getAttribute("href"))
+          [...doc.querySelectorAll("a[href]")]
+            .map(a => a.getAttribute("href"))
+            .filter(h => /(^|\/)chess-\d{4}-\d{2}-\d{2}(\.html)?$/.test(h))
+            .map(h => h.replace(/^\//, "").replace(/\.html$/, ""))
         ).size;
         if (n > 0) {
           document.getElementById("chess-count").textContent =
