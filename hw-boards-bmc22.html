@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Homework 25–30</title>
+<title>Best Move Contest 22</title>
 <style>
   html { background: #d3ecfb; }
   body::before {
@@ -168,33 +168,33 @@
 
   <a class="back" href="chess-homework.html">← All homework sheets</a>
 
-  <h1>♟️ Homework 25–30</h1>
-  <p class="subtitle">This week's set — answers hidden. Have a go.</p>
+  <h1>♟️ Best Move Contest 22</h1>
+  <p class="subtitle">Last year's sheet — every puzzle on a real board</p>
   <div class="badges">
-    <span class="badge">Handed out Sat 5 Sep 2026</span>
-    <span class="badge coach">🔒 Answers hidden</span>
-    <span class="badge alt">All six are White to move and win</span>
+    <span class="badge">Handed out ~24 Aug 2025</span>
+    <span class="badge alt">Engine-verified</span>
   </div>
 
   <div class="intro">
-    <p><b>These are yours to solve.</b> Coach hasn't gone through this set in class yet, so the answers aren't on this page — and they aren't hidden in the code either. All that's stored is a scrambled fingerprint of each move, so nobody can go looking for it.</p>
-    <p><b>How it works.</b> Click a piece and its legal squares light up, then click where you want it to go. Play the move you think is right and the board will tell you whether you've found it. Got it wrong? Press <b>↩ Undo</b> and try again.</p>
-    <p>There's a nudge next to each board if you're stuck — it says how long the mate is, without giving the move away.</p>
-    <p>Every one of these has a <b>forced mate</b>. Once Coach covers the set in class, the full lines will appear here like the other pages.</p>
+    <p>Seven of the nine, in the sheet's three rows: <b>MATE</b>, <b>MATERIAL</b> and <b>BEST MOVE</b>.</p>
+    <p><b>How to use a board.</b> Click a piece and its legal squares light up — then click one to move. Only legal moves are allowed.</p>
+    <p>Press <b>▶ Show the answer</b> and the whole line <b>plays itself</b>, one move at a time. Press it again to pause. <b>Next move</b> steps through by hand instead.</p>
+    <p>The <b>MATE</b> ones end in a real checkmate. The <b>MATERIAL</b> ones win a piece — usually by giving something up first and forking. The <b>BEST MOVE</b> ones are the hardest: sometimes there's only one move that holds.</p>
+    <p>Every position was solved from scratch with a chess engine and checked legal. The paper sheet is on the <a href="chess-homework.html">homework page</a>.</p>
   </div>
 
-  <h2>The six puzzles</h2>
-  <div data-puzzle="25"></div>
-  <div data-puzzle="26"></div>
-  <div data-puzzle="27"></div>
-  <div data-puzzle="28"></div>
-  <div data-puzzle="29"></div>
-  <div data-puzzle="30"></div>
+  <h2>The puzzles</h2>
+  <div data-puzzle="1"></div>
+  <div data-puzzle="2"></div>
+  <div data-puzzle="3"></div>
+  <div data-puzzle="4"></div>
+  <div data-puzzle="5"></div>
+  <div data-puzzle="6"></div>
+  <div data-puzzle="7"></div>
 
   <div class="intro">
-    <p>The paper sheet is on the <a href="chess-homework.html">homework page</a> if you'd rather work from that. Already-covered sets with full answers: <a href="hw-boards-7-12.html">7–12</a>, <a href="hw-boards-425-430.html">425–430</a>, <a href="hw-boards-431-436.html">431–436</a>.</p>
+    <p><b>Why 8 and 9 aren't here.</b> When I read those two diagrams and checked them with an engine, each came out with two <em>equally</em> good moves — which means a puzzle has no single answer, so I've almost certainly misread a piece. Rather than put a wrong board up, they're left out. A sharper photo of those two and I'll add them.</p>
   </div>
-
 </div>
 <script>
 /* Minimal but complete chess rules: legal moves, castling, en passant,
@@ -422,7 +422,7 @@ const CR = (() => {
            perft, SQ, FROM_SQ, colorOf, idx, rc, kingSq };
 })();
 
-const HWPUZZLES = [{"n": 25, "fen": "r3rk2/p3Rp1p/1qp1bQ2/8/1p1P4/6R1/PP3PPP/6K1 w - - 0 1", "turn": "w", "hint": "There is a forced mate in 4. Look for a quiet rook move first.", "answerHash": 2087502628, "hidden": true}, {"n": 26, "fen": "rnb3Br/p1p4p/6p1/kp2b3/2Q1p3/4B3/P1PNKPPP/q6R w - - 0 1", "turn": "w", "hint": "Mate in 4. Black's king is out in the open — start with a check.", "answerHash": 2087465538, "hidden": true}, {"n": 27, "fen": "r7/6Pk/4p2P/3pp3/3q1r2/pPQ5/P1P5/2K3RR w - - 0 1", "turn": "w", "hint": "Mate in 4. That pawn on g7 wants to become something.", "answerHash": 170337403, "hidden": true}, {"n": 28, "fen": "5rR1/p1n1bP1p/7k/1p2P3/P1p5/1B3KNP/8/8 w - - 0 1", "turn": "w", "hint": "Mate in 5 — the longest one. Bring the knight in with check.", "answerHash": 2087566114, "hidden": true}, {"n": 29, "fen": "6k1/pp3ppp/2b1p3/2Q1P1P1/3rq3/5R2/P4R1P/6K1 w - - 0 1", "turn": "w", "hint": "Mate in 4. Be brave with the queen.", "answerHash": 2087711789, "hidden": true}, {"n": 30, "fen": "6r1/1pp1r1pk/3p1pRn/pP1P4/4qN1P/2P3Q1/6R1/6K1 w - - 0 1", "turn": "w", "hint": "Mate in 4. Something has to come off that h6 square.", "answerHash": 2087571562, "hidden": true}];
+const HWPUZZLES = [{"n": 1, "cat": "Mate", "fen": "3r1rk1/1pR4p/p3R1b1/8/7Q/7P/Pq3PP1/6K1 w - - 0 1", "turn": "w", "moves": [{"san": "Rxg6+", "uci": "e6g6", "from": "e6", "to": "g6"}, {"san": "Qg7", "uci": "b2g7", "from": "b2", "to": "g7"}, {"san": "Rcxg7+", "uci": "c7g7", "from": "c7", "to": "g7"}, {"san": "Kh8", "uci": "g8h8", "from": "g8", "to": "h8"}, {"san": "Rxh7#", "uci": "g7h7", "from": "g7", "to": "h7"}], "note": "Take the bishop with check. Black can block on g7, but the other rook takes there too and it's mate on h7.", "verdict": "Mate in 3", "mate": true}, {"n": 2, "cat": "Mate", "fen": "2rq3r/pp2bR1p/2b3pk/4N3/3P2Q1/2P5/P6P/6K1 w - - 0 1", "turn": "w", "moves": [{"san": "Rxh7+", "uci": "f7h7", "from": "f7", "to": "h7"}, {"san": "Rxh7", "uci": "h8h7", "from": "h8", "to": "h7"}, {"san": "Qxg6#", "uci": "g4g6", "from": "g4", "to": "g6"}], "note": "Rip open the h-file with the rook, and the queen mates on g6.", "verdict": "Mate in 2", "mate": true}, {"n": 3, "cat": "Mate", "fen": "rn2kb1r/pb3ppp/1p2p1q1/2p1Q3/2B4B/8/PP3PPP/R3R1K1 w - - 0 1", "turn": "w", "moves": [{"san": "Qxb8+", "uci": "e5b8", "from": "e5", "to": "b8"}, {"san": "Kd7", "uci": "e8d7", "from": "e8", "to": "d7"}, {"san": "Qxb7+", "uci": "b8b7", "from": "b8", "to": "b7"}, {"san": "Kd6", "uci": "d7d6", "from": "d7", "to": "d6"}, {"san": "Rad1+", "uci": "a1d1", "from": "a1", "to": "d1"}, {"san": "Qd3", "uci": "g6d3", "from": "g6", "to": "d3"}, {"san": "Rxd3#", "uci": "d1d3", "from": "d1", "to": "d3"}], "note": "The queen eats her way in with check twice over, then the rook comes to the d-file and finishes.", "verdict": "Mate in 4", "mate": true}, {"n": 4, "cat": "Material", "fen": "r1bqk2r/ppp2ppp/2np4/8/3Pn3/4BN2/PP2BPPP/R2Q1RK1 w - - 0 1", "turn": "w", "moves": [{"san": "d5", "uci": "d4d5", "from": "d4", "to": "d5"}, {"san": "Ne7", "uci": "c6e7", "from": "c6", "to": "e7"}, {"san": "Qa4+", "uci": "d1a4", "from": "d1", "to": "a4"}, {"san": "Qd7", "uci": "d8d7", "from": "d8", "to": "d7"}, {"san": "Qxe4", "uci": "a4e4", "from": "a4", "to": "e4"}], "note": "Push the pawn to chase the knight on c6, and the knight on e4 runs out of squares. A quiet pawn move wins a piece.", "verdict": "Wins a piece", "mate": false}, {"n": 5, "cat": "Material", "fen": "r3k2r/pp1q1ppp/3bpn2/3p1b2/3P4/PQN2N1P/1P2PPP1/2R1KB1R w - - 0 1", "turn": "w", "moves": [{"san": "e4", "uci": "e2e4", "from": "e2", "to": "e4"}, {"san": "dxe4", "uci": "d5e4", "from": "d5", "to": "e4"}, {"san": "Bb5", "uci": "f1b5", "from": "f1", "to": "b5"}, {"san": "exf3", "uci": "e4f3", "from": "e4", "to": "f3"}, {"san": "Bxd7+", "uci": "b5d7", "from": "b5", "to": "d7"}], "note": "Open the centre with e4, then Bb5 skewers the queen. Notice White doesn't mind giving the knight back.", "verdict": "Wins a piece", "mate": false}, {"n": 6, "cat": "Material", "fen": "4r1k1/1p2qp1p/p4Rp1/8/3Q3P/P1B5/1PP1r3/1K6 w - - 0 1", "turn": "w", "moves": [{"san": "Re6", "uci": "f6e6", "from": "f6", "to": "e6"}, {"san": "Re1+", "uci": "e2e1", "from": "e2", "to": "e1"}, {"san": "Rxe1", "uci": "e6e1", "from": "e6", "to": "e1"}, {"san": "Qxe1+", "uci": "e7e1", "from": "e7", "to": "e1"}, {"san": "Bxe1", "uci": "c3e1", "from": "c3", "to": "e1"}], "note": "Re6 attacks the queen and dares Black to check. Every capture goes White's way and the queen comes off.", "verdict": "Wins the queen", "mate": false}, {"n": 7, "cat": "Best move", "fen": "5rk1/3Q2pp/2p5/1pp1Pp2/5Pn1/2PB2Pq/1P5P/R1B3K1 w - - 0 1", "turn": "w", "moves": [{"san": "Bc4+", "uci": "d3c4", "from": "d3", "to": "c4"}], "note": "Black's queen and knight are swarming the king. Bc4+ is the one move that holds everything together — anything else and White collapses.", "verdict": "Only move", "mate": false}];
 /* ---------- one independent, playable board per puzzle ---------- */
 const SYM = {k:"p-k", q:"p-q", r:"p-r", b:"p-b", n:"p-n", p:"p-p"};
 const FILES = "abcdefgh";

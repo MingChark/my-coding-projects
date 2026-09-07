@@ -35,6 +35,8 @@
   .pzhead { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px; }
   .pznum { font-size:30px; font-weight:bold; color:#63c15c; line-height:1; }
   .pzwho { font-size:19px; font-weight:bold; color:#1b4f72; }
+  .pzcat { font-size:12px; font-weight:bold; letter-spacing:.06em; text-transform:uppercase;
+           background:#1b4f72; color:#fff; border-radius:10px; padding:3px 9px; }
   .pzverdict { font-size:13px; color:#7d3c98; background:#f4ecfa;
                border:1px solid #e0cdee; border-radius:12px; padding:3px 10px; }
   .pzbody { display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start; }
@@ -458,7 +460,8 @@ class Puzzle {
       <div class="pz">
         <div class="pzhead">
           <span class="pznum">${d.n}</span>
-          <span class="pzwho">${d.turn === "w" ? "White" : "Black"} to move — and wins</span>
+          ${d.cat ? '<span class="pzcat">' + d.cat + '</span>' : ""}
+          <span class="pzwho">${d.turn === "w" ? "White" : "Black"} to move</span>
           <span class="pzverdict">${d.verdict}</span>
         </div>
         <div class="pzbody">
