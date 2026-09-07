@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Homework</title>
+  <style>
+    html { background: #d3ecfb; }
+    /* Background lives in a fixed, composited layer.
+       Using background-attachment:fixed on the body element repaints the
+       viewport every scroll frame (jank), and rescales when a mobile
+       URL bar collapses (jump). It also left the white wash on the
+       default 'scroll' attachment while the image stayed put, so the
+       two layers slid against each other. */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.62)),
+                  url('family-bg.svg') center / cover no-repeat;
+    }
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: transparent;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 18px 70px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      line-height: 1.5;
+    }
+    .page { max-width: 900px; margin: 0 auto; }
+    a.back {
+      display: inline-block; text-decoration: none; color: #1b4f72;
+      font-size: 17px; background: rgba(255,255,255,.9);
+      padding: 7px 16px; border-radius: 18px; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    }
+    h1 {
+      font-size: 40px; color: #1b4f72; margin: 22px 0 4px;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.85);
+    }
+    p.subtitle {
+      font-size: 19px; color: #34495e; margin: 0 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .badge { background: #1b4f72; color: #fff; font-size: 14px; padding: 5px 13px; border-radius: 14px; }
+    .badge.alt { background: #63c15c; }
+    .badge.coach { background: #8e44ad; }
+
+    h2 {
+      font-size: 27px; color: #1b4f72; margin: 44px 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.94);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      padding: 22px 24px;
+      margin: 18px 0;
+    }
+    .card.star { border: 3px solid #63c15c; background: linear-gradient(160deg,#fffef5,#eaf8e6); }
+
+    .rulehead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .num { font-size: 30px; color: #63c15c; font-weight: bold; line-height: 1; }
+    .ruletitle { font-size: 23px; color: #1b4f72; font-weight: bold; }
+    .why { font-size: 17px; margin: 10px 0 0; }
+
+    .said {
+      margin-top: 14px; padding: 12px 16px;
+      background: #f4ecfa; border-left: 6px solid #8e44ad;
+      border-radius: 0 12px 12px 0;
+    }
+    .said .cn {
+      font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      font-size: 18px; color: #4a235a;
+    }
+    .said .en { font-size: 16px; color: #5b2c6f; font-style: italic; margin-top: 3px; }
+    .said .when { font-size: 13px; color: #7d3c98; margin-top: 6px; }
+
+    .strip { display: flex; gap: 12px; margin-top: 18px; }
+    .strip figure { flex: 1 1 0; min-width: 0; margin: 0; text-align: center; }
+    .strip img {
+      width: 100%; height: auto; display: block;
+      border-radius: 10px; border: 3px solid #d5dbdb;
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
+    }
+    .strip figure.key img { border-color: #63c15c; }
+    .strip figcaption { font-size: 14px; margin-top: 7px; }
+    .strip figure.key figcaption { font-weight: bold; color: #217a1f; }
+    .step {
+      display: inline-block; background: #d5dbdb; color: #2c3e50;
+      font-size: 12px; padding: 2px 9px; border-radius: 10px; margin-bottom: 5px;
+    }
+    .strip figure.key .step { background: #63c15c; color: #fff; }
+
+    .movelist {
+      font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+      font-size: 15px; background: #eef3f7; border-radius: 12px;
+      padding: 14px 16px; margin-top: 14px; overflow-x: auto;
+      line-height: 1.9; color: #1b4f72;
+    }
+    .tip { font-size: 17px; margin-top: 12px; }
+    .tip strong { color: #1b4f72; }
+
+    @media (max-width: 700px) {
+      .strip { flex-wrap: wrap; }
+      .strip figure { flex: 1 1 44%; }
+      h1 { font-size: 31px; }
+    }
+
+    /* ---- homework sheets ---- */
+    .hw { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+    .hw .sheet { flex: 1 1 340px; min-width: 0; }
+    .hw .sheet a { display: block; text-decoration: none; }
+    .hw .sheet img {
+      width: 100%; height: auto; display: block; border-radius: 12px;
+      border: 3px solid #d5dbdb; background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,.2); transition: transform .15s;
+    }
+    .hw .sheet a:hover img { transform: scale(1.02); border-color: #63c15c; }
+    .hw .sheet .zoom { font-size: 14px; color: #7d3c98; text-align: center; margin-top: 8px; }
+    .hw .sol { flex: 1 1 320px; min-width: 0; }
+    .sol h3 { font-size: 20px; color: #1b4f72; margin: 0 0 4px; }
+    .sol .src { font-size: 13px; color: #7d3c98; margin-bottom: 12px; }
+    .sol ol { margin: 0; padding-left: 26px; font-size: 16.5px; line-height: 1.65; }
+    .sol ol li { margin-bottom: 9px; }
+    .sol ol li b { color: #1b4f72; }
+    .sol .warn { color: #b03a2e; font-weight: bold; }
+    .sol .none {
+      background: #fdf6e3; border: 1px solid #e8d9a8; border-radius: 12px;
+      padding: 14px 16px; font-size: 16px;
+    }
+    .setmeta { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 14px; }
+    .chip {
+      background: #eef3f7; color: #1b4f72; font-size: 13px;
+      padding: 4px 11px; border-radius: 12px; border: 1px solid #d5dbdb;
+    }
+    .chip.on { background: #63c15c; color: #fff; border-color: #63c15c; }
+    .chip.wait { background: #fdf0d9; color: #8a5a1c; border-color: #e8d9a8; }
+    .legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 10px; }
+    .legend div { font-size: 16px; }
+    .legend b { color: #1b4f72; font-size: 20px; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="chess.html">← All chess records</a>
+
+  <h1>📝 Chess Homework</h1>
+  <p class="subtitle">Every sheet, with Coach's answers beside it</p>
+  <div class="badges">
+    <span class="badge">6 sheets</span>
+    <span class="badge coach">👨‍🏫 Coach IM Li Wenliang (李文良)</span>
+    <span class="badge alt">Answers from the class recordings</span>
+  </div>
+
+  <div class="card">
+    <div class="ruletitle">How to read a sheet</div>
+    <div class="legend">
+      <div><b>△</b> — the little triangle tells you <b>whose move it is</b>. If it's under the board, it's that side to play.</div>
+      <div><b>+−</b> — means <b>White is winning</b>. Find the move that proves it.</div>
+    </div>
+    <p class="tip">On the <b>BEST MOVE CONTEST</b> sheets the three rows ask three different questions: <b>MATE</b> (force checkmate), <b>MATERIAL</b> (win a piece or pawn), and <b>BEST MOVE</b> (just find the strongest move). Coach says the Best Move row is the hardest and the one most people guess at.</p>
+    <p class="tip"><strong>Where these answers come from:</strong> Coach walks through the previous week's homework at the start of every class, out loud. These are <b>his</b> answers, taken from the recordings — not a computer's. Each set says which class to go watch if you want to hear the reasoning.</p>
+    <p class="tip">Tap any sheet to open it full size.</p>
+  </div>
+
+  <!-- ================= 2026 ================= -->
+  <h2>🗓️ This term (2026)</h2>
+
+  <!-- 25-30 -->
+  <div class="card">
+    <div class="setmeta">
+      <span class="chip">Puzzles 25–30</span>
+      <span class="chip">Handed out Sat 5 Sep 2026</span>
+      <span class="chip wait">⏳ Answers not out yet</span>
+    </div>
+    <div class="hw">
+      <div class="sheet">
+        <a href="hw-img/set-25-30.jpg" target="_blank" rel="noopener">
+          <img src="hw-img/set-25-30-thumb.jpg" alt="Homework sheet, puzzles 25 to 30">
+        </a>
+        <div class="zoom">Tap to open full size</div>
+      </div>
+      <div class="sol">
+        <h3>Answers</h3>
+        <div class="src">Not yet — this is the current set</div>
+        <div class="none">
+          <p style="margin:0">Coach goes through each week's homework at the <b>start of the next class</b>. This sheet went out on 5 September, so the answers come in the class after that.</p>
+          <p style="margin:8px 0 0">All six are marked <b>△ +−</b>: White to move, White wins.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7-12 -->
+  <div class="card">
+    <div class="setmeta">
+      <span class="chip">Puzzles 7–12</span>
+      <span class="chip">Handed out Sat 22 Aug 2026</span>
+      <span class="chip on">✓ Answers below</span>
+    </div>
+    <div class="hw">
+      <div class="sheet">
+        <a href="hw-img/set-7-12.jpg" target="_blank" rel="noopener">
+          <img src="hw-img/set-7-12-thumb.jpg" alt="Homework sheet, puzzles 7 to 12">
+        </a>
+        <div class="zoom">Tap to open full size</div>
+      </div>
+      <div class="sol">
+        <h3>Coach's answers</h3>
+        <div class="src">From the <a href="chess-2026-08-30.html">30 Aug class</a> · recording 03:00–10:30</div>
+        <ol start="7">
+          <li><b>Qg8+!</b> — give the queen away. After Kxg8, either <b>Nf6+</b> (then Nh7#) or <b>Ne7#</b> straight away. Both mate — Coach's point: <em>work out which one you actually want before you play it.</em></li>
+          <li><b>Qe8!</b></li>
+          <li><b>Qxe5</b> wins — but <b>Rd8!</b> is the better answer. It leads to a queen-sacrifice mate. Coach specifically praised the students who found Rd8, for having "tactical imagination". With Qxe5 the opponent gets an annoying check first.</li>
+          <li><b>Nf7</b> — the easiest of the six.</li>
+          <li><b>Qh7!</b> and then <b>Rg5!</b> — <span class="warn">the hardest one.</span> The h-file opens by force, the g-pawn can't move, and the king has nowhere to hide. A queen sacrifice followed by a second hard move.</li>
+          <li>Another <b>queen sacrifice</b>, then mate.</li>
+        </ol>
+        <p class="tip">Three students got all six. Coach had deliberately made this set easier than the previous two weeks.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 431-436 -->
+  <div class="card">
+    <div class="setmeta">
+      <span class="chip">Puzzles 431–436</span>
+      <span class="chip">Handed out Sat 15 Aug 2026</span>
+      <span class="chip on">✓ Answers below</span>
+    </div>
+    <div class="hw">
+      <div class="sheet">
+        <a href="hw-img/set-431-436.jpg" target="_blank" rel="noopener">
+          <img src="hw-img/set-431-436-thumb.jpg" alt="Homework sheet, puzzles 431 to 436">
+        </a>
+        <div class="zoom">Tap to open full size</div>
+      </div>
+      <div class="sol">
+        <h3>Coach's answers</h3>
+        <div class="src">From the <a href="chess-2026-08-22.html">22 Aug class</a> · recording 02:00–08:00</div>
+        <ol start="431">
+          <li><b>Qh6!</b></li>
+          <li><b>Qh6!</b> — same square, same idea. Three pieces deliver the mate.</li>
+          <li>A quiet <b>preparing move first</b>, and <em>then</em> <b>Qh7!</b> You have to open the line before you sacrifice. This was the tricky one.</li>
+          <li><b>Qh2!</b> (Black to move here — the triangle is under Black.)</li>
+          <li><b>Nb5+!</b> — after cxb5, the other knight mates on b7. Careful: the sheet's own hint points at <b>1…Nf5?</b>, which is the tempting wrong knight move.</li>
+          <li>A <b>decoy</b>, not a sacrifice — pull the defender away, then mate. This one is Tal–Petrosian, 1975.</li>
+        </ol>
+        <p class="tip">Four students got all six. Coach: the queen sacrifice is <em>"战术组合里面最高级的"</em> — the highest form of tactical combination.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 425-430 -->
+  <div class="card">
+    <div class="setmeta">
+      <span class="chip">Puzzles 425–430</span>
+      <span class="chip">Handed out ~12 Aug 2026</span>
+      <span class="chip on">✓ Answers below</span>
+    </div>
+    <div class="hw">
+      <div class="sheet">
+        <a href="hw-img/set-425-430.jpg" target="_blank" rel="noopener">
+          <img src="hw-img/set-425-430-thumb.jpg" alt="Homework sheet, puzzles 425 to 430">
+        </a>
+        <div class="zoom">Tap to open full size</div>
+      </div>
+      <div class="sol">
+        <h3>Coach's answers</h3>
+        <div class="src">From the <a href="chess-2026-08-15.html">15 Aug class</a> · recording 01:30–09:00</div>
+        <ol start="425">
+          <li>A <b>queen sacrifice for mate</b>. Refuse it and you're lost anyway; take it and you get mated.</li>
+          <li><span class="warn">The trap.</span> <b>Ba4</b> looks like mate — but it's a <b>blunder</b>, because the other side has a <b>check first</b>. Play the <b>knight move first</b>, and then <b>Rd1+</b> mates. <em>Look for their checks before you commit.</em></li>
+          <li><b>Qg6</b> — another queen sacrifice. If it's taken, it's <b>double check</b> and mate.</li>
+          <li><b>Queen sacrifice</b>, then <b>double check</b> mates.</li>
+          <li><b>No queen to give here</b> — so sacrifice something else, then mate.</li>
+          <li><b>Qh5</b> — queen sacrifice again, then mate.</li>
+        </ol>
+        <p class="tip">Coach pointed out the first three are <b>all</b> queen sacrifices, and told a story about a student who was brilliant at puzzles but could never solve a queen sacrifice, because he didn't want to give up his queen. <em>"On a chessboard only the king can't be sacrificed."</em></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 2025 ================= -->
+  <h2>🗓️ Last year (2025)</h2>
+
+  <!-- BMC 21 -->
+  <div class="card">
+    <div class="setmeta">
+      <span class="chip">Best Move Contest 21</span>
+      <span class="chip">Handed out ~17 Aug 2025</span>
+      <span class="chip on">✓ Answers below</span>
+    </div>
+    <div class="hw">
+      <div class="sheet">
+        <a href="hw-img/bmc21.jpg" target="_blank" rel="noopener">
+          <img src="hw-img/bmc21-thumb.jpg" alt="Best Move Contest 21 worksheet">
+        </a>
+        <div class="zoom">Tap to open full size</div>
+      </div>
+      <div class="sol">
+        <h3>Coach's answers</h3>
+        <div class="src">From the 24 Aug 2025 class recording · 01:00–05:00</div>
+        <p class="tip"><b>MATE row</b></p>
+        <ol>
+          <li><b>Qg6</b> — the two bishops finish it off.</li>
+          <li><b>Qf6</b> — same idea, and this time the rook joins in.</li>
+          <li><b>Bh6</b>, then the capture, then check. Coach's warning on this one: <em>if you sacrifice a piece, you must also calculate the line where they <b>don't</b> take.</em></li>
+        </ol>
+        <p class="tip"><b>MATERIAL row</b> — his general rule: a pawn sitting on the 5th rank can usually just be taken, let alone a knight. On the third one, <b>Rxf7</b> deflects the defender and the knight comes in behind it.</p>
+        <p class="tip"><b>BEST MOVE row</b> — <b>Qf3</b> (taking on f3 with the bishop). Coach: this row is where people guess; the answer came from spotting what was undefended.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BMC 22 -->
+  <div class="card">
+    <div class="setmeta">
+      <span class="chip">Best Move Contest 22</span>
+      <span class="chip">Handed out ~24 Aug 2025</span>
+      <span class="chip wait">No recording of that class</span>
+    </div>
+    <div class="hw">
+      <div class="sheet">
+        <a href="hw-img/bmc22.jpg" target="_blank" rel="noopener">
+          <img src="hw-img/bmc22-thumb.jpg" alt="Best Move Contest 22 worksheet">
+        </a>
+        <div class="zoom">Tap to open full size</div>
+      </div>
+      <div class="sol">
+        <h3>Answers</h3>
+        <div class="src">Not available</div>
+        <div class="none">
+          <p style="margin:0">Coach went through this set at the following week's class, but we don't have a recording of it — so there's no answer key for this one.</p>
+          <p style="margin:8px 0 0">The sheet is still worth doing. Every board has <b>coordinates printed down the side</b>, so you can write your answers in proper notation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= how to use ================= -->
+  <h2>🎯 How to get the most out of these</h2>
+  <div class="card">
+    <ul style="font-size:17px">
+      <li><b>Do them before you read the answers.</b> Coach's whole reason for setting them: <em>"do enough puzzles and it becomes familiar — then in a tense game, it comes back to you."</em></li>
+      <li><b>Write the answer in notation</b> (like <code>Qg6</code>), not just "the queen goes there". You'll need notation to talk about your games.</li>
+      <li><b>Before you commit to a pretty move, look for their checks.</b> Puzzle 426 is built entirely around that mistake — and the class fell for it.</li>
+      <li><b>If you sacrifice, also calculate what happens when they refuse.</b> That's Coach's rule from the Best Move Contest 21 class.</li>
+      <li>Want to move the pieces around instead of just looking? Use the <a href="puzzles.html">playable board</a>.</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>
