@@ -68,7 +68,7 @@
                   box-shadow:0 3px 8px rgba(0,0,0,.2); }
   .pzctl button:hover:not(:disabled) { background:#2a6f9e; }
   .pzctl button:disabled { opacity:.4; cursor:default; }
-  .pzctl button[data-a="solve"] { background:#63c15c; }
+  .pzctl button[data-a="solve"] { background:#63c15c; min-width:11.5em; }
   .pzctl button[data-a="solve"]:hover { background:#4faa49; }
   .pzctl button:focus-visible { outline:3px solid #63c15c; outline-offset:2px; }
 
@@ -174,7 +174,8 @@
 
   <div class="intro">
     <p>Five of the six from this sheet. Watch out for 435 — it's the odd one out, where the job is to spot a trap rather than win.</p>
-    <p><b>How to use a board.</b> Click a piece and its legal squares light up — then click one to move. Only legal moves are allowed. Press <b>▶ Show the answer</b> and then <b>Next move</b> to step through the solution, or click any move in the list to jump there.</p>
+    <p><b>How to use a board.</b> Click a piece and its legal squares light up — then click one to move. Only legal moves are allowed.</p>
+    <p>Press <b>▶ Show the answer</b> and the whole line <b>plays itself</b>, one move at a time. Press it again to pause. <b>Next move</b> steps through by hand instead, and you can click any move in the list to jump straight to it.</p>
     <p><b>Check the little triangle on the paper sheet</b> to see who moves — some of these are Black to play, which catches people out.</p>
     <p>Every position was checked with a chess engine before it went on this page: legal position, and the answer line confirmed.</p>
   </div>
@@ -432,6 +433,7 @@ class Puzzle {
   }
 
   reset(quiet) {
+    this.stopAuto();
     this.st = CR.fromFen(this.d.fen);
     this.flipped = this.d.turn === "b";
     this.sel = null;
@@ -478,6 +480,27 @@ class Puzzle {
     this.drawSolution();
   }
 
+  stopAuto() {
+    if (this.timer) { clearTimeout(this.timer); this.timer = null; }
+    this.syncSolveBtn();
+  }
+
+  syncSolveBtn() {
+    const b = this.host && this.host.querySelector('[data-a="solve"]');
+    if (b) b.textContent = this.timer ? "⏸ Pause" : "▶ Show the answer";
+  }
+
+  /* play the rest of the line by itself, one move at a time */
+  autoNext(delay) {
+    this.timer = setTimeout(() => {
+      this.timer = null;
+      const more = this.stepSolution();
+      if (more) this.autoNext(1000);
+      else this.syncSolveBtn();
+    }, delay);
+    this.syncSolveBtn();
+  }
+
   say(msg, kind) {
     this.sayEl.textContent = msg;
     this.sayEl.className = "pzsay" + (kind ? " " + kind : "");
@@ -487,32 +510,47 @@ class Puzzle {
     if (a === "reset")  { this.reset(); this.drawSolution(); return; }
     if (a === "flip")   { this.flipped = !this.flipped; this.render(); return; }
     if (a === "undo") {
+      this.stopAuto();
       if (!this.hist.length) return;
       this.st = this.hist.pop();
       this.sel = null; this.pending = null;
       if (this.solving) { this.solveAt--; if (this.solveAt < 0) { this.solving = false; this.solveAt = -1; } }
       this.say("", ""); this.render(); this.drawSolution(); return;
     }
-    if (a === "solve") {                 // restart from the puzzle position and begin
-      this.reset(true);
+    if (a === "solve") {
+      if (this.timer) {                  // already playing -> pause here
+        this.stopAuto();
+        this.say("Paused. Press “Next move”, or ▶ to play on.", "hint");
+        return;
+      }
+      if (this.solving && this.solveAt >= 0 &&
+          this.solveAt < this.d.moves.length - 1) {
+        this.autoNext(250);              // resume from where it paused
+        return;
+      }
+      this.reset(true);                  // otherwise start from the top
       this.solving = true; this.solveAt = -1;
-      this.say("Playing Coach's answer — press “Next move”.", "hint");
-      this.render(); this.drawSolution(); return;
+      this.say("Playing the answer…", "hint");
+      this.render(); this.drawSolution();
+      this.autoNext(700);
+      return;
     }
-    if (a === "step") {
-      if (!this.solving) { this.act("solve"); return; }
+    if (a === "step") {                  // one move, by hand
+      this.stopAuto();
+      if (!this.solving) { this.solving = true; this.solveAt = -1; }
       this.stepSolution();
+      return;
     }
   }
 
   stepSolution() {
     const nxt = this.solveAt + 1;
-    if (nxt >= this.d.moves.length) { this.say("That's the whole line.", "good"); return; }
+    if (nxt >= this.d.moves.length) { this.say("That's the whole line.", "good"); return false; }
     const m = this.d.moves[nxt];
     const mv = CR.legal(this.st).find(x =>
       CR.SQ(x.from) === m.from && CR.SQ(x.to) === m.to &&
       (!m.uci[4] || (x.promo || "") === m.uci[4]));
-    if (!mv) { this.say("Couldn't play " + m.san + " here.", "bad"); return; }
+    if (!mv) { this.say("Couldn't play " + m.san + " here.", "bad"); return false; }
     this.hist.push(this.st);
     this.st = CR.make(this.st, mv);
     this.solveAt = nxt;
@@ -522,6 +560,7 @@ class Puzzle {
       ? (this.d.mate ? "Checkmate. " + m.san : "Key move: " + m.san)
       : m.san, last ? "good" : "");
     this.render(); this.drawSolution();
+    return nxt < this.d.moves.length - 1;
   }
 
   drawSolution() {
@@ -537,6 +576,7 @@ class Puzzle {
     this.solEl.innerHTML = html;
     this.solEl.querySelectorAll(".mv").forEach(el => {
       el.onclick = () => {
+        this.stopAuto();
         const target = Number(el.dataset.i);
         this.reset(true); this.solving = true; this.solveAt = -1;
         while (this.solveAt < target) this.stepSolution();
@@ -593,6 +633,7 @@ class Puzzle {
 
   click(i) {
     if (this.pending) return;
+    this.stopAuto();
     const p = this.st.b[i];
     if (this.sel != null) {
       const opts = this.legalFrom(this.sel).filter(m => m.to === i);
@@ -624,8 +665,8 @@ class Puzzle {
     this.sel = null;
     const want = this.d.moves[0].uci;
     if (uci === want) {
-      this.say("✅ That's Coach's move — " + this.d.moves[0].san +
-               (this.d.moves.length > 1 ? ". Press “Next move” to see the rest." : "."), "good");
+      this.say("✅ That's the move — " + this.d.moves[0].san +
+               (this.d.moves.length > 1 ? ". Press ▶ to see the rest play out." : "."), "good");
       this.solving = true; this.solveAt = 0;
       this.drawSolution();
     } else if (CR.isMate(this.st)) {
