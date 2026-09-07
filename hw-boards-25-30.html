@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Homework Boards — Puzzles 7–12</title>
+<title>Homework 25–30</title>
 <style>
   html { background: #d3ecfb; }
   body::before {
@@ -166,32 +166,31 @@
 
   <a class="back" href="chess-homework.html">← All homework sheets</a>
 
-  <h1>♟️ Homework 7–12</h1>
-  <p class="subtitle">Six real boards. Try each one, then watch Coach's answer play out.</p>
+  <h1>♟️ Homework 25–30</h1>
+  <p class="subtitle">This week's set — answers hidden. Have a go.</p>
   <div class="badges">
-    <span class="badge">Handed out Sat 22 Aug 2026</span>
-    <span class="badge coach">👨‍🏫 Answers from the 30 Aug class</span>
-    <span class="badge alt">All six verified</span>
+    <span class="badge">Handed out Sat 5 Sep 2026</span>
+    <span class="badge coach">🔒 Answers hidden</span>
+    <span class="badge alt">All six are White to move and win</span>
   </div>
 
   <div class="intro">
-    <p><b>How to use a board.</b> Click a piece and its legal squares light up — then click one to move. Only legal moves are allowed.</p>
-    <p>Press <b>▶ Show the answer</b> and the whole line <b>plays itself</b>, one move at a time. Press it again to pause. <b>Next move</b> steps through by hand instead, and you can click any move in the list to jump straight to it.</p>
-    <p>If you find Coach's move yourself, the board will tell you.</p>
-    <p><b>Every position here was checked by a chess engine</b> — the position is legal, and where Coach's answer forces mate, the engine confirmed the whole line.</p>
+    <p><b>These are yours to solve.</b> Coach hasn't gone through this set in class yet, so the answers aren't on this page — and they aren't hidden in the code either. All that's stored is a scrambled fingerprint of each move, so nobody can go looking for it.</p>
+    <p><b>How it works.</b> Click a piece and its legal squares light up, then click where you want it to go. Play the move you think is right and the board will tell you whether you've found it. Got it wrong? Press <b>↩ Undo</b> and try again.</p>
+    <p>There's a nudge next to each board if you're stuck — it says how long the mate is, without giving the move away.</p>
+    <p>Every one of these has a <b>forced mate</b>. Once Coach covers the set in class, the full lines will appear here like the other pages.</p>
   </div>
 
   <h2>The six puzzles</h2>
-  <div data-puzzle="7"></div>
-  <div data-puzzle="8"></div>
-  <div data-puzzle="9"></div>
-  <div data-puzzle="10"></div>
-  <div data-puzzle="11"></div>
-  <div data-puzzle="12"></div>
+  <div data-puzzle="25"></div>
+  <div data-puzzle="26"></div>
+  <div data-puzzle="27"></div>
+  <div data-puzzle="28"></div>
+  <div data-puzzle="29"></div>
+  <div data-puzzle="30"></div>
 
   <div class="intro">
-    <p><b>Where these came from.</b> The paper sheet is on the <a href="chess-homework.html">homework page</a>. The answers are Coach Li's own, from the start of the 30 Aug class where he went through this set out loud.</p>
-    <p>Puzzles <b>9</b> and <b>11</b> show only the key move — those two wins run longer than a short forced mate, and Coach called 11 the hardest of the six.</p>
+    <p>The paper sheet is on the <a href="chess-homework.html">homework page</a> if you'd rather work from that. Already-covered sets with full answers: <a href="hw-boards-7-12.html">7–12</a>, <a href="hw-boards-425-430.html">425–430</a>, <a href="hw-boards-431-436.html">431–436</a>.</p>
   </div>
 
 </div>
@@ -421,7 +420,7 @@ const CR = (() => {
            perft, SQ, FROM_SQ, colorOf, idx, rc, kingSq };
 })();
 
-const HWPUZZLES = [{"n": 7, "fen": "r3r2k/p2n1Qbp/b7/q2NNp2/1pB5/8/P4PPP/3R1RK1 w - - 0 1", "turn": "w", "moves": [{"san": "Qg8+", "uci": "f7g8", "from": "f7", "to": "g8"}, {"san": "Kxg8", "uci": "h8g8", "from": "h8", "to": "g8"}, {"san": "Ne7+", "uci": "d5e7", "from": "d5", "to": "e7"}, {"san": "Kf8", "uci": "g8f8", "from": "g8", "to": "f8"}, {"san": "N7g6+", "uci": "e7g6", "from": "e7", "to": "g6"}, {"san": "hxg6", "uci": "h7g6", "from": "h7", "to": "g6"}, {"san": "Nxg6#", "uci": "e5g6", "from": "e5", "to": "g6"}], "note": "Coach: give the queen away. Both knight moves mate — work out which one you want.", "verdict": "Forced mate in 4", "mate": true}, {"n": 8, "fen": "6k1/1n3rr1/4Q3/P1pPp3/2P2pq1/3B3R/5P1K/8 w - - 0 1", "turn": "w", "moves": [{"san": "Qe8+", "uci": "e6e8", "from": "e6", "to": "e8"}, {"san": "Rf8", "uci": "f7f8", "from": "f7", "to": "f8"}, {"san": "Rh8+", "uci": "h3h8", "from": "h3", "to": "h8"}, {"san": "Kxh8", "uci": "g8h8", "from": "g8", "to": "h8"}, {"san": "Qxf8+", "uci": "e8f8", "from": "e8", "to": "f8"}, {"san": "Rg8", "uci": "g7g8", "from": "g7", "to": "g8"}, {"san": "Qh6#", "uci": "f8h6", "from": "f8", "to": "h6"}], "note": "Coach's answer was simply Qe8.", "verdict": "Forced mate in 4", "mate": true}, {"n": 9, "fen": "r1b3k1/1p2q2p/p5pP/4p3/1PP3r1/4Q1P1/P3N3/3RKR2 w - - 0 1", "turn": "w", "moves": [{"san": "Rd8+", "uci": "d1d8", "from": "d1", "to": "d8"}], "note": "Qxe5 also wins, but Coach preferred Rd8 — it leads to a queen-sacrifice mate. He praised the students who found it.", "verdict": "Key move (the win runs long)", "mate": false, "alt": {"san": "Qxe5", "uci": "e3e5"}}, {"n": 10, "fen": "5r1k/bp1rNppp/p7/6N1/8/4P3/PP3PPP/2R3K1 w - - 0 1", "turn": "w", "moves": [{"san": "Nxf7+", "uci": "g5f7", "from": "g5", "to": "f7"}, {"san": "Rxf7", "uci": "f8f7", "from": "f8", "to": "f7"}, {"san": "Rc8+", "uci": "c1c8", "from": "c1", "to": "c8"}, {"san": "Rd8", "uci": "d7d8", "from": "d7", "to": "d8"}, {"san": "Rxd8+", "uci": "c8d8", "from": "c8", "to": "d8"}, {"san": "Rf8", "uci": "f7f8", "from": "f7", "to": "f8"}, {"san": "Rxf8#", "uci": "d8f8", "from": "d8", "to": "f8"}], "note": "Coach: the easiest of the six.", "verdict": "Forced mate in 4", "mate": true}, {"n": 11, "fen": "4nqrk/r5pp/pn1p1p2/2pPpPPQ/2P4P/1P3P2/2BBK3/6RR w - - 0 1", "turn": "w", "moves": [{"san": "Qxh7+", "uci": "h5h7", "from": "h5", "to": "h7"}], "note": "Coach: the hardest one. Sacrifice on h7, then the follow-up Rg5 — the h-file opens by force, the g-pawn can't move and the king can't hide.", "verdict": "Key move (the hardest — long win)", "mate": false}, {"n": 12, "fen": "2Q5/p3b1k1/5rPp/2q5/4B3/P2P4/7P/6RK w - - 0 1", "turn": "w", "moves": [{"san": "Qh8+", "uci": "c8h8", "from": "c8", "to": "h8"}, {"san": "Kxh8", "uci": "g7h8", "from": "g7", "to": "h8"}, {"san": "g7+", "uci": "g6g7", "from": "g6", "to": "g7"}, {"san": "Kg8", "uci": "h8g8", "from": "h8", "to": "g8"}, {"san": "Bh7+", "uci": "e4h7", "from": "e4", "to": "h7"}, {"san": "Kxh7", "uci": "g8h7", "from": "g8", "to": "h7"}, {"san": "g8=Q#", "uci": "g7g8q", "from": "g7", "to": "g8"}], "note": "Coach: another queen sacrifice, then mate. It's a double sacrifice — the bishop goes too — finishing with a new queen.", "verdict": "Forced mate in 4", "mate": true}];
+const HWPUZZLES = [{"n": 25, "fen": "r3rk2/p3Rp1p/1qp1bQ2/8/1p1P4/6R1/PP3PPP/6K1 w - - 0 1", "turn": "w", "hint": "There is a forced mate in 4. Look for a quiet rook move first.", "answerHash": 2087502628, "hidden": true}, {"n": 26, "fen": "rnb3Br/p1p4p/6p1/kp2b3/2Q1p3/4B3/P1PNKPPP/q6R w - - 0 1", "turn": "w", "hint": "Mate in 4. Black's king is out in the open — start with a check.", "answerHash": 2087465538, "hidden": true}, {"n": 27, "fen": "r7/6Pk/4p2P/3pp3/3q1r2/pPQ5/P1P5/2K3RR w - - 0 1", "turn": "w", "hint": "Mate in 4. That pawn on g7 wants to become something.", "answerHash": 170337403, "hidden": true}, {"n": 28, "fen": "5rR1/p1n1bP1p/7k/1p2P3/P1p5/1B3KNP/8/8 w - - 0 1", "turn": "w", "hint": "Mate in 5 — the longest one. Bring the knight in with check.", "answerHash": 2087566114, "hidden": true}, {"n": 29, "fen": "6k1/pp3ppp/2b1p3/2Q1P1P1/3rq3/5R2/P4R1P/6K1 w - - 0 1", "turn": "w", "hint": "Mate in 4. Be brave with the queen.", "answerHash": 2087711789, "hidden": true}, {"n": 30, "fen": "6r1/1pp1r1pk/3p1pRn/pP1P4/4qN1P/2P3Q1/6R1/6K1 w - - 0 1", "turn": "w", "hint": "Mate in 4. Something has to come off that h6 square.", "answerHash": 2087571562, "hidden": true}];
 /* ---------- one independent, playable board per puzzle ---------- */
 const SYM = {k:"p-k", q:"p-q", r:"p-r", b:"p-b", n:"p-n", p:"p-p"};
 const FILES = "abcdefgh";

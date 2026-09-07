@@ -74,6 +74,8 @@
 
   .pznote { font-size:16px; margin:0 0 12px; }
   .pzsol { background:#f7fafc; border:1px solid #dbe4ec; border-radius:12px; padding:12px 14px; font-size:15px; }
+  .pzsol.locked { background:#fdf6e3; border-color:#e8d9a8; }
+  .pzsol.locked > b { color:#8a5a1c; }
   .pzsol > b { color:#1b4f72; }
   .pzline { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
   .pzline .mv { font-family:"SFMono-Regular",Consolas,monospace; font-size:14px; cursor:pointer;
@@ -421,6 +423,14 @@ const SYM = {k:"p-k", q:"p-q", r:"p-r", b:"p-b", n:"p-n", p:"p-p"};
 const FILES = "abcdefgh";
 const NAMES = {k:"king", q:"queen", r:"rook", b:"bishop", n:"knight", p:"pawn"};
 
+/* Same hash the build script uses. Puzzles still waiting to be covered in
+   class ship with only this hash, so the answer isn't in the page at all. */
+function h33(str) {
+  let h = 5381;
+  for (const ch of str) h = ((h * 33) ^ ch.codePointAt(0)) & 0xFFFFFFFF;
+  return h >>> 0;
+}
+
 class Puzzle {
   constructor(data, host) {
     this.d = data;
@@ -455,15 +465,15 @@ class Puzzle {
           <div class="pzleft">
             <div class="board-frame"><div class="board"></div></div>
             <div class="pzctl">
-              <button data-a="solve">▶ Show the answer</button>
-              <button data-a="step">Next move</button>
+              ${d.hidden ? "" : '<button data-a="solve">▶ Show the answer</button>' +
+                                '<button data-a="step">Next move</button>'}
               <button data-a="undo">↩ Undo</button>
               <button data-a="reset">⟲ Reset</button>
               <button data-a="flip">⤢</button>
             </div>
           </div>
           <div class="pzright">
-            <p class="pznote">${d.note}</p>
+            <p class="pznote">${d.hidden ? d.hint : d.note}</p>
             <div class="pzsol"></div>
             <div class="pzsay"></div>
           </div>
@@ -471,6 +481,14 @@ class Puzzle {
       </div>`;
     this.boardEl = this.host.querySelector(".board");
     this.solEl   = this.host.querySelector(".pzsol");
+    if (this.d.hidden) {
+      this.solEl.className = "pzsol locked";
+      this.solEl.innerHTML =
+        "<b>🔒 Answer hidden</b>" +
+        "<div class='pzhide'>This is the newest homework, so the answer isn't on this page — " +
+        "not even hidden in the code. Play the move you think is right and the board will tell " +
+        "you if you've got it.</div>";
+    }
     this.sayEl   = this.host.querySelector(".pzsay");
     this.host.querySelectorAll(".pzctl button").forEach(b => {
       b.onclick = () => this.act(b.dataset.a);
@@ -542,6 +560,7 @@ class Puzzle {
   }
 
   stepSolution() {
+    if (this.d.hidden) return false;
     const nxt = this.solveAt + 1;
     if (nxt >= this.d.moves.length) { this.say("That's the whole line.", "good"); return false; }
     const m = this.d.moves[nxt];
@@ -563,6 +582,7 @@ class Puzzle {
 
   drawSolution() {
     const d = this.d;
+    if (d.hidden) return;
     let html = "<b>Coach's answer</b><div class='pzline'>";
     d.moves.forEach((m, i) => {
       const on = i <= this.solveAt ? " on" : "";
@@ -661,6 +681,19 @@ class Puzzle {
     this.hist.push(this.st);
     this.st = CR.make(this.st, mv);
     this.sel = null;
+
+    if (this.d.hidden) {                       // newest set: check, never reveal
+      if (h33(uci) === this.d.answerHash) {
+        this.say("✅ Yes — that's the move. Well done.", "good");
+      } else if (CR.isMate(this.st)) {
+        this.say("✅ That's checkmate, so it works!", "good");
+      } else {
+        this.say("Not the one. Press Undo and have another look.", "bad");
+      }
+      this.render();
+      return;
+    }
+
     const want = this.d.moves[0].uci;
     if (uci === want) {
       this.say("✅ That's the move — " + this.d.moves[0].san +
