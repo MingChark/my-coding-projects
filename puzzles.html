@@ -495,7 +495,7 @@ function draw() {
     for (const fl of files) {
       const i = CR.FROM_SQ(fl + rk);
       const sq = document.createElement("div");
-      const dark = (FILES.indexOf(fl) + rk) % 2 === 0;
+      const dark = (FILES.indexOf(fl) + rk) % 2 === 1;
       sq.className = "sq " + (dark ? "dark" : "light");
       if (i === sel) sq.classList.add("sel");
       if (i === myKing) sq.classList.add("chk");

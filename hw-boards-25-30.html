@@ -625,7 +625,7 @@ class Puzzle {
       for (const fl of files) {
         const name = fl + rk, i = CR.FROM_SQ(name);
         const sq = document.createElement("div");
-        sq.className = "sq " + (((FILES.indexOf(fl) + rk) % 2 === 0) ? "dark" : "light");
+        sq.className = "sq " + (((FILES.indexOf(fl) + rk) % 2 === 1) ? "dark" : "light");
         if (i === this.sel) sq.classList.add("sel");
         if (i === inChk) sq.classList.add("chk");
         if (lastM && (name === lastM.from || name === lastM.to)) sq.classList.add("last");
