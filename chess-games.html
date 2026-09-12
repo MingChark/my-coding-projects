@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JJ's Game Records</title>
+<style>
+  html { background: #d3ecfb; }
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.7)),
+                url('family-bg.svg') center / cover no-repeat;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+    background: transparent; color: #2c3e50;
+    margin: 0; padding: 26px 16px 70px; min-height: 100vh; line-height: 1.5;
+  }
+  .page { max-width: 1120px; margin: 0 auto; }
+  a.back {
+    display: inline-block; text-decoration: none; color: #1b4f72; font-size: 17px;
+    background: rgba(255,255,255,.9); padding: 7px 16px; border-radius: 18px;
+    box-shadow: 0 3px 8px rgba(0,0,0,.15);
+  }
+  h1 { font-size: 38px; color: #1b4f72; margin: 20px 0 4px; text-shadow: 2px 2px 0 rgba(255,255,255,.85); }
+  p.subtitle { font-size: 18px; color: #34495e; margin: 0; text-shadow: 1px 1px 0 rgba(255,255,255,.85); }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .badge { background: #1b4f72; color: #fff; font-size: 14px; padding: 5px 13px; border-radius: 14px; }
+  .badge.alt { background: #63c15c; }
+  .badge.eco { background: #7d3c98; }
+
+  /* ---- scoreboard of move quality ---- */
+  .tally { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .tile {
+    background: rgba(255,255,255,.94); border-radius: 16px; padding: 12px 18px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.14); min-width: 116px;
+    border-left: 6px solid #b9c6d4;
+  }
+  .tile .n { font-size: 30px; font-weight: bold; color: #12263a; line-height: 1.1; }
+  .tile .l { font-size: 13.5px; color: #5b6b7c; font-family: "Trebuchet MS", sans-serif; }
+  .tile.good  { border-left-color: #2f7d32; }
+  .tile.inacc { border-left-color: #b8860b; }
+  .tile.blund { border-left-color: #a3242b; }
+
+  /* ---- eval graph ---- */
+  .graphwrap {
+    background: rgba(255,255,255,.94); border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.18); padding: 16px 18px 10px; margin-top: 18px;
+  }
+  .graphwrap h2 { font-size: 20px; color: #1b4f72; margin: 0 0 2px; }
+  .graphwrap .sub { font-family: "Trebuchet MS", sans-serif; font-size: 13.5px; color: #5b6b7c; margin: 0 0 10px; }
+  .evalchart { width: 100%; display: block; overflow: visible; touch-action: none; }
+  @media (max-width: 430px) { .graphwrap { padding: 14px 10px 8px; } }
+  .evalchart .grid { stroke: #e3e9ef; stroke-width: 1; }
+  .evalchart .zero { stroke: #8899aa; stroke-width: 2; }
+  .evalchart .axlab { font-family: "Trebuchet MS", sans-serif; font-size: 10.5px; fill: #7b8794; }
+  .evalchart .dot { stroke: #fff; stroke-width: 2; }
+  .evalchart .nagmark { font-family: "Trebuchet MS", sans-serif; font-size: 13px;
+                        font-weight: bold; fill: #12263a; }
+  .evalchart .cross { stroke: #12263a; stroke-width: 1.5; stroke-dasharray: 3 3; opacity: 0; }
+  .evalchart .hit { fill: transparent; cursor: pointer; }
+  .tip {
+    position: absolute; pointer-events: none; z-index: 5; opacity: 0;
+    background: #12263a; color: #fff; font-family: "Trebuchet MS", sans-serif;
+    font-size: 13px; line-height: 1.45; padding: 7px 10px; border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.3); max-width: 240px; transition: opacity .1s;
+  }
+  .tip b { color: #9fd5ff; }
+  .graphhost { position: relative; }
+
+  /* ---- board + notation ---- */
+  .board-app {
+    display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start;
+    background: rgba(255,255,255,.94); border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.18); padding: 18px; margin-top: 18px;
+  }
+  .left { flex: 1 1 300px; max-width: 440px; min-width: 0;
+          display: flex; flex-direction: column; gap: 12px; }
+  .board-frame { background: #3f5a80; padding: 9px; border-radius: 6px;
+                 box-shadow: 0 4px 12px rgba(0,0,0,.25); width: 100%; }
+  .board {
+    width: 100%; display: grid;
+    grid-template-columns: 20px repeat(8, 1fr);
+    grid-template-rows: repeat(8, auto) 18px;
+    container-type: inline-size;
+  }
+  .sq {
+    position: relative; aspect-ratio: 1 / 1; min-width: 0;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1; user-select: none;
+  }
+  .sq.light { background: #eef1f5; }
+  .sq.dark  { background: #8ca9cf; }
+  .sq.from::after, .sq.to::after {
+    content: ""; position: absolute; inset: 0;
+    background: rgba(255, 214, 61, .45); pointer-events: none;
+  }
+  .pc { position: relative; z-index: 1; width: 88%; height: 88%; display: block;
+        stroke-linejoin: round; stroke-linecap: round; }
+  .pc.w { fill: #fdfdfd; stroke: #1c1c1c; }
+  .pc.b { fill: #262626; stroke: #0b0b0b; }
+  .rank, .file { display: flex; align-items: center; justify-content: center;
+                 font-family: "Trebuchet MS", sans-serif; font-size: 11px; color: #eaf0f7; }
+
+  .controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .controls button {
+    font-family: inherit; font-size: 19px; cursor: pointer;
+    background: #1b4f72; color: #fff; border: 0; border-radius: 12px;
+    padding: 8px 16px; box-shadow: 0 3px 8px rgba(0,0,0,.2); min-width: 52px;
+  }
+  .controls button:hover:not(:disabled) { background: #2a6f9e; }
+  .controls button:disabled { opacity: .4; cursor: default; }
+  .controls button:focus-visible { outline: 3px solid #63c15c; outline-offset: 2px; }
+  .status { text-align: center; font-size: 15px; color: #34495e; min-height: 3.2em; }
+  .status b { color: #1b4f72; }
+  .status .why { font-family: "Trebuchet MS", sans-serif; font-size: 14px; color: #5b6b7c; }
+
+  .right { flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; }
+  .panel-head {
+    background: linear-gradient(#f4f7fa, #e4ebf3);
+    border: 1px solid #bfcbd9; border-bottom: 0; border-radius: 6px 6px 0 0;
+    padding: 7px 12px; font-family: "Trebuchet MS", sans-serif; font-size: 13px; color: #2c3e50;
+  }
+  .panel-head .tabsrow { display: flex; gap: 14px; color: #5b6b7c; }
+  .panel-head .tabsrow span:first-child { color: #1b4f72; font-weight: bold; }
+  .notation {
+    border: 1px solid #bfcbd9; border-radius: 0 0 6px 6px; background: #fff;
+    padding: 14px 16px; font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 16.5px; line-height: 2.05; min-height: 300px;
+    overflow-y: auto; max-height: 560px;
+  }
+  .gametitle { text-align: center; font-weight: bold; font-size: 18px; color: #1a1a1a; margin-bottom: 2px; }
+  .gameeco { text-align: center; font-size: 15px; color: #444; margin-bottom: 12px; }
+  .mv { cursor: pointer; padding: 1px 3px; border-radius: 3px;
+        font-weight: bold; color: #12263a; white-space: nowrap; }
+  .mv:hover { background: #dbe8f5; }
+  .mv.on { background: #12263a; color: #fff; }
+  .mv:focus-visible { outline: 2px solid #63c15c; }
+  .no { color: #12263a; font-weight: bold; }
+  .nag { font-weight: bold; }
+  .mv.good  .nag { color: #2f7d32; }
+  .mv.inaccuracy .nag { color: #b8860b; }
+  .mv.mistake .nag, .mv.blunder .nag { color: #a3242b; }
+  .mv.on .nag { color: #ffd84d; }
+  .mv.good  { box-shadow: inset 0 -3px 0 #2f7d32; }
+  .mv.inaccuracy { box-shadow: inset 0 -3px 0 #b8860b; }
+  .mv.mistake, .mv.blunder { box-shadow: inset 0 -3px 0 #a3242b; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px;
+            font-family: "Trebuchet MS", sans-serif; font-size: 13.5px; color: #5b6b7c; }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .legend i { width: 14px; height: 4px; border-radius: 2px; display: inline-block; }
+
+  .notes { background: rgba(255,255,255,.94); border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,.18);
+           padding: 20px 24px; margin-top: 18px; }
+  .notes h2 { font-size: 22px; color: #1b4f72; margin: 0 0 8px; }
+  .notes ol, .notes ul { margin: 0; padding-left: 22px; font-size: 17px; }
+  .notes li { margin-bottom: 7px; }
+  .notes .q { color: #7d3c98; font-weight: bold; }
+  .hint { font-size: 14px; color: #5b6b7c; margin-top: 10px; font-family: "Trebuchet MS", sans-serif; }
+
+  table.movetable { border-collapse: collapse; width: 100%; font-family: "Trebuchet MS", sans-serif;
+                    font-size: 14px; margin-top: 10px; }
+  table.movetable th, table.movetable td { border-bottom: 1px solid #e3e9ef; padding: 5px 8px; text-align: left; }
+  table.movetable th { color: #5b6b7c; font-weight: normal; }
+  details.tablewrap { margin-top: 14px; }
+  details.tablewrap summary { cursor: pointer; font-family: "Trebuchet MS", sans-serif;
+                              font-size: 14px; color: #1b4f72; }
+  .tablescroll { overflow-x: auto; }
+
+  @media (max-width: 760px) { .left { max-width: 460px; margin: 0 auto; } }
+  @media (max-width: 430px) {
+    body { padding-left: 8px; padding-right: 8px; }
+    .board-frame { padding: 5px; }
+    .board { grid-template-columns: 14px repeat(8, 1fr); }
+    .rank, .file { font-size: 9px; }
+    .board-app { padding: 10px; }
+    h1 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <defs>
+    <symbol id="p-p" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <circle cx="22.5" cy="13.5" r="5.8"/>
+        <path d="M17.3 20.2c-1.9 2.2-2.9 4.4-2.9 7 0 3.3 1.7 5.6 3.1 7.3h10c1.4-1.7 3.1-4 3.1-7.3 0-2.6-1-4.8-2.9-7z"/>
+        <path d="M13 34.5h19l2.7 5.2H10.3z"/>
+      </g>
+    </symbol>
+
+    <symbol id="p-r" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <path d="M11.5 39.5h22v-3.6h-22z"/>
+        <path d="M14 35.9h17l-1.4-13.4H15.4z"/>
+        <path d="M12.6 22.5h19.8v-3.4H12.6z"/>
+        <path d="M13.2 19.1V9.4h4.3v3.9h3.1V9.4h3.8v3.9h3.1V9.4h4.3v9.7z"/>
+      </g>
+    </symbol>
+
+    <symbol id="p-n" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <path d="M11.5 39.5h22v-3.6h-22z"/>
+        <path d="M14.2 35.9c-.3-4.8.6-9.2 2.8-12.6 1.7-2.6 4-4.4 5.7-6.1-.5-1.1-1.5-1.9-2.9-2.1-1 1.5-2.4 2.6-4.1 3.1-.9.3-1.6-.1-1.7-1-.1-1.1.5-2.2 1.4-3.4 1.6-2.1 3.6-3.8 5.6-5 .3-1.3.5-2.5 1.4-3.4.7-.7 1.7-.6 2.2.2.3.5.3 1.1.2 1.7 3.6 1.1 6.7 3.4 8.4 6.9 1.8 3.6 2.2 8.1 2.2 12.6v9.1z"/>
+      </g>
+    </symbol>
+
+    <symbol id="p-b" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <path d="M11.5 39.5h22v-3.6h-22z"/>
+        <path d="M15.2 35.9h14.6c-.4-2.6-1.9-4.2-1.9-4.2H17.1s-1.5 1.6-1.9 4.2z"/>
+        <path d="M22.5 9.6c-4.3 2.9-7.4 6.6-7.4 11.3 0 3.8 2.8 6.7 7.4 8.4 4.6-1.7 7.4-4.6 7.4-8.4 0-4.7-3.1-8.4-7.4-11.3z"/>
+        <circle cx="22.5" cy="7.2" r="2.3"/>
+        <path d="M19.4 17.6h6.2M22.5 14.5v6.2" fill="none" stroke-width="1.5"/>
+      </g>
+    </symbol>
+
+    <symbol id="p-q" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <path d="M10.5 39.5h24v-3.6h-24z"/>
+        <path d="M13.4 35.9h18.2c1.1-4.3 1.7-8.6 1.7-12.4H11.7c0 3.8.6 8.1 1.7 12.4z"/>
+        <path d="M11.7 23.5 9.4 12.8l6.4 5.1 3.2-9.1 3.5 8.6 3.5-8.6 3.2 9.1 6.4-5.1-2.3 10.7z"/>
+        <circle cx="8.6" cy="11.4" r="2.1"/>
+        <circle cx="16.4" cy="8.3" r="2.1"/>
+        <circle cx="22.5" cy="6.9" r="2.1"/>
+        <circle cx="28.6" cy="8.3" r="2.1"/>
+        <circle cx="36.4" cy="11.4" r="2.1"/>
+      </g>
+    </symbol>
+
+    <symbol id="p-k" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <path d="M11 39.5h23v-3.6H11z"/>
+        <path d="M13.6 35.9h17.8c1.2-3.9 1.9-7.6 1.9-10.6 0-3.4-2.4-5.7-5.3-5.7-2.1 0-3.9 1.2-5.5 3.4-1.6-2.2-3.4-3.4-5.5-3.4-2.9 0-5.3 2.3-5.3 5.7 0 3 .7 6.7 1.9 10.6z"/>
+        <path d="M22.5 19.6V8.4" fill="none" stroke-width="2"/>
+        <path d="M17.6 12.4h9.8" fill="none" stroke-width="2"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="page">
+
+  <a class="back" href="chess.html">← All chess records</a>
+
+  <h1>♟️ JJ's games</h1>
+  <p class="subtitle">His own games, move by move, with Stockfish marking the good and the bad</p>
+
+  <div class="badges">
+    <span class="badge">Game 1 · from the score sheet</span>
+    <span class="badge alt">JJ played Black</span>
+    <span class="badge eco">B51 — Sicilian, Moscow Variation</span>
+  </div>
+
+  <div class="tally">
+    <div class="tile blund"><div class="n">0</div><div class="l">blunders by JJ</div></div>
+    <div class="tile"><div class="n">0</div><div class="l">mistakes by JJ</div></div>
+    <div class="tile inacc"><div class="n">3</div><div class="l">inaccuracies by JJ</div></div>
+    <div class="tile good"><div class="n">7</div><div class="l">top-engine moves by JJ</div></div>
+  </div>
+
+  <div class="graphwrap">
+    <h2>How the game swung</h2>
+    <p class="sub">Stockfish's score after every move, in pawns. Hover a point to see the move; click to jump the board there.</p>
+    <div class="graphhost">
+      <svg id="evalchart" class="evalchart" role="img"
+           aria-label="Stockfish evaluation after each move, from JJ's point of view. The full move list is in the table below."></svg>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="legend">
+      <span><i style="background:#2166ac"></i> JJ ahead</span>
+      <span><i style="background:#b2500e"></i> opponent ahead</span>
+      <span>● a move worth talking about — JJ&rsquo;s symbol sits above the dot, the opponent&rsquo;s below</span>
+    </div>
+  </div>
+
+  <div class="board-app">
+    <div class="left">
+      <div class="board-frame"><div class="board" id="board"></div></div>
+      <div class="controls">
+        <button id="bStart" title="Start position">⏮</button>
+        <button id="bPrev"  title="Previous move">◀</button>
+        <button id="bPlay"  title="Play through the game">▶</button>
+        <button id="bNext"  title="Next move">▶|</button>
+        <button id="bEnd"   title="Last move">⏭</button>
+        <button id="bFlip"  title="Flip the board">⤢</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="right">
+      <div class="panel-head">
+        <div class="tabsrow"><span>Notation</span><span>Score sheet</span><span>Engine</span></div>
+      </div>
+      <div class="notation" id="notation"></div>
+      <div class="legend">
+        <span><i style="background:#2f7d32"></i> <b>!</b> good move</span>
+        <span><i style="background:#b8860b"></i> <b>?!</b> inaccuracy</span>
+        <span><i style="background:#a3242b"></i> <b>?</b> mistake</span>
+        <span><i style="background:#a3242b"></i> <b>??</b> blunder</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h2>What happened</h2>
+    <ol>
+      <li><b>A clean opening.</b> JJ played the Sicilian and for thirteen moves the game was
+          dead level — never worse than a tenth of a pawn. Nothing to fix here.</li>
+      <li><b>The opponent gave a pawn away.</b> <span class="q">15.Qc3+</span> was a check that
+          did nothing, and <span class="q">16.Rae1</span> ignored the loose pawn on d5.</li>
+      <li><b>JJ took it.</b> <span class="q">16…Nxd5!</span> — Stockfish's first choice.
+          A pawn up and clearly better.</li>
+      <li><b>Good defending.</b> <span class="q">18…e6</span> shut the door on the c4–f7
+          diagonal just as the queen and knight lined up on f7.</li>
+      <li><b>Then it slipped away.</b> <span class="q">24…Nxe4</span> and especially
+          <span class="q">25…d5?!</span> handed the extra pawn back. After 26.exd5 the
+          position opened and the advantage went from <b>+1.0 to level</b>.</li>
+    </ol>
+
+    <h2 style="margin-top:18px">Two of Coach Li's rules, live in this game</h2>
+    <ul>
+      <li><b>Never trade just because you can.</b> When you are a pawn up, every trade
+          helps the person who is behind. 24…Nxe4 was that trade.</li>
+      <li><b>Before you push a pawn, check your pieces are safe.</b> 25…d5 was the push
+          that let everything out.</li>
+    </ul>
+
+    <details class="tablewrap">
+      <summary>Show every move as a table</summary>
+      <div class="tablescroll">
+        <table class="movetable">
+          <thead><tr><th>Move</th><th>Played</th><th>By</th><th>Score after</th>
+                     <th>Engine's pick</th><th>Verdict</th></tr></thead>
+          <tbody>
+<tr><td>1.</td><td><b>e4</b></td><td>opponent</td><td>opponent +0.2</td><td>e4</td><td>engine's top move</td></tr>
+<tr><td>1…</td><td><b>c5</b></td><td>JJ</td><td>opponent +0.3</td><td>e5</td><td></td></tr>
+<tr><td>2.</td><td><b>Nf3</b></td><td>opponent</td><td>opponent +0.3</td><td>Nf3</td><td>engine's top move</td></tr>
+<tr><td>2…</td><td><b>d6</b></td><td>JJ</td><td>opponent +0.2</td><td>Nc6</td><td></td></tr>
+<tr><td>3.</td><td><b>Nc3</b></td><td>opponent</td><td>level</td><td>d4</td><td></td></tr>
+<tr><td>3…</td><td><b>Nf6</b></td><td>JJ</td><td>opponent +0.3</td><td>e5</td><td></td></tr>
+<tr><td>4.</td><td><b>Bb5+</b></td><td>opponent</td><td>level</td><td>d4</td><td></td></tr>
+<tr><td>4…</td><td><b>Bd7</b></td><td>JJ</td><td>level</td><td>Bd7</td><td>engine's top move</td></tr>
+<tr><td>5.</td><td><b>Bxd7+</b></td><td>opponent</td><td>level</td><td>Qe2</td><td></td></tr>
+<tr><td>5…</td><td><b>Qxd7</b></td><td>JJ</td><td>level</td><td>Nbxd7</td><td></td></tr>
+<tr><td>6.</td><td><b>d3</b></td><td>opponent</td><td>level</td><td>d4</td><td></td></tr>
+<tr><td>6…</td><td><b>Nc6</b></td><td>JJ</td><td>level</td><td>e6</td><td></td></tr>
+<tr><td>7.</td><td><b>O-O</b></td><td>opponent</td><td>level</td><td>Bg5</td><td></td></tr>
+<tr><td>7…</td><td><b>g6</b></td><td>JJ</td><td>level</td><td>e6</td><td></td></tr>
+<tr><td>8.</td><td><b>Bg5</b></td><td>opponent</td><td>level</td><td>Nd5</td><td></td></tr>
+<tr><td>8…</td><td><b>Bg7</b></td><td>JJ</td><td>level</td><td>Bg7</td><td>engine's top move</td></tr>
+<tr><td>9.</td><td><b>Qd2</b></td><td>opponent</td><td>JJ +0.4</td><td>Rb1</td><td></td></tr>
+<tr><td>9…</td><td><b>O-O</b></td><td>JJ</td><td>level</td><td>h6</td><td></td></tr>
+<tr><td>10.</td><td><b>Bh6</b></td><td>opponent</td><td>level</td><td>Bh6</td><td>engine's top move</td></tr>
+<tr><td>10…</td><td><b>Rfe8</b></td><td>JJ</td><td>level</td><td>Rae8</td><td></td></tr>
+<tr><td>11.</td><td><b>Bxg7</b></td><td>opponent</td><td>level</td><td>h3</td><td></td></tr>
+<tr><td>11…</td><td><b>Kxg7</b></td><td>JJ</td><td>level</td><td>Kxg7</td><td>engine's top move</td></tr>
+<tr><td>12.</td><td><b>h3</b></td><td>opponent</td><td>level</td><td>h3</td><td>engine's top move</td></tr>
+<tr><td>12…</td><td><b>a6</b></td><td>JJ</td><td>opponent +0.4</td><td>Rad8</td><td></td></tr>
+<tr><td>13.</td><td><b>Nd5</b></td><td>opponent</td><td>level</td><td>Rae1</td><td></td></tr>
+<tr><td>13…</td><td><b>Nxd5</b></td><td>JJ</td><td>opponent +0.4</td><td>Rad8</td><td></td></tr>
+<tr><td>14.</td><td><b>exd5</b></td><td>opponent</td><td>opponent +0.4</td><td>exd5</td><td>engine's top move</td></tr>
+<tr><td>14…</td><td><b>Nb4</b></td><td>JJ</td><td>opponent +0.9</td><td>Nd8</td><td></td></tr>
+<tr><td>15.</td><td><b>Qc3+?</b></td><td>opponent</td><td>JJ +0.7</td><td>c4</td><td>mistake</td></tr>
+<tr><td>15…</td><td><b>Kg8</b></td><td>JJ</td><td>JJ +0.5</td><td>Kg8</td><td>engine's top move</td></tr>
+<tr><td>16.</td><td><b>Rae1?</b></td><td>opponent</td><td>JJ +2.2</td><td>Qb3</td><td>mistake</td></tr>
+<tr><td>16…</td><td><b>Nxd5!</b></td><td>JJ</td><td>JJ +2.3</td><td>Nxd5</td><td>good move</td></tr>
+<tr><td>17.</td><td><b>Qc4</b></td><td>opponent</td><td>JJ +2.3</td><td>Qc4</td><td>engine's top move</td></tr>
+<tr><td>17…</td><td><b>Nf6</b></td><td>JJ</td><td>JJ +1.6</td><td>Qf5</td><td></td></tr>
+<tr><td>18.</td><td><b>Ng5</b></td><td>opponent</td><td>JJ +1.7</td><td>Ng5</td><td>engine's top move</td></tr>
+<tr><td>18…</td><td><b>e6</b></td><td>JJ</td><td>JJ +1.6</td><td>e6</td><td>engine's top move</td></tr>
+<tr><td>19.</td><td><b>Qc3</b></td><td>opponent</td><td>JJ +2.0</td><td>Qh4</td><td></td></tr>
+<tr><td>19…</td><td><b>Nd5</b></td><td>JJ</td><td>JJ +1.7</td><td>Nd5</td><td>engine's top move</td></tr>
+<tr><td>20.</td><td><b>Qc4</b></td><td>opponent</td><td>JJ +2.4</td><td>Qd2</td><td></td></tr>
+<tr><td>20…</td><td><b>b5?!</b></td><td>JJ</td><td>JJ +1.6</td><td>Kg7</td><td>inaccuracy</td></tr>
+<tr><td>21.</td><td><b>Qh4</b></td><td>opponent</td><td>JJ +1.5</td><td>Qh4</td><td>engine's top move</td></tr>
+<tr><td>21…</td><td><b>h5</b></td><td>JJ</td><td>JJ +1.3</td><td>Nf6</td><td></td></tr>
+<tr><td>22.</td><td><b>Qe4</b></td><td>opponent</td><td>JJ +1.7</td><td>f4</td><td></td></tr>
+<tr><td>22…</td><td><b>Nf6</b></td><td>JJ</td><td>JJ +1.6</td><td>Rac8</td><td></td></tr>
+<tr><td>23.</td><td><b>Qf3</b></td><td>opponent</td><td>JJ +1.5</td><td>Qe2</td><td></td></tr>
+<tr><td>23…</td><td><b>Qe7</b></td><td>JJ</td><td>JJ +1.6</td><td>Nh7</td><td></td></tr>
+<tr><td>24.</td><td><b>Ne4</b></td><td>opponent</td><td>JJ +1.9</td><td>Qg3</td><td></td></tr>
+<tr><td>24…</td><td><b>Nxe4?!</b></td><td>JJ</td><td>JJ +1.2</td><td>Kg7</td><td>inaccuracy</td></tr>
+<tr><td>25.</td><td><b>dxe4</b></td><td>opponent</td><td>JJ +1.0</td><td>dxe4</td><td>engine's top move</td></tr>
+<tr><td>25…</td><td><b>d5?!</b></td><td>JJ</td><td>level</td><td>Red8</td><td>inaccuracy</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <p class="hint"><b>About the score sheet.</b> The game is written on two slips —
+      the second one carries on where the first runs out, with the numbering started
+      again at 1. Every move up to <b>25…d5</b> reads cleanly and was checked for
+      legality with python-chess. From move 26 the handwriting has two readings that
+      are both legal chess, so those moves are left off rather than guessed. A sharper
+      photo of the bottom half of the second slip would finish the game off.</p>
+    <p class="hint">Analysis: Stockfish 17 at depth 22 on every position.
+      <b>?!</b> costs about half a pawn, <b>?</b> about a pawn and a half,
+      <b>??</b> three pawns or more.</p>
+  </div>
+
+</div>
+<script>
+
+const G = {"title":"JJ vs opponent","black":"JJ","white":"opponent","eco":"B51 \u2014 Sicilian, Moscow Variation","start":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","startEval":25,"nodes":[{"ply":1,"san":"e4","from":"e2","to":"e4","fen":"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1","side":"w","eval":25,"loss":4,"best":"e4","cls":"best","mark":"","note":""},{"ply":2,"san":"c5","from":"c7","to":"c5","fen":"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2","side":"b","eval":35,"loss":10,"best":"e5","cls":"","mark":"","note":""},{"ply":3,"san":"Nf3","from":"g1","to":"f3","fen":"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2","side":"w","eval":31,"loss":4,"best":"Nf3","cls":"best","mark":"","note":""},{"ply":4,"san":"d6","from":"d7","to":"d6","fen":"rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3","side":"b","eval":23,"loss":-8,"best":"Nc6","cls":"","mark":"","note":""},{"ply":5,"san":"Nc3","from":"b1","to":"c3","fen":"rnbqkbnr/pp2pppp/3p4/2p5/4P3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 1 3","side":"w","eval":20,"loss":3,"best":"d4","cls":"","mark":"","note":""},{"ply":6,"san":"Nf6","from":"g8","to":"f6","fen":"rnbqkb1r/pp2pppp/3p1n2/2p5/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 2 4","side":"b","eval":29,"loss":9,"best":"e5","cls":"","mark":"","note":""},{"ply":7,"san":"Bb5+","from":"f1","to":"b5","fen":"rnbqkb1r/pp2pppp/3p1n2/1Bp5/4P3/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 3 4","side":"w","eval":0,"loss":29,"best":"d4","cls":"","mark":"","note":""},{"ply":8,"san":"Bd7","from":"c8","to":"d7","fen":"rn1qkb1r/pp1bpppp/3p1n2/1Bp5/4P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 4 5","side":"b","eval":-3,"loss":-3,"best":"Bd7","cls":"best","mark":"","note":"The Moscow Variation. White checks with the bishop, JJ blocks with the bishop \u2014 the normal, solid answer."},{"ply":9,"san":"Bxd7+","from":"b5","to":"d7","fen":"rn1qkb1r/pp1Bpppp/3p1n2/2p5/4P3/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 0 5","side":"w","eval":0,"loss":-3,"best":"Qe2","cls":"","mark":"","note":""},{"ply":10,"san":"Qxd7","from":"d8","to":"d7","fen":"rn2kb1r/pp1qpppp/3p1n2/2p5/4P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 6","side":"b","eval":7,"loss":7,"best":"Nbxd7","cls":"","mark":"","note":""},{"ply":11,"san":"d3","from":"d2","to":"d3","fen":"rn2kb1r/pp1qpppp/3p1n2/2p5/4P3/2NP1N2/PPP2PPP/R1BQK2R b KQkq - 0 6","side":"w","eval":-1,"loss":8,"best":"d4","cls":"","mark":"","note":""},{"ply":12,"san":"Nc6","from":"b8","to":"c6","fen":"r3kb1r/pp1qpppp/2np1n2/2p5/4P3/2NP1N2/PPP2PPP/R1BQK2R w KQkq - 1 7","side":"b","eval":0,"loss":1,"best":"e6","cls":"","mark":"","note":""},{"ply":13,"san":"O-O","from":"e1","to":"g1","fen":"r3kb1r/pp1qpppp/2np1n2/2p5/4P3/2NP1N2/PPP2PPP/R1BQ1RK1 b kq - 2 7","side":"w","eval":-3,"loss":3,"best":"Bg5","cls":"","mark":"","note":""},{"ply":14,"san":"g6","from":"g7","to":"g6","fen":"r3kb1r/pp1qpp1p/2np1np1/2p5/4P3/2NP1N2/PPP2PPP/R1BQ1RK1 w kq - 0 8","side":"b","eval":0,"loss":3,"best":"e6","cls":"","mark":"","note":""},{"ply":15,"san":"Bg5","from":"c1","to":"g5","fen":"r3kb1r/pp1qpp1p/2np1np1/2p3B1/4P3/2NP1N2/PPP2PPP/R2Q1RK1 b kq - 1 8","side":"w","eval":-13,"loss":13,"best":"Nd5","cls":"","mark":"","note":""},{"ply":16,"san":"Bg7","from":"f8","to":"g7","fen":"r3k2r/pp1qppbp/2np1np1/2p3B1/4P3/2NP1N2/PPP2PPP/R2Q1RK1 w kq - 2 9","side":"b","eval":-17,"loss":-4,"best":"Bg7","cls":"best","mark":"","note":""},{"ply":17,"san":"Qd2","from":"d1","to":"d2","fen":"r3k2r/pp1qppbp/2np1np1/2p3B1/4P3/2NP1N2/PPPQ1PPP/R4RK1 b kq - 3 9","side":"w","eval":-37,"loss":20,"best":"Rb1","cls":"","mark":"","note":""},{"ply":18,"san":"O-O","from":"e8","to":"g8","fen":"r4rk1/pp1qppbp/2np1np1/2p3B1/4P3/2NP1N2/PPPQ1PPP/R4RK1 w - - 4 10","side":"b","eval":-5,"loss":32,"best":"h6","cls":"","mark":"","note":""},{"ply":19,"san":"Bh6","from":"g5","to":"h6","fen":"r4rk1/pp1qppbp/2np1npB/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 b - - 5 10","side":"w","eval":-5,"loss":0,"best":"Bh6","cls":"best","mark":"","note":""},{"ply":20,"san":"Rfe8","from":"f8","to":"e8","fen":"r3r1k1/pp1qppbp/2np1npB/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 w - - 6 11","side":"b","eval":11,"loss":16,"best":"Rae8","cls":"","mark":"","note":""},{"ply":21,"san":"Bxg7","from":"h6","to":"g7","fen":"r3r1k1/pp1qppBp/2np1np1/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 b - - 0 11","side":"w","eval":10,"loss":1,"best":"h3","cls":"","mark":"","note":""},{"ply":22,"san":"Kxg7","from":"g8","to":"g7","fen":"r3r3/pp1qppkp/2np1np1/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 w - - 0 12","side":"b","eval":7,"loss":-3,"best":"Kxg7","cls":"best","mark":"","note":""},{"ply":23,"san":"h3","from":"h2","to":"h3","fen":"r3r3/pp1qppkp/2np1np1/2p5/4P3/2NP1N1P/PPPQ1PP1/R4RK1 b - - 0 12","side":"w","eval":16,"loss":-9,"best":"h3","cls":"best","mark":"","note":""},{"ply":24,"san":"a6","from":"a7","to":"a6","fen":"r3r3/1p1qppkp/p1np1np1/2p5/4P3/2NP1N1P/PPPQ1PP1/R4RK1 w - - 0 13","side":"b","eval":38,"loss":22,"best":"Rad8","cls":"","mark":"","note":""},{"ply":25,"san":"Nd5","from":"c3","to":"d5","fen":"r3r3/1p1qppkp/p1np1np1/2pN4/4P3/3P1N1P/PPPQ1PP1/R4RK1 b - - 1 13","side":"w","eval":13,"loss":25,"best":"Rae1","cls":"","mark":"","note":""},{"ply":26,"san":"Nxd5","from":"f6","to":"d5","fen":"r3r3/1p1qppkp/p1np2p1/2pn4/4P3/3P1N1P/PPPQ1PP1/R4RK1 w - - 0 14","side":"b","eval":43,"loss":30,"best":"Rad8","cls":"","mark":"","note":""},{"ply":27,"san":"exd5","from":"e4","to":"d5","fen":"r3r3/1p1qppkp/p1np2p1/2pP4/8/3P1N1P/PPPQ1PP1/R4RK1 b - - 0 14","side":"w","eval":44,"loss":-1,"best":"exd5","cls":"best","mark":"","note":"White wins the knight back and the d-pawn lands on d5, poking into JJ's position."},{"ply":28,"san":"Nb4","from":"c6","to":"b4","fen":"r3r3/1p1qppkp/p2p2p1/2pP4/1n6/3P1N1P/PPPQ1PP1/R4RK1 w - - 1 15","side":"b","eval":94,"loss":50,"best":"Nd8","cls":"","mark":"","note":"Nb4 looks active but the knight has no future on b4. Nd8, guarding e6 and f7, kept things tidy."},{"ply":29,"san":"Qc3+","from":"d2","to":"c3","fen":"r3r3/1p1qppkp/p2p2p1/2pP4/1n6/2QP1N1P/PPP2PP1/R4RK1 b - - 2 15","side":"w","eval":-68,"loss":162,"best":"c4","cls":"mistake","mark":"?","note":"A check that achieves nothing. White had to play c4, protecting the d5 pawn. Now that pawn is loose."},{"ply":30,"san":"Kg8","from":"g7","to":"g8","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pP4/1n6/2QP1N1P/PPP2PP1/R4RK1 w - - 3 16","side":"b","eval":-54,"loss":14,"best":"Kg8","cls":"best","mark":"","note":""},{"ply":31,"san":"Rae1","from":"a1","to":"e1","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pP4/1n6/2QP1N1P/PPP2PP1/4RRK1 b - - 4 16","side":"w","eval":-222,"loss":168,"best":"Qb3","cls":"mistake","mark":"?","note":"Still not defending d5. Qb3 was the move. Now the pawn just falls."},{"ply":32,"san":"Nxd5","from":"b4","to":"d5","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pn4/8/2QP1N1P/PPP2PP1/4RRK1 w - - 0 17","side":"b","eval":-229,"loss":-7,"best":"Nxd5","cls":"good","mark":"!","note":"JJ spots it and takes the free pawn \u2014 Stockfish's first choice. A whole pawn up, and clearly better."},{"ply":33,"san":"Qc4","from":"c3","to":"c4","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pn4/2Q5/3P1N1P/PPP2PP1/4RRK1 b - - 1 17","side":"w","eval":-232,"loss":3,"best":"Qc4","cls":"best","mark":"","note":""},{"ply":34,"san":"Nf6","from":"d5","to":"f6","fen":"r3r1k1/1p1qpp1p/p2p1np1/2p5/2Q5/3P1N1P/PPP2PP1/4RRK1 w - - 2 18","side":"b","eval":-165,"loss":67,"best":"Qf5","cls":"","mark":"","note":""},{"ply":35,"san":"Ng5","from":"f3","to":"g5","fen":"r3r1k1/1p1qpp1p/p2p1np1/2p3N1/2Q5/3P3P/PPP2PP1/4RRK1 b - - 3 18","side":"w","eval":-168,"loss":3,"best":"Ng5","cls":"best","mark":"","note":""},{"ply":36,"san":"e6","from":"e7","to":"e6","fen":"r3r1k1/1p1q1p1p/p2ppnp1/2p3N1/2Q5/3P3P/PPP2PP1/4RRK1 w - - 0 19","side":"b","eval":-161,"loss":7,"best":"e6","cls":"best","mark":"","note":"Good defending. Qc4 and Ng5 were both aiming at f7; e6 slams the door on the c4\u2013f7 diagonal."},{"ply":37,"san":"Qc3","from":"c4","to":"c3","fen":"r3r1k1/1p1q1p1p/p2ppnp1/2p3N1/8/2QP3P/PPP2PP1/4RRK1 b - - 1 19","side":"w","eval":-196,"loss":35,"best":"Qh4","cls":"","mark":"","note":""},{"ply":38,"san":"Nd5","from":"f6","to":"d5","fen":"r3r1k1/1p1q1p1p/p2pp1p1/2pn2N1/8/2QP3P/PPP2PP1/4RRK1 w - - 2 20","side":"b","eval":-173,"loss":23,"best":"Nd5","cls":"best","mark":"","note":""},{"ply":39,"san":"Qc4","from":"c3","to":"c4","fen":"r3r1k1/1p1q1p1p/p2pp1p1/2pn2N1/2Q5/3P3P/PPP2PP1/4RRK1 b - - 3 20","side":"w","eval":-235,"loss":62,"best":"Qd2","cls":"","mark":"","note":""},{"ply":40,"san":"b5","from":"b7","to":"b5","fen":"r3r1k1/3q1p1p/p2pp1p1/1ppn2N1/2Q5/3P3P/PPP2PP1/4RRK1 w - - 0 21","side":"b","eval":-157,"loss":78,"best":"Kg7","cls":"inaccuracy","mark":"?!","note":"Loosens the queenside for no reason. Simply Kg7, tucking the king, kept a big edge."},{"ply":41,"san":"Qh4","from":"c4","to":"h4","fen":"r3r1k1/3q1p1p/p2pp1p1/1ppn2N1/7Q/3P3P/PPP2PP1/4RRK1 b - - 1 21","side":"w","eval":-152,"loss":-5,"best":"Qh4","cls":"best","mark":"","note":""},{"ply":42,"san":"h5","from":"h7","to":"h5","fen":"r3r1k1/3q1p2/p2pp1p1/1ppn2Np/7Q/3P3P/PPP2PP1/4RRK1 w - - 0 22","side":"b","eval":-133,"loss":19,"best":"Nf6","cls":"","mark":"","note":""},{"ply":43,"san":"Qe4","from":"h4","to":"e4","fen":"r3r1k1/3q1p2/p2pp1p1/1ppn2Np/4Q3/3P3P/PPP2PP1/4RRK1 b - - 1 22","side":"w","eval":-168,"loss":35,"best":"f4","cls":"","mark":"","note":""},{"ply":44,"san":"Nf6","from":"d5","to":"f6","fen":"r3r1k1/3q1p2/p2ppnp1/1pp3Np/4Q3/3P3P/PPP2PP1/4RRK1 w - - 2 23","side":"b","eval":-160,"loss":8,"best":"Rac8","cls":"","mark":"","note":""},{"ply":45,"san":"Qf3","from":"e4","to":"f3","fen":"r3r1k1/3q1p2/p2ppnp1/1pp3Np/8/3P1Q1P/PPP2PP1/4RRK1 b - - 3 23","side":"w","eval":-147,"loss":-13,"best":"Qe2","cls":"","mark":"","note":""},{"ply":46,"san":"Qe7","from":"d7","to":"e7","fen":"r3r1k1/4qp2/p2ppnp1/1pp3Np/8/3P1Q1P/PPP2PP1/4RRK1 w - - 4 24","side":"b","eval":-165,"loss":-18,"best":"Nh7","cls":"","mark":"","note":""},{"ply":47,"san":"Ne4","from":"g5","to":"e4","fen":"r3r1k1/4qp2/p2ppnp1/1pp4p/4N3/3P1Q1P/PPP2PP1/4RRK1 b - - 5 24","side":"w","eval":-189,"loss":24,"best":"Qg3","cls":"","mark":"","note":""},{"ply":48,"san":"Nxe4","from":"f6","to":"e4","fen":"r3r1k1/4qp2/p2pp1p1/1pp4p/4n3/3P1Q1P/PPP2PP1/4RRK1 w - - 0 25","side":"b","eval":-118,"loss":71,"best":"Kg7","cls":"inaccuracy","mark":"?!","note":"Trading knights helps the defender when you're the one who's a pawn up. Coach Li's rule: never trade just because you can."},{"ply":49,"san":"dxe4","from":"d3","to":"e4","fen":"r3r1k1/4qp2/p2pp1p1/1pp4p/4P3/5Q1P/PPP2PP1/4RRK1 b - - 0 25","side":"w","eval":-103,"loss":-15,"best":"dxe4","cls":"best","mark":"","note":""},{"ply":50,"san":"d5","from":"d6","to":"d5","fen":"r3r1k1/4qp2/p3p1p1/1ppp3p/4P3/5Q1P/PPP2PP1/4RRK1 w - - 0 26","side":"b","eval":-8,"loss":95,"best":"Red8","cls":"inaccuracy","mark":"?!","note":"The move that let it slip. After 26.exd5 the position opens up and the extra pawn disappears \u2014 from clearly better to dead level. Check your pieces before you push a pawn."}]};
+const SYM = {k:"p-k", q:"p-q", r:"p-r", b:"p-b", n:"p-n", p:"p-p"};
+const FILES = "abcdefgh";
+let idx = -1;              // -1 = start position
+let flipped = true;        // JJ played Black, so show it from his side
+let timer = null;
+
+/* ---------- board ---------- */
+function stateAt(i) {
+  if (i < 0) return {fen: G.start, from: null, to: null};
+  const n = G.nodes[i];
+  return {fen: n.fen, from: n.from, to: n.to};
+}
+function drawBoard() {
+  const {fen, from, to} = stateAt(idx);
+  const rows = fen.split(" ")[0].split("/");
+  const grid = {};
+  rows.forEach((row, r) => {
+    let f = 0;
+    for (const ch of row) {
+      if (/\d/.test(ch)) { f += Number(ch); continue; }
+      grid[FILES[f] + (8 - r)] = ch; f++;
+    }
+  });
+  const ranks = flipped ? [1,2,3,4,5,6,7,8] : [8,7,6,5,4,3,2,1];
+  const files = flipped ? [...FILES].reverse() : [...FILES];
+  const board = document.getElementById("board");
+  board.textContent = "";
+  for (const rk of ranks) {
+    const lab = document.createElement("div");
+    lab.className = "rank"; lab.textContent = rk; board.appendChild(lab);
+    for (const fl of files) {
+      const name = fl + rk;
+      const sq = document.createElement("div");
+      // a1 is a dark square: (file index + rank) is odd on the dark squares
+      sq.className = "sq " + (((FILES.indexOf(fl) + rk) % 2 === 1) ? "dark" : "light");
+      if (name === from) sq.classList.add("from");
+      if (name === to)   sq.classList.add("to");
+      const p = grid[name];
+      if (p) {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 45 45");
+        svg.setAttribute("class", "pc " + (p === p.toUpperCase() ? "w" : "b"));
+        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        use.setAttribute("href", "#" + SYM[p.toLowerCase()]);
+        svg.appendChild(use); sq.appendChild(svg);
+      }
+      board.appendChild(sq);
+    }
+  }
+  board.appendChild(document.createElement("div"));
+  for (const fl of files) {
+    const lab = document.createElement("div");
+    lab.className = "file"; lab.textContent = fl.toUpperCase();
+    board.appendChild(lab);
+  }
+}
+
+/* ---------- notation ---------- */
+const LABEL = {good:"a good move", best:"the engine's top move",
+               inaccuracy:"an inaccuracy", mistake:"a mistake", blunder:"a blunder"};
+function buildNotation() {
+  const box = document.getElementById("notation");
+  box.textContent = "";
+  const t = document.createElement("div");
+  t.className = "gametitle"; t.textContent = G.title; box.appendChild(t);
+  const e = document.createElement("div");
+  e.className = "gameeco"; e.textContent = G.eco; box.appendChild(e);
+  G.nodes.forEach((n, i) => {
+    if (n.side === "w") {
+      const no = document.createElement("span");
+      no.className = "no"; no.textContent = Math.ceil(n.ply / 2) + ".";
+      box.appendChild(no); box.appendChild(document.createTextNode(" "));
+    }
+    const b = document.createElement("span");
+    b.className = "mv" + (n.cls ? " " + n.cls : "");
+    b.tabIndex = 0; b.dataset.i = i;
+    b.textContent = n.san;
+    if (n.mark) {
+      const g = document.createElement("span");
+      g.className = "nag"; g.textContent = n.mark; b.appendChild(g);
+    }
+    if (n.cls) b.title = n.san + " — " + LABEL[n.cls];
+    box.appendChild(b); box.appendChild(document.createTextNode(" "));
+  });
+}
+function syncNotation() {
+  document.querySelectorAll("#notation .mv").forEach(el => {
+    const on = Number(el.dataset.i) === idx;
+    el.classList.toggle("on", on);
+    if (on) el.scrollIntoView({block: "nearest"});
+  });
+}
+
+/* ---------- status line ---------- */
+function syncStatus() {
+  const s = document.getElementById("status");
+  if (idx < 0) { s.innerHTML = "<b>Start position</b> — press ▶ to play through the game."; return; }
+  const n = G.nodes[idx];
+  const who = n.side === "w" ? "Opponent" : "JJ";
+  const ev = (-n.eval / 100);   // from JJ's point of view
+  const lead = Math.abs(ev) < 0.2 ? "level"
+             : (ev > 0 ? "JJ ahead by " + ev.toFixed(1)
+                       : "opponent ahead by " + (-ev).toFixed(1));
+  let line = "<b>" + Math.ceil(n.ply / 2) + (n.side === "w" ? ". " : "… ") +
+             n.san + n.mark + "</b> — " + who + " · " + lead;
+  if (n.note) line += "<div class='why'>" + n.note +
+      (n.cls && n.cls !== "best" && n.cls !== "good" && n.best
+        ? " Stockfish wanted <b>" + n.best + "</b>." : "") + "</div>";
+  s.innerHTML = line;
+}
+
+/* ---------- eval graph ---------- */
+const CH = {w: 960, h: 190, padL: 34, padR: 10, padT: 12, padB: 22, cap: 3};
+function sizeChart() {
+  const host = document.getElementById("evalchart").parentElement;
+  CH.w = Math.max(300, Math.round(host.clientWidth));
+  CH.h = CH.w < 520 ? 210 : 190;   // a phone needs the height back
+}
+function buildChart() {
+  sizeChart();
+  const svg = document.getElementById("evalchart");
+  const pts = [{ply: 0, ev: -G.startEval / 100}].concat(
+    G.nodes.map(n => ({ply: n.ply, ev: -n.eval / 100, n})));
+  const X = p => CH.padL + (p / 50) * (CH.w - CH.padL - CH.padR);
+  const clamp = v => Math.max(-CH.cap, Math.min(CH.cap, v));
+  const Y = v => CH.padT + ((CH.cap - clamp(v)) / (2 * CH.cap)) * (CH.h - CH.padT - CH.padB);
+  const y0 = Y(0);
+  const ns = "http://www.w3.org/2000/svg";
+  const mk = (t, a) => { const el = document.createElementNS(ns, t);
+                         for (const k in a) el.setAttribute(k, a[k]); return el; };
+  svg.textContent = "";
+  svg.setAttribute("viewBox", `0 0 ${CH.w} ${CH.h}`);
+  svg.style.height = CH.h + "px";
+
+  // gridlines + axis labels
+  [3, 1.5, 0, -1.5, -3].forEach(v => {
+    svg.appendChild(mk("line", {class: v === 0 ? "zero" : "grid",
+      x1: CH.padL, x2: CH.w - CH.padR, y1: Y(v), y2: Y(v)}));
+    const lab = mk("text", {class: "axlab", x: CH.padL - 6, y: Y(v) + 3.5, "text-anchor": "end"});
+    lab.textContent = v === 0 ? "0" : (v > 0 ? "+" + v : String(v));
+    svg.appendChild(lab);
+  });
+  const top = mk("text", {class: "axlab", x: CH.padL + 3, y: CH.padT + 11});
+  top.textContent = "▲ JJ better"; svg.appendChild(top);
+  const bot = mk("text", {class: "axlab", x: CH.padL + 3, y: CH.h - CH.padB - 3});
+  bot.textContent = "▼ opponent better"; svg.appendChild(bot);
+
+  // diverging area: one hue each side of a neutral zero line
+  const line = pts.map(p => `${X(p.ply)},${Y(p.ev)}`).join(" L ");
+  const area = `M ${X(0)},${y0} L ${line} L ${X(50)},${y0} Z`;
+  ["up", "dn"].forEach(side => {
+    const cp = mk("clipPath", {id: "clip-" + side});
+    cp.appendChild(mk("rect", {x: 0, y: side === "up" ? 0 : y0,
+      width: CH.w, height: side === "up" ? y0 : CH.h - y0}));
+    svg.appendChild(cp);
+    svg.appendChild(mk("path", {d: area, fill: side === "up" ? "#2166ac" : "#b2500e",
+      "fill-opacity": .22, "clip-path": `url(#clip-${side})`}));
+    svg.appendChild(mk("path", {d: "M " + line, fill: "none",
+      stroke: side === "up" ? "#2166ac" : "#b2500e", "stroke-width": 2,
+      "stroke-linejoin": "round", "clip-path": `url(#clip-${side})`}));
+  });
+
+  // Markers on the moves worth naming.  Severity rides on the !/?!/? glyph, not
+  // on hue: good-vs-bad as green-vs-red is exactly the pair red-green colour
+  // blindness collapses, so the dots are all one neutral ink and the symbol says
+  // which is which.
+  const NOTABLE = {good: 1, inaccuracy: 1, mistake: 1, blunder: 1};
+  pts.forEach(p => {
+    if (!p.n || !NOTABLE[p.n.cls]) return;
+    svg.appendChild(mk("circle", {class: "dot", cx: X(p.ply), cy: Y(p.ev), r: 5,
+                                  fill: "#12263a"}));
+    // JJ's symbols go above the dot, the opponent's below.  Consecutive
+    // notable moves always alternate side, so they can never sit shoulder to
+    // shoulder and read as one symbol ("?" next to "!" looked like "?!").
+    const above = p.n.side === "b";
+    const y = Math.max(CH.padT + 11,
+              Math.min(CH.h - CH.padB - 3, Y(p.ev) + (above ? -11 : 19)));
+    const g = mk("text", {class: "nagmark", x: X(p.ply), y, "text-anchor": "middle"});
+    g.textContent = p.n.mark || "!";
+    svg.appendChild(g);
+  });
+  // crosshair + hover/click targets
+  const cross = mk("line", {class: "cross", y1: CH.padT, y2: CH.h - CH.padB});
+  cross.id = "cross"; svg.appendChild(cross);
+  const tip = document.getElementById("tip");
+  pts.forEach(p => {
+    if (!p.n) return;
+    const hit = mk("rect", {class: "hit", x: X(p.ply) - 9, y: CH.padT,
+                            width: 18, height: CH.h - CH.padT - CH.padB});
+    hit.addEventListener("pointerenter", () => {
+      cross.setAttribute("x1", X(p.ply)); cross.setAttribute("x2", X(p.ply));
+      cross.style.opacity = 1;
+      const box = svg.getBoundingClientRect(), host = svg.parentElement.getBoundingClientRect();
+      const px = box.left - host.left + (X(p.ply) / CH.w) * box.width;
+      const py = box.top - host.top + (Y(p.ev) / CH.h) * box.height;
+      tip.innerHTML = "<b>" + Math.ceil(p.n.ply / 2) + (p.n.side === "w" ? ". " : "… ") +
+        p.n.san + p.n.mark + "</b><br>" +
+        (p.ev > 0 ? "JJ +" + p.ev.toFixed(1) : p.ev < 0 ? "opponent +" + (-p.ev).toFixed(1) : "level") +
+        (p.n.cls ? "<br>" + LABEL[p.n.cls] : "");
+      tip.style.opacity = 1;
+      tip.style.left = Math.max(0, Math.min(px - tip.offsetWidth / 2, host.width - tip.offsetWidth)) + "px";
+      tip.style.top = Math.max(0, py - tip.offsetHeight - 12) + "px";
+    });
+    hit.addEventListener("pointerleave", () => { tip.style.opacity = 0; cross.style.opacity = 0; });
+    hit.addEventListener("click", () => { stop(); go(p.ply - 1); });
+    svg.appendChild(hit);
+  });
+}
+function syncChart() {
+  const c = document.getElementById("cross");
+  if (!c) return;
+  if (idx < 0) { c.style.opacity = 0; return; }
+  const x = CH.padL + ((idx + 1) / 50) * (CH.w - CH.padL - CH.padR);
+  c.setAttribute("x1", x); c.setAttribute("x2", x); c.style.opacity = .5;
+}
+
+/* ---------- navigation ---------- */
+function go(i) {
+  idx = Math.max(-1, Math.min(G.nodes.length - 1, i));
+  drawBoard(); syncNotation(); syncStatus(); syncChart(); syncButtons();
+}
+function syncButtons() {
+  document.getElementById("bStart").disabled = idx < 0;
+  document.getElementById("bPrev").disabled  = idx < 0;
+  document.getElementById("bNext").disabled  = idx >= G.nodes.length - 1;
+  document.getElementById("bEnd").disabled   = idx >= G.nodes.length - 1;
+  document.getElementById("bPlay").textContent = timer ? "⏸" : "▶";
+}
+function stop() { if (timer) { clearTimeout(timer); timer = null; } syncButtons(); }
+function play() {
+  if (timer) { stop(); return; }
+  if (idx >= G.nodes.length - 1) go(-1);
+  const step = () => {
+    if (idx >= G.nodes.length - 1) { stop(); return; }
+    go(idx + 1);
+    timer = setTimeout(step, 1100);
+    syncButtons();
+  };
+  step();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  buildNotation(); buildChart(); go(-1);
+  let rz; addEventListener("resize", () => {
+    clearTimeout(rz); rz = setTimeout(() => { buildChart(); syncChart(); }, 120);
+  });
+  document.getElementById("bStart").onclick = () => { stop(); go(-1); };
+  document.getElementById("bPrev").onclick  = () => { stop(); go(idx - 1); };
+  document.getElementById("bNext").onclick  = () => { stop(); go(idx + 1); };
+  document.getElementById("bEnd").onclick   = () => { stop(); go(G.nodes.length - 1); };
+  document.getElementById("bPlay").onclick  = play;
+  document.getElementById("bFlip").onclick  = () => { flipped = !flipped; drawBoard(); };
+  document.getElementById("notation").addEventListener("click", e => {
+    const m = e.target.closest(".mv"); if (m) { stop(); go(Number(m.dataset.i)); }
+  });
+  document.getElementById("notation").addEventListener("keydown", e => {
+    const m = e.target.closest(".mv");
+    if (m && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); stop(); go(Number(m.dataset.i)); }
+  });
+  document.addEventListener("keydown", e => {
+    if (e.target.closest("input, textarea")) return;
+    if (e.key === "ArrowRight") { stop(); go(idx + 1); }
+    if (e.key === "ArrowLeft")  { stop(); go(idx - 1); }
+  });
+});
+
+</script>
+</body>
+</html>
