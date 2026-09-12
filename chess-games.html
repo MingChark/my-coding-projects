@@ -44,6 +44,19 @@
   .tile.inacc { border-left-color: #b8860b; }
   .tile.blund { border-left-color: #a3242b; }
 
+  .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; }
+  .tab {
+    font-family: inherit; font-size: 16px; cursor: pointer; text-align: left;
+    background: rgba(255,255,255,.9); color: #1b4f72;
+    border: 3px solid transparent; border-radius: 16px; padding: 10px 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.13);
+  }
+  .tab .eco { font-size: 12px; color: #7d3c98; display: block; }
+  .tab[aria-selected="true"] { border-color: #63c15c; background: #fffef5; }
+  .tab:focus-visible { outline: 3px solid #1b4f72; outline-offset: 2px; }
+  p.blurb { font-size: 17px; color: #34495e; margin: 16px 0 0;
+            text-shadow: 1px 1px 0 rgba(255,255,255,.85); }
+
   /* ---- eval graph ---- */
   .graphwrap {
     background: rgba(255,255,255,.94); border-radius: 20px;
@@ -140,12 +153,12 @@
   .mv:focus-visible { outline: 2px solid #63c15c; }
   .no { color: #12263a; font-weight: bold; }
   .nag { font-weight: bold; }
-  .mv.good  .nag { color: #2f7d32; }
-  .mv.inaccuracy .nag { color: #b8860b; }
+  .mv.good .nag, .mv.brilliant .nag { color: #2f7d32; }
+  .mv.inaccuracy .nag, .mv.turn .nag { color: #b8860b; }
   .mv.mistake .nag, .mv.blunder .nag { color: #a3242b; }
   .mv.on .nag { color: #ffd84d; }
-  .mv.good  { box-shadow: inset 0 -3px 0 #2f7d32; }
-  .mv.inaccuracy { box-shadow: inset 0 -3px 0 #b8860b; }
+  .mv.good, .mv.brilliant { box-shadow: inset 0 -3px 0 #2f7d32; }
+  .mv.inaccuracy, .mv.turn { box-shadow: inset 0 -3px 0 #b8860b; }
   .mv.mistake, .mv.blunder { box-shadow: inset 0 -3px 0 #a3242b; }
 
   .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px;
@@ -249,17 +262,20 @@
   <h1>♟️ JJ's games</h1>
   <p class="subtitle">His own games, move by move, with Stockfish marking the good and the bad</p>
 
+  <div class="tabs" id="gametabs" role="tablist" aria-label="Choose a game"></div>
+
+  <p class="blurb" id="gblurb"></p>
   <div class="badges">
-    <span class="badge">Game 1 · from the score sheet</span>
     <span class="badge alt">JJ played Black</span>
-    <span class="badge eco">B51 — Sicilian, Moscow Variation</span>
+    <span class="badge eco" id="geco"></span>
+    <span class="badge" id="gdate"></span>
   </div>
 
   <div class="tally">
-    <div class="tile blund"><div class="n">0</div><div class="l">blunders by JJ</div></div>
-    <div class="tile"><div class="n">0</div><div class="l">mistakes by JJ</div></div>
-    <div class="tile inacc"><div class="n">3</div><div class="l">inaccuracies by JJ</div></div>
-    <div class="tile good"><div class="n">7</div><div class="l">top-engine moves by JJ</div></div>
+    <div class="tile blund"><div class="n" id="t-blund">0</div><div class="l">blunders by JJ</div></div>
+    <div class="tile"><div class="n" id="t-mist">0</div><div class="l">mistakes by JJ</div></div>
+    <div class="tile inacc"><div class="n" id="t-inacc">0</div><div class="l">slips by JJ</div></div>
+    <div class="tile good"><div class="n" id="t-good">0</div><div class="l">top-engine moves by JJ</div></div>
   </div>
 
   <div class="graphwrap">
@@ -296,7 +312,7 @@
       </div>
       <div class="notation" id="notation"></div>
       <div class="legend">
-        <span><i style="background:#2f7d32"></i> <b>!</b> good move</span>
+        <span><i style="background:#2f7d32"></i> <b>!!</b> brilliant &middot; <b>!</b> good</span>
         <span><i style="background:#b8860b"></i> <b>?!</b> inaccuracy</span>
         <span><i style="background:#a3242b"></i> <b>?</b> mistake</span>
         <span><i style="background:#a3242b"></i> <b>??</b> blunder</span>
@@ -305,27 +321,16 @@
   </div>
 
   <div class="notes">
-    <h2>What happened</h2>
-    <ol>
-      <li><b>A clean opening.</b> JJ played the Sicilian and for thirteen moves the game was
-          dead level — never worse than a tenth of a pawn. Nothing to fix here.</li>
-      <li><b>The opponent gave a pawn away.</b> <span class="q">15.Qc3+</span> was a check that
-          did nothing, and <span class="q">16.Rae1</span> ignored the loose pawn on d5.</li>
-      <li><b>JJ took it.</b> <span class="q">16…Nxd5!</span> — Stockfish's first choice.
-          A pawn up and clearly better.</li>
-      <li><b>Good defending.</b> <span class="q">18…e6</span> shut the door on the c4–f7
-          diagonal just as the queen and knight lined up on f7.</li>
-      <li><b>Then it slipped away.</b> <span class="q">24…Nxe4</span> and especially
-          <span class="q">25…d5?!</span> handed the extra pawn back. After 26.exd5 the
-          position opened and the advantage went from <b>+1.0 to level</b>.</li>
-    </ol>
+    <h2 id="wh-title">What happened</h2>
+    <ol id="whathappened"></ol>
 
-    <h2 style="margin-top:18px">Two of Coach Li's rules, live in this game</h2>
+    <h2 style="margin-top:18px">Coach Li's rules, live in these games</h2>
     <ul>
       <li><b>Never trade just because you can.</b> When you are a pawn up, every trade
-          helps the person who is behind. 24…Nxe4 was that trade.</li>
-      <li><b>Before you push a pawn, check your pieces are safe.</b> 25…d5 was the push
-          that let everything out.</li>
+          helps the person who is behind.</li>
+      <li><b>Before you push a pawn, check your pieces are safe.</b></li>
+      <li><b>Look at what your opponent's last move threatens</b> before you grab material —
+          that is the one that decided the London game.</li>
     </ul>
 
     <details class="tablewrap">
@@ -334,77 +339,23 @@
         <table class="movetable">
           <thead><tr><th>Move</th><th>Played</th><th>By</th><th>Score after</th>
                      <th>Engine's pick</th><th>Verdict</th></tr></thead>
-          <tbody>
-<tr><td>1.</td><td><b>e4</b></td><td>opponent</td><td>opponent +0.2</td><td>e4</td><td>engine's top move</td></tr>
-<tr><td>1…</td><td><b>c5</b></td><td>JJ</td><td>opponent +0.3</td><td>e5</td><td></td></tr>
-<tr><td>2.</td><td><b>Nf3</b></td><td>opponent</td><td>opponent +0.3</td><td>Nf3</td><td>engine's top move</td></tr>
-<tr><td>2…</td><td><b>d6</b></td><td>JJ</td><td>opponent +0.2</td><td>Nc6</td><td></td></tr>
-<tr><td>3.</td><td><b>Nc3</b></td><td>opponent</td><td>level</td><td>d4</td><td></td></tr>
-<tr><td>3…</td><td><b>Nf6</b></td><td>JJ</td><td>opponent +0.3</td><td>e5</td><td></td></tr>
-<tr><td>4.</td><td><b>Bb5+</b></td><td>opponent</td><td>level</td><td>d4</td><td></td></tr>
-<tr><td>4…</td><td><b>Bd7</b></td><td>JJ</td><td>level</td><td>Bd7</td><td>engine's top move</td></tr>
-<tr><td>5.</td><td><b>Bxd7+</b></td><td>opponent</td><td>level</td><td>Qe2</td><td></td></tr>
-<tr><td>5…</td><td><b>Qxd7</b></td><td>JJ</td><td>level</td><td>Nbxd7</td><td></td></tr>
-<tr><td>6.</td><td><b>d3</b></td><td>opponent</td><td>level</td><td>d4</td><td></td></tr>
-<tr><td>6…</td><td><b>Nc6</b></td><td>JJ</td><td>level</td><td>e6</td><td></td></tr>
-<tr><td>7.</td><td><b>O-O</b></td><td>opponent</td><td>level</td><td>Bg5</td><td></td></tr>
-<tr><td>7…</td><td><b>g6</b></td><td>JJ</td><td>level</td><td>e6</td><td></td></tr>
-<tr><td>8.</td><td><b>Bg5</b></td><td>opponent</td><td>level</td><td>Nd5</td><td></td></tr>
-<tr><td>8…</td><td><b>Bg7</b></td><td>JJ</td><td>level</td><td>Bg7</td><td>engine's top move</td></tr>
-<tr><td>9.</td><td><b>Qd2</b></td><td>opponent</td><td>JJ +0.4</td><td>Rb1</td><td></td></tr>
-<tr><td>9…</td><td><b>O-O</b></td><td>JJ</td><td>level</td><td>h6</td><td></td></tr>
-<tr><td>10.</td><td><b>Bh6</b></td><td>opponent</td><td>level</td><td>Bh6</td><td>engine's top move</td></tr>
-<tr><td>10…</td><td><b>Rfe8</b></td><td>JJ</td><td>level</td><td>Rae8</td><td></td></tr>
-<tr><td>11.</td><td><b>Bxg7</b></td><td>opponent</td><td>level</td><td>h3</td><td></td></tr>
-<tr><td>11…</td><td><b>Kxg7</b></td><td>JJ</td><td>level</td><td>Kxg7</td><td>engine's top move</td></tr>
-<tr><td>12.</td><td><b>h3</b></td><td>opponent</td><td>level</td><td>h3</td><td>engine's top move</td></tr>
-<tr><td>12…</td><td><b>a6</b></td><td>JJ</td><td>opponent +0.4</td><td>Rad8</td><td></td></tr>
-<tr><td>13.</td><td><b>Nd5</b></td><td>opponent</td><td>level</td><td>Rae1</td><td></td></tr>
-<tr><td>13…</td><td><b>Nxd5</b></td><td>JJ</td><td>opponent +0.4</td><td>Rad8</td><td></td></tr>
-<tr><td>14.</td><td><b>exd5</b></td><td>opponent</td><td>opponent +0.4</td><td>exd5</td><td>engine's top move</td></tr>
-<tr><td>14…</td><td><b>Nb4</b></td><td>JJ</td><td>opponent +0.9</td><td>Nd8</td><td></td></tr>
-<tr><td>15.</td><td><b>Qc3+?</b></td><td>opponent</td><td>JJ +0.7</td><td>c4</td><td>mistake</td></tr>
-<tr><td>15…</td><td><b>Kg8</b></td><td>JJ</td><td>JJ +0.5</td><td>Kg8</td><td>engine's top move</td></tr>
-<tr><td>16.</td><td><b>Rae1?</b></td><td>opponent</td><td>JJ +2.2</td><td>Qb3</td><td>mistake</td></tr>
-<tr><td>16…</td><td><b>Nxd5!</b></td><td>JJ</td><td>JJ +2.3</td><td>Nxd5</td><td>good move</td></tr>
-<tr><td>17.</td><td><b>Qc4</b></td><td>opponent</td><td>JJ +2.3</td><td>Qc4</td><td>engine's top move</td></tr>
-<tr><td>17…</td><td><b>Nf6</b></td><td>JJ</td><td>JJ +1.6</td><td>Qf5</td><td></td></tr>
-<tr><td>18.</td><td><b>Ng5</b></td><td>opponent</td><td>JJ +1.7</td><td>Ng5</td><td>engine's top move</td></tr>
-<tr><td>18…</td><td><b>e6</b></td><td>JJ</td><td>JJ +1.6</td><td>e6</td><td>engine's top move</td></tr>
-<tr><td>19.</td><td><b>Qc3</b></td><td>opponent</td><td>JJ +2.0</td><td>Qh4</td><td></td></tr>
-<tr><td>19…</td><td><b>Nd5</b></td><td>JJ</td><td>JJ +1.7</td><td>Nd5</td><td>engine's top move</td></tr>
-<tr><td>20.</td><td><b>Qc4</b></td><td>opponent</td><td>JJ +2.4</td><td>Qd2</td><td></td></tr>
-<tr><td>20…</td><td><b>b5?!</b></td><td>JJ</td><td>JJ +1.6</td><td>Kg7</td><td>inaccuracy</td></tr>
-<tr><td>21.</td><td><b>Qh4</b></td><td>opponent</td><td>JJ +1.5</td><td>Qh4</td><td>engine's top move</td></tr>
-<tr><td>21…</td><td><b>h5</b></td><td>JJ</td><td>JJ +1.3</td><td>Nf6</td><td></td></tr>
-<tr><td>22.</td><td><b>Qe4</b></td><td>opponent</td><td>JJ +1.7</td><td>f4</td><td></td></tr>
-<tr><td>22…</td><td><b>Nf6</b></td><td>JJ</td><td>JJ +1.6</td><td>Rac8</td><td></td></tr>
-<tr><td>23.</td><td><b>Qf3</b></td><td>opponent</td><td>JJ +1.5</td><td>Qe2</td><td></td></tr>
-<tr><td>23…</td><td><b>Qe7</b></td><td>JJ</td><td>JJ +1.6</td><td>Nh7</td><td></td></tr>
-<tr><td>24.</td><td><b>Ne4</b></td><td>opponent</td><td>JJ +1.9</td><td>Qg3</td><td></td></tr>
-<tr><td>24…</td><td><b>Nxe4?!</b></td><td>JJ</td><td>JJ +1.2</td><td>Kg7</td><td>inaccuracy</td></tr>
-<tr><td>25.</td><td><b>dxe4</b></td><td>opponent</td><td>JJ +1.0</td><td>dxe4</td><td>engine's top move</td></tr>
-<tr><td>25…</td><td><b>d5?!</b></td><td>JJ</td><td>level</td><td>Red8</td><td>inaccuracy</td></tr>
-          </tbody>
+          <tbody id="movetable"></tbody>
         </table>
       </div>
     </details>
 
-    <p class="hint"><b>About the score sheet.</b> The game is written on two slips —
-      the second one carries on where the first runs out, with the numbering started
-      again at 1. Every move up to <b>25…d5</b> reads cleanly and was checked for
-      legality with python-chess. From move 26 the handwriting has two readings that
-      are both legal chess, so those moves are left off rather than guessed. A sharper
-      photo of the bottom half of the second slip would finish the game off.</p>
-    <p class="hint">Analysis: Stockfish 17 at depth 22 on every position.
-      <b>?!</b> costs about half a pawn, <b>?</b> about a pawn and a half,
-      <b>??</b> three pawns or more.</p>
+    <p class="hint" id="sheetnote"></p>
+    <p class="hint">Analysis: Stockfish 17. A move is judged by how much
+      <b>winning chance</b> it gives away, not raw pawns — so missing a quicker
+      win in an already-won position is not called a mistake.
+      <b>?!</b> costs about 10 points of winning chance, <b>?</b> 20, <b>??</b> 30 or more.</p>
   </div>
 
 </div>
 <script>
 
-const G = {"title":"JJ vs opponent","black":"JJ","white":"opponent","eco":"B51 \u2014 Sicilian, Moscow Variation","start":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","startEval":25,"nodes":[{"ply":1,"san":"e4","from":"e2","to":"e4","fen":"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1","side":"w","eval":25,"loss":4,"best":"e4","cls":"best","mark":"","note":""},{"ply":2,"san":"c5","from":"c7","to":"c5","fen":"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2","side":"b","eval":35,"loss":10,"best":"e5","cls":"","mark":"","note":""},{"ply":3,"san":"Nf3","from":"g1","to":"f3","fen":"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2","side":"w","eval":31,"loss":4,"best":"Nf3","cls":"best","mark":"","note":""},{"ply":4,"san":"d6","from":"d7","to":"d6","fen":"rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3","side":"b","eval":23,"loss":-8,"best":"Nc6","cls":"","mark":"","note":""},{"ply":5,"san":"Nc3","from":"b1","to":"c3","fen":"rnbqkbnr/pp2pppp/3p4/2p5/4P3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 1 3","side":"w","eval":20,"loss":3,"best":"d4","cls":"","mark":"","note":""},{"ply":6,"san":"Nf6","from":"g8","to":"f6","fen":"rnbqkb1r/pp2pppp/3p1n2/2p5/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 2 4","side":"b","eval":29,"loss":9,"best":"e5","cls":"","mark":"","note":""},{"ply":7,"san":"Bb5+","from":"f1","to":"b5","fen":"rnbqkb1r/pp2pppp/3p1n2/1Bp5/4P3/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 3 4","side":"w","eval":0,"loss":29,"best":"d4","cls":"","mark":"","note":""},{"ply":8,"san":"Bd7","from":"c8","to":"d7","fen":"rn1qkb1r/pp1bpppp/3p1n2/1Bp5/4P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 4 5","side":"b","eval":-3,"loss":-3,"best":"Bd7","cls":"best","mark":"","note":"The Moscow Variation. White checks with the bishop, JJ blocks with the bishop \u2014 the normal, solid answer."},{"ply":9,"san":"Bxd7+","from":"b5","to":"d7","fen":"rn1qkb1r/pp1Bpppp/3p1n2/2p5/4P3/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 0 5","side":"w","eval":0,"loss":-3,"best":"Qe2","cls":"","mark":"","note":""},{"ply":10,"san":"Qxd7","from":"d8","to":"d7","fen":"rn2kb1r/pp1qpppp/3p1n2/2p5/4P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 6","side":"b","eval":7,"loss":7,"best":"Nbxd7","cls":"","mark":"","note":""},{"ply":11,"san":"d3","from":"d2","to":"d3","fen":"rn2kb1r/pp1qpppp/3p1n2/2p5/4P3/2NP1N2/PPP2PPP/R1BQK2R b KQkq - 0 6","side":"w","eval":-1,"loss":8,"best":"d4","cls":"","mark":"","note":""},{"ply":12,"san":"Nc6","from":"b8","to":"c6","fen":"r3kb1r/pp1qpppp/2np1n2/2p5/4P3/2NP1N2/PPP2PPP/R1BQK2R w KQkq - 1 7","side":"b","eval":0,"loss":1,"best":"e6","cls":"","mark":"","note":""},{"ply":13,"san":"O-O","from":"e1","to":"g1","fen":"r3kb1r/pp1qpppp/2np1n2/2p5/4P3/2NP1N2/PPP2PPP/R1BQ1RK1 b kq - 2 7","side":"w","eval":-3,"loss":3,"best":"Bg5","cls":"","mark":"","note":""},{"ply":14,"san":"g6","from":"g7","to":"g6","fen":"r3kb1r/pp1qpp1p/2np1np1/2p5/4P3/2NP1N2/PPP2PPP/R1BQ1RK1 w kq - 0 8","side":"b","eval":0,"loss":3,"best":"e6","cls":"","mark":"","note":""},{"ply":15,"san":"Bg5","from":"c1","to":"g5","fen":"r3kb1r/pp1qpp1p/2np1np1/2p3B1/4P3/2NP1N2/PPP2PPP/R2Q1RK1 b kq - 1 8","side":"w","eval":-13,"loss":13,"best":"Nd5","cls":"","mark":"","note":""},{"ply":16,"san":"Bg7","from":"f8","to":"g7","fen":"r3k2r/pp1qppbp/2np1np1/2p3B1/4P3/2NP1N2/PPP2PPP/R2Q1RK1 w kq - 2 9","side":"b","eval":-17,"loss":-4,"best":"Bg7","cls":"best","mark":"","note":""},{"ply":17,"san":"Qd2","from":"d1","to":"d2","fen":"r3k2r/pp1qppbp/2np1np1/2p3B1/4P3/2NP1N2/PPPQ1PPP/R4RK1 b kq - 3 9","side":"w","eval":-37,"loss":20,"best":"Rb1","cls":"","mark":"","note":""},{"ply":18,"san":"O-O","from":"e8","to":"g8","fen":"r4rk1/pp1qppbp/2np1np1/2p3B1/4P3/2NP1N2/PPPQ1PPP/R4RK1 w - - 4 10","side":"b","eval":-5,"loss":32,"best":"h6","cls":"","mark":"","note":""},{"ply":19,"san":"Bh6","from":"g5","to":"h6","fen":"r4rk1/pp1qppbp/2np1npB/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 b - - 5 10","side":"w","eval":-5,"loss":0,"best":"Bh6","cls":"best","mark":"","note":""},{"ply":20,"san":"Rfe8","from":"f8","to":"e8","fen":"r3r1k1/pp1qppbp/2np1npB/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 w - - 6 11","side":"b","eval":11,"loss":16,"best":"Rae8","cls":"","mark":"","note":""},{"ply":21,"san":"Bxg7","from":"h6","to":"g7","fen":"r3r1k1/pp1qppBp/2np1np1/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 b - - 0 11","side":"w","eval":10,"loss":1,"best":"h3","cls":"","mark":"","note":""},{"ply":22,"san":"Kxg7","from":"g8","to":"g7","fen":"r3r3/pp1qppkp/2np1np1/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 w - - 0 12","side":"b","eval":7,"loss":-3,"best":"Kxg7","cls":"best","mark":"","note":""},{"ply":23,"san":"h3","from":"h2","to":"h3","fen":"r3r3/pp1qppkp/2np1np1/2p5/4P3/2NP1N1P/PPPQ1PP1/R4RK1 b - - 0 12","side":"w","eval":16,"loss":-9,"best":"h3","cls":"best","mark":"","note":""},{"ply":24,"san":"a6","from":"a7","to":"a6","fen":"r3r3/1p1qppkp/p1np1np1/2p5/4P3/2NP1N1P/PPPQ1PP1/R4RK1 w - - 0 13","side":"b","eval":38,"loss":22,"best":"Rad8","cls":"","mark":"","note":""},{"ply":25,"san":"Nd5","from":"c3","to":"d5","fen":"r3r3/1p1qppkp/p1np1np1/2pN4/4P3/3P1N1P/PPPQ1PP1/R4RK1 b - - 1 13","side":"w","eval":13,"loss":25,"best":"Rae1","cls":"","mark":"","note":""},{"ply":26,"san":"Nxd5","from":"f6","to":"d5","fen":"r3r3/1p1qppkp/p1np2p1/2pn4/4P3/3P1N1P/PPPQ1PP1/R4RK1 w - - 0 14","side":"b","eval":43,"loss":30,"best":"Rad8","cls":"","mark":"","note":""},{"ply":27,"san":"exd5","from":"e4","to":"d5","fen":"r3r3/1p1qppkp/p1np2p1/2pP4/8/3P1N1P/PPPQ1PP1/R4RK1 b - - 0 14","side":"w","eval":44,"loss":-1,"best":"exd5","cls":"best","mark":"","note":"White wins the knight back and the d-pawn lands on d5, poking into JJ's position."},{"ply":28,"san":"Nb4","from":"c6","to":"b4","fen":"r3r3/1p1qppkp/p2p2p1/2pP4/1n6/3P1N1P/PPPQ1PP1/R4RK1 w - - 1 15","side":"b","eval":94,"loss":50,"best":"Nd8","cls":"","mark":"","note":"Nb4 looks active but the knight has no future on b4. Nd8, guarding e6 and f7, kept things tidy."},{"ply":29,"san":"Qc3+","from":"d2","to":"c3","fen":"r3r3/1p1qppkp/p2p2p1/2pP4/1n6/2QP1N1P/PPP2PP1/R4RK1 b - - 2 15","side":"w","eval":-68,"loss":162,"best":"c4","cls":"mistake","mark":"?","note":"A check that achieves nothing. White had to play c4, protecting the d5 pawn. Now that pawn is loose."},{"ply":30,"san":"Kg8","from":"g7","to":"g8","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pP4/1n6/2QP1N1P/PPP2PP1/R4RK1 w - - 3 16","side":"b","eval":-54,"loss":14,"best":"Kg8","cls":"best","mark":"","note":""},{"ply":31,"san":"Rae1","from":"a1","to":"e1","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pP4/1n6/2QP1N1P/PPP2PP1/4RRK1 b - - 4 16","side":"w","eval":-222,"loss":168,"best":"Qb3","cls":"mistake","mark":"?","note":"Still not defending d5. Qb3 was the move. Now the pawn just falls."},{"ply":32,"san":"Nxd5","from":"b4","to":"d5","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pn4/8/2QP1N1P/PPP2PP1/4RRK1 w - - 0 17","side":"b","eval":-229,"loss":-7,"best":"Nxd5","cls":"good","mark":"!","note":"JJ spots it and takes the free pawn \u2014 Stockfish's first choice. A whole pawn up, and clearly better."},{"ply":33,"san":"Qc4","from":"c3","to":"c4","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pn4/2Q5/3P1N1P/PPP2PP1/4RRK1 b - - 1 17","side":"w","eval":-232,"loss":3,"best":"Qc4","cls":"best","mark":"","note":""},{"ply":34,"san":"Nf6","from":"d5","to":"f6","fen":"r3r1k1/1p1qpp1p/p2p1np1/2p5/2Q5/3P1N1P/PPP2PP1/4RRK1 w - - 2 18","side":"b","eval":-165,"loss":67,"best":"Qf5","cls":"","mark":"","note":""},{"ply":35,"san":"Ng5","from":"f3","to":"g5","fen":"r3r1k1/1p1qpp1p/p2p1np1/2p3N1/2Q5/3P3P/PPP2PP1/4RRK1 b - - 3 18","side":"w","eval":-168,"loss":3,"best":"Ng5","cls":"best","mark":"","note":""},{"ply":36,"san":"e6","from":"e7","to":"e6","fen":"r3r1k1/1p1q1p1p/p2ppnp1/2p3N1/2Q5/3P3P/PPP2PP1/4RRK1 w - - 0 19","side":"b","eval":-161,"loss":7,"best":"e6","cls":"best","mark":"","note":"Good defending. Qc4 and Ng5 were both aiming at f7; e6 slams the door on the c4\u2013f7 diagonal."},{"ply":37,"san":"Qc3","from":"c4","to":"c3","fen":"r3r1k1/1p1q1p1p/p2ppnp1/2p3N1/8/2QP3P/PPP2PP1/4RRK1 b - - 1 19","side":"w","eval":-196,"loss":35,"best":"Qh4","cls":"","mark":"","note":""},{"ply":38,"san":"Nd5","from":"f6","to":"d5","fen":"r3r1k1/1p1q1p1p/p2pp1p1/2pn2N1/8/2QP3P/PPP2PP1/4RRK1 w - - 2 20","side":"b","eval":-173,"loss":23,"best":"Nd5","cls":"best","mark":"","note":""},{"ply":39,"san":"Qc4","from":"c3","to":"c4","fen":"r3r1k1/1p1q1p1p/p2pp1p1/2pn2N1/2Q5/3P3P/PPP2PP1/4RRK1 b - - 3 20","side":"w","eval":-235,"loss":62,"best":"Qd2","cls":"","mark":"","note":""},{"ply":40,"san":"b5","from":"b7","to":"b5","fen":"r3r1k1/3q1p1p/p2pp1p1/1ppn2N1/2Q5/3P3P/PPP2PP1/4RRK1 w - - 0 21","side":"b","eval":-157,"loss":78,"best":"Kg7","cls":"inaccuracy","mark":"?!","note":"Loosens the queenside for no reason. Simply Kg7, tucking the king, kept a big edge."},{"ply":41,"san":"Qh4","from":"c4","to":"h4","fen":"r3r1k1/3q1p1p/p2pp1p1/1ppn2N1/7Q/3P3P/PPP2PP1/4RRK1 b - - 1 21","side":"w","eval":-152,"loss":-5,"best":"Qh4","cls":"best","mark":"","note":""},{"ply":42,"san":"h5","from":"h7","to":"h5","fen":"r3r1k1/3q1p2/p2pp1p1/1ppn2Np/7Q/3P3P/PPP2PP1/4RRK1 w - - 0 22","side":"b","eval":-133,"loss":19,"best":"Nf6","cls":"","mark":"","note":""},{"ply":43,"san":"Qe4","from":"h4","to":"e4","fen":"r3r1k1/3q1p2/p2pp1p1/1ppn2Np/4Q3/3P3P/PPP2PP1/4RRK1 b - - 1 22","side":"w","eval":-168,"loss":35,"best":"f4","cls":"","mark":"","note":""},{"ply":44,"san":"Nf6","from":"d5","to":"f6","fen":"r3r1k1/3q1p2/p2ppnp1/1pp3Np/4Q3/3P3P/PPP2PP1/4RRK1 w - - 2 23","side":"b","eval":-160,"loss":8,"best":"Rac8","cls":"","mark":"","note":""},{"ply":45,"san":"Qf3","from":"e4","to":"f3","fen":"r3r1k1/3q1p2/p2ppnp1/1pp3Np/8/3P1Q1P/PPP2PP1/4RRK1 b - - 3 23","side":"w","eval":-147,"loss":-13,"best":"Qe2","cls":"","mark":"","note":""},{"ply":46,"san":"Qe7","from":"d7","to":"e7","fen":"r3r1k1/4qp2/p2ppnp1/1pp3Np/8/3P1Q1P/PPP2PP1/4RRK1 w - - 4 24","side":"b","eval":-165,"loss":-18,"best":"Nh7","cls":"","mark":"","note":""},{"ply":47,"san":"Ne4","from":"g5","to":"e4","fen":"r3r1k1/4qp2/p2ppnp1/1pp4p/4N3/3P1Q1P/PPP2PP1/4RRK1 b - - 5 24","side":"w","eval":-189,"loss":24,"best":"Qg3","cls":"","mark":"","note":""},{"ply":48,"san":"Nxe4","from":"f6","to":"e4","fen":"r3r1k1/4qp2/p2pp1p1/1pp4p/4n3/3P1Q1P/PPP2PP1/4RRK1 w - - 0 25","side":"b","eval":-118,"loss":71,"best":"Kg7","cls":"inaccuracy","mark":"?!","note":"Trading knights helps the defender when you're the one who's a pawn up. Coach Li's rule: never trade just because you can."},{"ply":49,"san":"dxe4","from":"d3","to":"e4","fen":"r3r1k1/4qp2/p2pp1p1/1pp4p/4P3/5Q1P/PPP2PP1/4RRK1 b - - 0 25","side":"w","eval":-103,"loss":-15,"best":"dxe4","cls":"best","mark":"","note":""},{"ply":50,"san":"d5","from":"d6","to":"d5","fen":"r3r1k1/4qp2/p3p1p1/1ppp3p/4P3/5Q1P/PPP2PP1/4RRK1 w - - 0 26","side":"b","eval":-8,"loss":95,"best":"Red8","cls":"inaccuracy","mark":"?!","note":"The move that let it slip. After 26.exd5 the position opens up and the extra pawn disappears \u2014 from clearly better to dead level. Check your pieces before you push a pawn."}]};
+const GAMES = [{"id":"g2","title":"Opponent vs JJ  0\u20131","black":"JJ","result":"JJ won","eco":"D02 \u2014 London System","date":"Chess.com, Sat 6 Sep 2026 \u00b7 reviewed by Coach Dong 12 Sep","blurb":"JJ played Black and won. The finish is the best move he has played all term.","start":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","startEval":25,"nodes":[{"ply":1,"san":"d4","from":"d2","to":"d4","side":"w","cls":"","drop":0.2,"best":"e4","note":"","fen":"rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1","eval":21,"mark":""},{"ply":2,"san":"d5","from":"d7","to":"d5","side":"b","cls":"","drop":0.3,"best":"Nf6","note":"","fen":"rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2","eval":24,"mark":""},{"ply":3,"san":"Bf4","from":"c1","to":"f4","side":"w","cls":"","drop":1.5,"best":"c4","note":"","fen":"rnbqkbnr/ppp1pppp/8/3p4/3P1B2/8/PPP1PPPP/RN1QKBNR b KQkq - 1 2","eval":8,"mark":""},{"ply":4,"san":"Nf6","from":"g8","to":"f6","side":"b","cls":"","drop":0.7,"best":"c5","note":"","fen":"rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/8/PPP1PPPP/RN1QKBNR w KQkq - 2 3","eval":16,"mark":""},{"ply":5,"san":"Nf3","from":"g1","to":"f3","side":"w","cls":"","drop":0.6,"best":"e3","note":"","fen":"rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/5N2/PPP1PPPP/RN1QKB1R b KQkq - 3 3","eval":10,"mark":""},{"ply":6,"san":"Bf5","from":"c8","to":"f5","side":"b","cls":"","drop":1.3,"best":"e6","note":"","fen":"rn1qkb1r/ppp1pppp/5n2/3p1b2/3P1B2/5N2/PPP1PPPP/RN1QKB1R w KQkq - 4 4","eval":24,"mark":""},{"ply":7,"san":"e3","from":"e2","to":"e3","side":"w","cls":"","drop":0.7,"best":"c4","note":"","fen":"rn1qkb1r/ppp1pppp/5n2/3p1b2/3P1B2/4PN2/PPP2PPP/RN1QKB1R b KQkq - 0 4","eval":16,"mark":""},{"ply":8,"san":"e6","from":"e7","to":"e6","side":"b","cls":"best","drop":-0.1,"best":"e6","note":"","fen":"rn1qkb1r/ppp2ppp/4pn2/3p1b2/3P1B2/4PN2/PPP2PPP/RN1QKB1R w KQkq - 0 5","eval":15,"mark":""},{"ply":9,"san":"Bd3","from":"f1","to":"d3","side":"w","cls":"","drop":0.6,"best":"c4","note":"","fen":"rn1qkb1r/ppp2ppp/4pn2/3p1b2/3P1B2/3BPN2/PPP2PPP/RN1QK2R b KQkq - 1 5","eval":9,"mark":""},{"ply":10,"san":"Bxd3","from":"f5","to":"d3","side":"b","cls":"","drop":0.7,"best":"Ne4","note":"","fen":"rn1qkb1r/ppp2ppp/4pn2/3p4/3P1B2/3bPN2/PPP2PPP/RN1QK2R w KQkq - 0 6","eval":17,"mark":""},{"ply":11,"san":"Qxd3","from":"d1","to":"d3","side":"w","cls":"","drop":1.8,"best":"cxd3","note":"","fen":"rn1qkb1r/ppp2ppp/4pn2/3p4/3P1B2/3QPN2/PPP2PPP/RN2K2R b KQkq - 0 6","eval":-3,"mark":""},{"ply":12,"san":"c5","from":"c7","to":"c5","side":"b","cls":"best","drop":0.1,"best":"c5","note":"","fen":"rn1qkb1r/pp3ppp/4pn2/2pp4/3P1B2/3QPN2/PPP2PPP/RN2K2R w KQkq - 0 7","eval":-2,"mark":""},{"ply":13,"san":"c3","from":"c2","to":"c3","side":"w","cls":"","drop":0.5,"best":"O-O","note":"","fen":"rn1qkb1r/pp3ppp/4pn2/2pp4/3P1B2/2PQPN2/PP3PPP/RN2K2R b KQkq - 0 7","eval":-7,"mark":""},{"ply":14,"san":"Nc6","from":"b8","to":"c6","side":"b","cls":"","drop":-0.2,"best":"Nbd7","note":"","fen":"r2qkb1r/pp3ppp/2n1pn2/2pp4/3P1B2/2PQPN2/PP3PPP/RN2K2R w KQkq - 1 8","eval":-9,"mark":""},{"ply":15,"san":"Nbd2","from":"b1","to":"d2","side":"w","cls":"best","drop":0.0,"best":"Nbd2","note":"","fen":"r2qkb1r/pp3ppp/2n1pn2/2pp4/3P1B2/2PQPN2/PP1N1PPP/R3K2R b KQkq - 2 8","eval":-9,"mark":""},{"ply":16,"san":"Bd6","from":"f8","to":"d6","side":"b","cls":"best","drop":0.5,"best":"Bd6","note":"","fen":"r2qk2r/pp3ppp/2nbpn2/2pp4/3P1B2/2PQPN2/PP1N1PPP/R3K2R w KQkq - 3 9","eval":-4,"mark":""},{"ply":17,"san":"Bxd6","from":"f4","to":"d6","side":"w","cls":"","drop":0.7,"best":"dxc5","note":"","fen":"r2qk2r/pp3ppp/2nBpn2/2pp4/3P4/2PQPN2/PP1N1PPP/R3K2R b KQkq - 0 9","eval":-12,"mark":""},{"ply":18,"san":"Qxd6","from":"d8","to":"d6","side":"b","cls":"best","drop":0.0,"best":"Qxd6","note":"","fen":"r3k2r/pp3ppp/2nqpn2/2pp4/3P4/2PQPN2/PP1N1PPP/R3K2R w KQkq - 0 10","eval":-12,"mark":""},{"ply":19,"san":"Qb5","from":"d3","to":"b5","side":"w","cls":"best","drop":0.6,"best":"Qb5","note":"","fen":"r3k2r/pp3ppp/2nqpn2/1Qpp4/3P4/2P1PN2/PP1N1PPP/R3K2R b KQkq - 1 10","eval":-18,"mark":""},{"ply":20,"san":"b6","from":"b7","to":"b6","side":"b","cls":"best","drop":0.7,"best":"b6","note":"","fen":"r3k2r/p4ppp/1pnqpn2/1Qpp4/3P4/2P1PN2/PP1N1PPP/R3K2R w KQkq - 0 11","eval":-10,"mark":""},{"ply":21,"san":"Ne5","from":"f3","to":"e5","side":"w","cls":"","drop":0.8,"best":"O-O","note":"","fen":"r3k2r/p4ppp/1pnqpn2/1QppN3/3P4/2P1P3/PP1N1PPP/R3K2R b KQkq - 1 11","eval":-19,"mark":""},{"ply":22,"san":"Rc8","from":"a8","to":"c8","side":"b","cls":"best","drop":0.1,"best":"Rc8","note":"","fen":"2r1k2r/p4ppp/1pnqpn2/1QppN3/3P4/2P1P3/PP1N1PPP/R3K2R w KQk - 2 12","eval":-18,"mark":""},{"ply":23,"san":"Ndf3","from":"d2","to":"f3","side":"w","cls":"","drop":-0.3,"best":"Nxc6","note":"","fen":"2r1k2r/p4ppp/1pnqpn2/1QppN3/3P4/2P1PN2/PP3PPP/R3K2R b KQk - 3 12","eval":-15,"mark":""},{"ply":24,"san":"O-O","from":"e8","to":"g8","side":"b","cls":"best","drop":0.1,"best":"O-O","note":"","fen":"2r2rk1/p4ppp/1pnqpn2/1QppN3/3P4/2P1PN2/PP3PPP/R3K2R w KQ - 4 13","eval":-14,"mark":""},{"ply":25,"san":"O-O","from":"e1","to":"g1","side":"w","cls":"","drop":0.5,"best":"Nxc6","note":"","fen":"2r2rk1/p4ppp/1pnqpn2/1QppN3/3P4/2P1PN2/PP3PPP/R4RK1 b - - 5 13","eval":-19,"mark":""},{"ply":26,"san":"Ne4","from":"f6","to":"e4","side":"b","cls":"","drop":0.3,"best":"Ne7","note":"","fen":"2r2rk1/p4ppp/1pnqp3/1QppN3/3Pn3/2P1PN2/PP3PPP/R4RK1 w - - 6 14","eval":-16,"mark":""},{"ply":27,"san":"Rad1","from":"a1","to":"d1","side":"w","cls":"","drop":-0.6,"best":"Nxc6","note":"","fen":"2r2rk1/p4ppp/1pnqp3/1QppN3/3Pn3/2P1PN2/PP3PPP/3R1RK1 b - - 7 14","eval":-10,"mark":""},{"ply":28,"san":"f6","from":"f7","to":"f6","side":"b","cls":"best","drop":-0.7,"best":"f6","note":"","fen":"2r2rk1/p5pp/1pnqpp2/1QppN3/3Pn3/2P1PN2/PP3PPP/3R1RK1 w - - 0 15","eval":-18,"mark":""},{"ply":29,"san":"Nxc6","from":"e5","to":"c6","side":"w","cls":"best","drop":-0.7,"best":"Nxc6","note":"","fen":"2r2rk1/p5pp/1pNqpp2/1Qpp4/3Pn3/2P1PN2/PP3PPP/3R1RK1 b - - 0 15","eval":-10,"mark":""},{"ply":30,"san":"Rxc6","from":"c8","to":"c6","side":"b","cls":"","drop":1.1,"best":"Qxc6","note":"Coach Dong would have taken with the queen here \u2014 15\u2026Qxc6 \u2014 keeping the rook free for the c-file.","fen":"5rk1/p5pp/1prqpp2/1Qpp4/3Pn3/2P1PN2/PP3PPP/3R1RK1 w - - 0 16","eval":2,"mark":""},{"ply":31,"san":"Nd2","from":"f3","to":"d2","side":"w","cls":"","drop":0.3,"best":"Qe2","note":"","fen":"5rk1/p5pp/1prqpp2/1Qpp4/3Pn3/2P1P3/PP1N1PPP/3R1RK1 b - - 1 16","eval":-1,"mark":""},{"ply":32,"san":"Nxd2","from":"e4","to":"d2","side":"b","cls":"","drop":0.1,"best":"f5","note":"","fen":"5rk1/p5pp/1prqpp2/1Qpp4/3P4/2P1P3/PP1n1PPP/3R1RK1 w - - 0 17","eval":0,"mark":""},{"ply":33,"san":"Rxd2","from":"d1","to":"d2","side":"w","cls":"best","drop":0.9,"best":"Rxd2","note":"","fen":"5rk1/p5pp/1prqpp2/1Qpp4/3P4/2P1P3/PP1R1PPP/5RK1 b - - 0 17","eval":-10,"mark":""},{"ply":34,"san":"cxd4","from":"c5","to":"d4","side":"b","cls":"","drop":0.9,"best":"Rc7","note":"","fen":"5rk1/p5pp/1prqpp2/1Q1p4/3p4/2P1P3/PP1R1PPP/5RK1 w - - 0 18","eval":0,"mark":""},{"ply":35,"san":"Rxd4","from":"d2","to":"d4","side":"w","cls":"best","drop":0.0,"best":"Rxd4","note":"","fen":"5rk1/p5pp/1prqpp2/1Q1p4/3R4/2P1P3/PP3PPP/5RK1 b - - 0 18","eval":0,"mark":""},{"ply":36,"san":"Rc5","from":"c6","to":"c5","side":"b","cls":"","drop":0.0,"best":"Qc7","note":"","fen":"5rk1/p5pp/1p1qpp2/1Qrp4/3R4/2P1P3/PP3PPP/5RK1 w - - 1 19","eval":0,"mark":""},{"ply":37,"san":"Qb3","from":"b5","to":"b3","side":"w","cls":"","drop":0.6,"best":"Qa4","note":"","fen":"5rk1/p5pp/1p1qpp2/2rp4/3R4/1QP1P3/PP3PPP/5RK1 b - - 2 19","eval":-7,"mark":""},{"ply":38,"san":"e5","from":"e6","to":"e5","side":"b","cls":"","drop":2.4,"best":"Qc6","note":"Coach Dong's note: e5 isn't quite right. 19\u2026Qc6 first, stepping the queen out of trouble, was cleaner.","fen":"5rk1/p5pp/1p1q1p2/2rpp3/3R4/1QP1P3/PP3PPP/5RK1 w - - 0 20","eval":19,"mark":""},{"ply":39,"san":"Rd2","from":"d4","to":"d2","side":"w","cls":"","drop":0.9,"best":"Rd3","note":"","fen":"5rk1/p5pp/1p1q1p2/2rpp3/8/1QP1P3/PP1R1PPP/5RK1 b - - 1 20","eval":9,"mark":""},{"ply":40,"san":"Kh8","from":"g8","to":"h8","side":"b","cls":"","drop":1.0,"best":"Rd8","note":"","fen":"5r1k/p5pp/1p1q1p2/2rpp3/8/1QP1P3/PP1R1PPP/5RK1 w - - 2 21","eval":20,"mark":""},{"ply":41,"san":"Rfd1","from":"f1","to":"d1","side":"w","cls":"best","drop":1.0,"best":"Rfd1","note":"","fen":"5r1k/p5pp/1p1q1p2/2rpp3/8/1QP1P3/PP1R1PPP/3R2K1 b - - 3 21","eval":9,"mark":""},{"ply":42,"san":"Rd8","from":"f8","to":"d8","side":"b","cls":"best","drop":0.3,"best":"Rd8","note":"","fen":"3r3k/p5pp/1p1q1p2/2rpp3/8/1QP1P3/PP1R1PPP/3R2K1 w - - 4 22","eval":12,"mark":""},{"ply":43,"san":"e4","from":"e3","to":"e4","side":"w","cls":"","drop":1.1,"best":"a3","note":"","fen":"3r3k/p5pp/1p1q1p2/2rpp3/4P3/1QP5/PP1R1PPP/3R2K1 b - - 0 22","eval":0,"mark":""},{"ply":44,"san":"d4","from":"d5","to":"d4","side":"b","cls":"best","drop":0.0,"best":"d4","note":"","fen":"3r3k/p5pp/1p1q1p2/2r1p3/3pP3/1QP5/PP1R1PPP/3R2K1 w - - 0 23","eval":0,"mark":""},{"ply":45,"san":"g3","from":"g2","to":"g3","side":"w","cls":"","drop":0.0,"best":"Qa4","note":"","fen":"3r3k/p5pp/1p1q1p2/2r1p3/3pP3/1QP3P1/PP1R1P1P/3R2K1 b - - 0 23","eval":0,"mark":""},{"ply":46,"san":"h6","from":"h7","to":"h6","side":"b","cls":"best","drop":0.4,"best":"h6","note":"","fen":"3r3k/p5p1/1p1q1p1p/2r1p3/3pP3/1QP3P1/PP1R1P1P/3R2K1 w - - 0 24","eval":4,"mark":""},{"ply":47,"san":"cxd4","from":"c3","to":"d4","side":"w","cls":"","drop":0.6,"best":"Kg2","note":"","fen":"3r3k/p5p1/1p1q1p1p/2r1p3/3PP3/1Q4P1/PP1R1P1P/3R2K1 b - - 0 24","eval":-3,"mark":""},{"ply":48,"san":"exd4","from":"e5","to":"d4","side":"b","cls":"best","drop":0.3,"best":"exd4","note":"","fen":"3r3k/p5p1/1p1q1p1p/2r5/3pP3/1Q4P1/PP1R1P1P/3R2K1 w - - 0 25","eval":0,"mark":""},{"ply":49,"san":"Qd3","from":"b3","to":"d3","side":"w","cls":"","drop":0.4,"best":"Qa4","note":"","fen":"3r3k/p5p1/1p1q1p1p/2r5/3pP3/3Q2P1/PP1R1P1P/3R2K1 b - - 1 25","eval":-4,"mark":""},{"ply":50,"san":"Qe5","from":"d6","to":"e5","side":"b","cls":"","drop":0.1,"best":"Qe6","note":"","fen":"3r3k/p5p1/1p3p1p/2r1q3/3pP3/3Q2P1/PP1R1P1P/3R2K1 w - - 2 26","eval":-3,"mark":""},{"ply":51,"san":"f4","from":"f2","to":"f4","side":"w","cls":"","drop":0.2,"best":"Kg2","note":"","fen":"3r3k/p5p1/1p3p1p/2r1q3/3pPP2/3Q2P1/PP1R3P/3R2K1 b - - 0 26","eval":-5,"mark":""},{"ply":52,"san":"Qc7","from":"e5","to":"c7","side":"b","cls":"best","drop":0.5,"best":"Qc7","note":"","fen":"3r3k/p1q3p1/1p3p1p/2r5/3pPP2/3Q2P1/PP1R3P/3R2K1 w - - 1 27","eval":0,"mark":""},{"ply":53,"san":"Qf1","from":"d3","to":"f1","side":"w","cls":"","drop":0.2,"best":"Qe2","note":"","fen":"3r3k/p1q3p1/1p3p1p/2r5/3pPP2/6P1/PP1R3P/3R1QK1 b - - 2 27","eval":-2,"mark":""},{"ply":54,"san":"Rc2","from":"c5","to":"c2","side":"b","cls":"","drop":-0.4,"best":"Rc4","note":"","fen":"3r3k/p1q3p1/1p3p1p/8/3pPP2/6P1/PPrR3P/3R1QK1 w - - 3 28","eval":-6,"mark":""},{"ply":55,"san":"Qf2","from":"f1","to":"f2","side":"w","cls":"","drop":0.2,"best":"Qd3","note":"","fen":"3r3k/p1q3p1/1p3p1p/8/3pPP2/6P1/PPrR1Q1P/3R2K1 b - - 4 28","eval":-8,"mark":""},{"ply":56,"san":"d3","from":"d4","to":"d3","side":"b","cls":"best","drop":-0.3,"best":"d3","note":"","fen":"3r3k/p1q3p1/1p3p1p/8/4PP2/3p2P1/PPrR1Q1P/3R2K1 w - - 0 29","eval":-11,"mark":""},{"ply":57,"san":"Rxc2","from":"d2","to":"c2","side":"w","cls":"blunder","drop":44.1,"best":"Qe3","note":"The losing move. White grabs the rook on c2 without seeing what the d-pawn does next. 29.Qe3 held everything.","fen":"3r3k/p1q3p1/1p3p1p/8/4PP2/3p2P1/PPR2Q1P/3R2K1 b - - 0 29","eval":-806,"mark":"??"},{"ply":58,"san":"dxc2","from":"d3","to":"c2","side":"b","cls":"best","drop":-1.1,"best":"dxc2","note":"Recapturing makes a monster: the pawn on c2 is one square from becoming a queen.","fen":"3r3k/p1q3p1/1p3p1p/8/4PP2/6P1/PPp2Q1P/3R2K1 w - - 0 30","eval":-880,"mark":""},{"ply":59,"san":"Rxd8+","from":"d1","to":"d8","side":"w","cls":"best","drop":-0.1,"best":"Rxd8+","note":"White checks and expects the rook to be taken back.","fen":"3R3k/p1q3p1/1p3p1p/8/4PP2/6P1/PPp2Q1P/6K1 b - - 0 30","eval":-872,"mark":""},{"ply":60,"san":"Kh7","from":"h8","to":"h7","side":"b","cls":"brilliant","drop":-0.2,"best":"Kh7","note":"The whole game. JJ ignores the rook and just steps aside \u2014 because the c-pawn queens next move. Taking the rook instead (30\u2026Qxd8) is dead level; this wins. Coach Dong called it a brilliant move.","fen":"3R4/p1q3pk/1p3p1p/8/4PP2/6P1/PPp2Q1P/6K1 w - - 1 31","eval":-884,"mark":"!!"},{"ply":61,"san":"Rd2","from":"d8","to":"d2","side":"w","cls":"","drop":0.3,"best":"Kg2","note":"","fen":"8/p1q3pk/1p3p1p/8/4PP2/6P1/PPpR1Q1P/6K1 b - - 2 31","eval":-905,"mark":""},{"ply":62,"san":"c1=Q+","from":"c2","to":"c1","side":"b","cls":"best","drop":-0.3,"best":"c1=Q+","note":"And there it is \u2014 a new queen, with check.","fen":"8/p1q3pk/1p3p1p/8/4PP2/6P1/PP1R1Q1P/2q3K1 w - - 0 32","eval":-931,"mark":""},{"ply":63,"san":"Kg2","from":"g1","to":"g2","side":"w","cls":"best","drop":0.0,"best":"Kg2","note":"","fen":"8/p1q3pk/1p3p1p/8/4PP2/6P1/PP1R1QKP/2q5 b - - 1 32","eval":-933,"mark":""},{"ply":64,"san":"Q7c6","from":"c7","to":"c6","side":"b","cls":"best","drop":-0.0,"best":"Q7c6","note":"","fen":"8/p5pk/1pq2p1p/8/4PP2/6P1/PP1R1QKP/2q5 w - - 2 33","eval":-935,"mark":""},{"ply":65,"san":"Qd4","from":"f2","to":"d4","side":"w","cls":"","drop":0.5,"best":"Re2","note":"","fen":"8/p5pk/1pq2p1p/8/3QPP2/6P1/PP1R2KP/2q5 b - - 3 33","eval":-982,"mark":""},{"ply":66,"san":"Q1c5","from":"c1","to":"c5","side":"b","cls":"","drop":0.6,"best":"f5","note":"","fen":"8/p5pk/1pq2p1p/2q5/3QPP2/6P1/PP1R2KP/8 w - - 4 34","eval":-922,"mark":""},{"ply":67,"san":"Qd3","from":"d4","to":"d3","side":"w","cls":"","drop":0.6,"best":"Qd5","note":"","fen":"8/p5pk/1pq2p1p/2q5/4PP2/3Q2P1/PP1R2KP/8 b - - 5 34","eval":-983,"mark":""},{"ply":68,"san":"Qc4","from":"c5","to":"c4","side":"b","cls":"","drop":0.6,"best":"f5","note":"","fen":"8/p5pk/1pq2p1p/8/2q1PP2/3Q2P1/PP1R2KP/8 w - - 6 35","eval":-929,"mark":""},{"ply":69,"san":"Qb1","from":"d3","to":"b1","side":"w","cls":"","drop":0.7,"best":"Qxc4","note":"","fen":"8/p5pk/1pq2p1p/8/2q1PP2/6P1/PP1R2KP/1Q6 b - - 7 35","eval":-1003,"mark":""},{"ply":70,"san":"Q4xe4+","from":"c4","to":"e4","side":"b","cls":"","drop":0.5,"best":"f5","note":"","fen":"8/p5pk/1pq2p1p/8/4qP2/6P1/PP1R2KP/1Q6 w - - 0 36","eval":-948,"mark":""},{"ply":71,"san":"Qxe4+","from":"b1","to":"e4","side":"w","cls":"best","drop":-0.3,"best":"Qxe4+","note":"","fen":"8/p5pk/1pq2p1p/8/4QP2/6P1/PP1R2KP/8 b - - 0 36","eval":-924,"mark":""},{"ply":72,"san":"Qxe4+","from":"c6","to":"e4","side":"b","cls":"best","drop":0.2,"best":"Qxe4+","note":"","fen":"8/p5pk/1p3p1p/8/4qP2/6P1/PP1R2KP/8 w - - 0 37","eval":-905,"mark":""},{"ply":73,"san":"Kf2","from":"g2","to":"f2","side":"w","cls":"best","drop":-0.0,"best":"Kf2","note":"","fen":"8/p5pk/1p3p1p/8/4qP2/6P1/PP1R1K1P/8 b - - 1 37","eval":-901,"mark":""},{"ply":74,"san":"Qb4","from":"e4","to":"b4","side":"b","cls":"","drop":0.2,"best":"b5","note":"","fen":"8/p5pk/1p3p1p/8/1q3P2/6P1/PP1R1K1P/8 w - - 2 38","eval":-889,"mark":""},{"ply":75,"san":"Rc2","from":"d2","to":"c2","side":"w","cls":"","drop":0.5,"best":"Ke1","note":"","fen":"8/p5pk/1p3p1p/8/1q3P2/6P1/PPR2K1P/8 b - - 3 38","eval":-932,"mark":""},{"ply":76,"san":"Qd4+","from":"b4","to":"d4","side":"b","cls":"best","drop":-0.1,"best":"Qd4+","note":"","fen":"8/p5pk/1p3p1p/8/3q1P2/6P1/PPR2K1P/8 w - - 4 39","eval":-944,"mark":""},{"ply":77,"san":"Ke2","from":"f2","to":"e2","side":"w","cls":"best","drop":0.1,"best":"Ke2","note":"","fen":"8/p5pk/1p3p1p/8/3q1P2/6P1/PPR1K2P/8 b - - 5 39","eval":-956,"mark":""},{"ply":78,"san":"Qe4+","from":"d4","to":"e4","side":"b","cls":"best","drop":-0.0,"best":"Qe4+","note":"","fen":"8/p5pk/1p3p1p/8/4qP2/6P1/PPR1K2P/8 w - - 6 40","eval":-957,"mark":""},{"ply":79,"san":"Kd2","from":"e2","to":"d2","side":"w","cls":"best","drop":-0.0,"best":"Kd2","note":"","fen":"8/p5pk/1p3p1p/8/4qP2/6P1/PPRK3P/8 b - - 7 40","eval":-956,"mark":""},{"ply":80,"san":"Qd5+","from":"e4","to":"d5","side":"b","cls":"best","drop":-0.0,"best":"Qd5+","note":"","fen":"8/p5pk/1p3p1p/3q4/5P2/6P1/PPRK3P/8 w - - 8 41","eval":-958,"mark":""},{"ply":81,"san":"Ke1","from":"d2","to":"e1","side":"w","cls":"","drop":-0.0,"best":"Ke3","note":"","fen":"8/p5pk/1p3p1p/3q4/5P2/6P1/PPR4P/4K3 b - - 9 41","eval":-957,"mark":""},{"ply":82,"san":"Qxa2","from":"d5","to":"a2","side":"b","cls":"best","drop":-0.1,"best":"Qxa2","note":"","fen":"8/p5pk/1p3p1p/8/5P2/6P1/qPR4P/4K3 w - - 0 42","eval":-969,"mark":""},{"ply":83,"san":"Re2","from":"c2","to":"e2","side":"w","cls":"best","drop":-0.0,"best":"Re2","note":"","fen":"8/p5pk/1p3p1p/8/5P2/6P1/qP2R2P/4K3 b - - 1 42","eval":-968,"mark":""},{"ply":84,"san":"Qb1+","from":"a2","to":"b1","side":"b","cls":"","drop":0.1,"best":"a5","note":"","fen":"8/p5pk/1p3p1p/8/5P2/6P1/1P2R2P/1q2K3 w - - 2 43","eval":-956,"mark":""},{"ply":85,"san":"Kf2","from":"e1","to":"f2","side":"w","cls":"best","drop":0.1,"best":"Kf2","note":"","fen":"8/p5pk/1p3p1p/8/5P2/6P1/1P2RK1P/1q6 b - - 3 43","eval":-962,"mark":""},{"ply":86,"san":"a5","from":"a7","to":"a5","side":"b","cls":"","drop":-0.0,"best":"Qh1","note":"","fen":"8/6pk/1p3p1p/p7/5P2/6P1/1P2RK1P/1q6 w - - 0 44","eval":-964,"mark":""},{"ply":87,"san":"b4","from":"b2","to":"b4","side":"w","cls":"","drop":0.4,"best":"Kg2","note":"","fen":"8/6pk/1p3p1p/p7/1P3P2/6P1/4RK1P/1q6 b - - 0 44","eval":-1012,"mark":""},{"ply":88,"san":"a4","from":"a5","to":"a4","side":"b","cls":"","drop":-0.0,"best":"Qxb4","note":"","fen":"8/6pk/1p3p1p/8/pP3P2/6P1/4RK1P/1q6 w - - 0 45","eval":-1014,"mark":""},{"ply":89,"san":"g4","from":"g3","to":"g4","side":"w","cls":"best","drop":0.1,"best":"g4","note":"","fen":"8/6pk/1p3p1p/8/pP3PP1/8/4RK1P/1q6 b - - 0 45","eval":-1026,"mark":""},{"ply":90,"san":"a3","from":"a4","to":"a3","side":"b","cls":"best","drop":-0.2,"best":"a3","note":"","fen":"8/6pk/1p3p1p/8/1P3PP1/p7/4RK1P/1q6 w - - 0 46","eval":-1048,"mark":""},{"ply":91,"san":"g5","from":"g4","to":"g5","side":"w","cls":"","drop":1.0,"best":"Kf3","note":"","fen":"8/6pk/1p3p1p/6P1/1P3P2/p7/4RK1P/1q6 b - - 0 46","eval":-1218,"mark":""},{"ply":92,"san":"hxg5","from":"h6","to":"g5","side":"b","cls":"","drop":1.2,"best":"a2","note":"","fen":"8/6pk/1p3p2/6p1/1P3P2/p7/4RK1P/1q6 w - - 0 47","eval":-1021,"mark":""},{"ply":93,"san":"Kg3","from":"f2","to":"g3","side":"w","cls":"","drop":2.2,"best":"fxg5","note":"","fen":"8/6pk/1p3p2/6p1/1P3P2/p5K1/4R2P/1q6 b - - 1 47","eval":-9986,"mark":""},{"ply":94,"san":"a2","from":"a3","to":"a2","side":"b","cls":"","drop":1.0,"best":"Qg1+","note":"","fen":"8/6pk/1p3p2/6p1/1P3P2/6K1/p3R2P/1q6 w - - 0 48","eval":-1224,"mark":""},{"ply":95,"san":"f5","from":"f4","to":"f5","side":"w","cls":"","drop":1.0,"best":"Rxa2","note":"","fen":"8/6pk/1p3p2/5Pp1/1P6/6K1/p3R2P/1q6 b - - 0 48","eval":-9995,"mark":""},{"ply":96,"san":"a1=Q","from":"a2","to":"a1","side":"b","cls":"best","drop":0.0,"best":"a1=Q","note":"","fen":"8/6pk/1p3p2/5Pp1/1P6/6K1/4R2P/qq6 w - - 0 49","eval":-9996,"mark":""}],"sheetnote":"<b>Where this came from.</b> Played on Chess.com on Saturday 6 September and reviewed by Coach Dong on 12 September. The moves are read off his ChessBase screen, not from the audio, and the whole game was replayed with python-chess to check every move is legal."},{"id":"g1","title":"JJ vs opponent","black":"JJ","result":"unfinished on the sheet","eco":"B51 \u2014 Sicilian, Moscow Variation","date":"From his paper score sheets","blurb":"JJ played Black. Level for thirteen moves, then he won a pawn \u2014 and gave it back.","start":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","startEval":25,"nodes":[{"ply":1,"san":"e4","from":"e2","to":"e4","side":"w","cls":"best","drop":0.4,"best":"e4","note":"","fen":"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1","eval":25,"mark":""},{"ply":2,"san":"c5","from":"c7","to":"c5","side":"b","cls":"","drop":0.9,"best":"e5","note":"","fen":"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2","eval":35,"mark":""},{"ply":3,"san":"Nf3","from":"g1","to":"f3","side":"w","cls":"best","drop":0.4,"best":"Nf3","note":"","fen":"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2","eval":31,"mark":""},{"ply":4,"san":"d6","from":"d7","to":"d6","side":"b","cls":"","drop":-0.7,"best":"Nc6","note":"","fen":"rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3","eval":23,"mark":""},{"ply":5,"san":"Nc3","from":"b1","to":"c3","side":"w","cls":"","drop":0.3,"best":"d4","note":"","fen":"rnbqkbnr/pp2pppp/3p4/2p5/4P3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 1 3","eval":20,"mark":""},{"ply":6,"san":"Nf6","from":"g8","to":"f6","side":"b","cls":"","drop":0.8,"best":"e5","note":"","fen":"rnbqkb1r/pp2pppp/3p1n2/2p5/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 2 4","eval":29,"mark":""},{"ply":7,"san":"Bb5+","from":"f1","to":"b5","side":"w","cls":"","drop":2.7,"best":"d4","note":"","fen":"rnbqkb1r/pp2pppp/3p1n2/1Bp5/4P3/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 3 4","eval":0,"mark":""},{"ply":8,"san":"Bd7","from":"c8","to":"d7","side":"b","cls":"best","drop":-0.3,"best":"Bd7","note":"","fen":"rn1qkb1r/pp1bpppp/3p1n2/1Bp5/4P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 4 5","eval":-3,"mark":""},{"ply":9,"san":"Bxd7+","from":"b5","to":"d7","side":"w","cls":"","drop":-0.3,"best":"Qe2","note":"","fen":"rn1qkb1r/pp1Bpppp/3p1n2/2p5/4P3/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 0 5","eval":0,"mark":""},{"ply":10,"san":"Qxd7","from":"d8","to":"d7","side":"b","cls":"","drop":0.6,"best":"Nbxd7","note":"","fen":"rn2kb1r/pp1qpppp/3p1n2/2p5/4P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 6","eval":7,"mark":""},{"ply":11,"san":"d3","from":"d2","to":"d3","side":"w","cls":"","drop":0.7,"best":"d4","note":"","fen":"rn2kb1r/pp1qpppp/3p1n2/2p5/4P3/2NP1N2/PPP2PPP/R1BQK2R b KQkq - 0 6","eval":-1,"mark":""},{"ply":12,"san":"Nc6","from":"b8","to":"c6","side":"b","cls":"","drop":0.1,"best":"e6","note":"","fen":"r3kb1r/pp1qpppp/2np1n2/2p5/4P3/2NP1N2/PPP2PPP/R1BQK2R w KQkq - 1 7","eval":0,"mark":""},{"ply":13,"san":"O-O","from":"e1","to":"g1","side":"w","cls":"","drop":0.3,"best":"Bg5","note":"","fen":"r3kb1r/pp1qpppp/2np1n2/2p5/4P3/2NP1N2/PPP2PPP/R1BQ1RK1 b kq - 2 7","eval":-3,"mark":""},{"ply":14,"san":"g6","from":"g7","to":"g6","side":"b","cls":"","drop":0.3,"best":"e6","note":"","fen":"r3kb1r/pp1qpp1p/2np1np1/2p5/4P3/2NP1N2/PPP2PPP/R1BQ1RK1 w kq - 0 8","eval":0,"mark":""},{"ply":15,"san":"Bg5","from":"c1","to":"g5","side":"w","cls":"","drop":1.2,"best":"Nd5","note":"","fen":"r3kb1r/pp1qpp1p/2np1np1/2p3B1/4P3/2NP1N2/PPP2PPP/R2Q1RK1 b kq - 1 8","eval":-13,"mark":""},{"ply":16,"san":"Bg7","from":"f8","to":"g7","side":"b","cls":"best","drop":-0.4,"best":"Bg7","note":"","fen":"r3k2r/pp1qppbp/2np1np1/2p3B1/4P3/2NP1N2/PPP2PPP/R2Q1RK1 w kq - 2 9","eval":-17,"mark":""},{"ply":17,"san":"Qd2","from":"d1","to":"d2","side":"w","cls":"","drop":1.8,"best":"Rb1","note":"","fen":"r3k2r/pp1qppbp/2np1np1/2p3B1/4P3/2NP1N2/PPPQ1PPP/R4RK1 b kq - 3 9","eval":-37,"mark":""},{"ply":18,"san":"O-O","from":"e8","to":"g8","side":"b","cls":"","drop":2.9,"best":"h6","note":"","fen":"r4rk1/pp1qppbp/2np1np1/2p3B1/4P3/2NP1N2/PPPQ1PPP/R4RK1 w - - 4 10","eval":-5,"mark":""},{"ply":19,"san":"Bh6","from":"g5","to":"h6","side":"w","cls":"best","drop":0.0,"best":"Bh6","note":"","fen":"r4rk1/pp1qppbp/2np1npB/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 b - - 5 10","eval":-5,"mark":""},{"ply":20,"san":"Rfe8","from":"f8","to":"e8","side":"b","cls":"","drop":1.5,"best":"Rae8","note":"","fen":"r3r1k1/pp1qppbp/2np1npB/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 w - - 6 11","eval":11,"mark":""},{"ply":21,"san":"Bxg7","from":"h6","to":"g7","side":"w","cls":"","drop":0.1,"best":"h3","note":"","fen":"r3r1k1/pp1qppBp/2np1np1/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 b - - 0 11","eval":10,"mark":""},{"ply":22,"san":"Kxg7","from":"g8","to":"g7","side":"b","cls":"best","drop":-0.3,"best":"Kxg7","note":"","fen":"r3r3/pp1qppkp/2np1np1/2p5/4P3/2NP1N2/PPPQ1PPP/R4RK1 w - - 0 12","eval":7,"mark":""},{"ply":23,"san":"h3","from":"h2","to":"h3","side":"w","cls":"best","drop":-0.8,"best":"h3","note":"","fen":"r3r3/pp1qppkp/2np1np1/2p5/4P3/2NP1N1P/PPPQ1PP1/R4RK1 b - - 0 12","eval":16,"mark":""},{"ply":24,"san":"a6","from":"a7","to":"a6","side":"b","cls":"","drop":2.0,"best":"Rad8","note":"","fen":"r3r3/1p1qppkp/p1np1np1/2p5/4P3/2NP1N1P/PPPQ1PP1/R4RK1 w - - 0 13","eval":38,"mark":""},{"ply":25,"san":"Nd5","from":"c3","to":"d5","side":"w","cls":"","drop":2.3,"best":"Rae1","note":"","fen":"r3r3/1p1qppkp/p1np1np1/2pN4/4P3/3P1N1P/PPPQ1PP1/R4RK1 b - - 1 13","eval":13,"mark":""},{"ply":26,"san":"Nxd5","from":"f6","to":"d5","side":"b","cls":"","drop":2.8,"best":"Rad8","note":"","fen":"r3r3/1p1qppkp/p1np2p1/2pn4/4P3/3P1N1P/PPPQ1PP1/R4RK1 w - - 0 14","eval":43,"mark":""},{"ply":27,"san":"exd5","from":"e4","to":"d5","side":"w","cls":"best","drop":-0.1,"best":"exd5","note":"","fen":"r3r3/1p1qppkp/p1np2p1/2pP4/8/3P1N1P/PPPQ1PP1/R4RK1 b - - 0 14","eval":44,"mark":""},{"ply":28,"san":"Nb4","from":"c6","to":"b4","side":"b","cls":"","drop":4.5,"best":"Nd8","note":"","fen":"r3r3/1p1qppkp/p2p2p1/2pP4/1n6/3P1N1P/PPPQ1PP1/R4RK1 w - - 1 15","eval":94,"mark":""},{"ply":29,"san":"Qc3+","from":"d2","to":"c3","side":"w","cls":"inaccuracy","drop":14.8,"best":"c4","note":"A check that achieves nothing. White had to play c4 and hold the extra pawn. Now d5 is loose.","fen":"r3r3/1p1qppkp/p2p2p1/2pP4/1n6/2QP1N1P/PPP2PP1/R4RK1 b - - 2 15","eval":-68,"mark":"?!"},{"ply":30,"san":"Kg8","from":"g7","to":"g8","side":"b","cls":"best","drop":1.3,"best":"Kg8","note":"","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pP4/1n6/2QP1N1P/PPP2PP1/R4RK1 w - - 3 16","eval":-54,"mark":""},{"ply":31,"san":"Rae1","from":"a1","to":"e1","side":"w","cls":"inaccuracy","drop":14.4,"best":"Qb3","note":"Still not defending d5, so it just drops.","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pP4/1n6/2QP1N1P/PPP2PP1/4RRK1 b - - 4 16","eval":-222,"mark":"?!"},{"ply":32,"san":"Nxd5","from":"b4","to":"d5","side":"b","cls":"good","drop":-0.5,"best":"Nxd5","note":"JJ takes the free pawn \u2014 Stockfish's first choice, and the move that put him clearly on top.","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pn4/8/2QP1N1P/PPP2PP1/4RRK1 w - - 0 17","eval":-229,"mark":"!"},{"ply":33,"san":"Qc4","from":"c3","to":"c4","side":"w","cls":"best","drop":0.2,"best":"Qc4","note":"","fen":"r3r1k1/1p1qpp1p/p2p2p1/2pn4/2Q5/3P1N1P/PPP2PP1/4RRK1 b - - 1 17","eval":-232,"mark":""},{"ply":34,"san":"Nf6","from":"d5","to":"f6","side":"b","cls":"","drop":5.4,"best":"Qf5","note":"","fen":"r3r1k1/1p1qpp1p/p2p1np1/2p5/2Q5/3P1N1P/PPP2PP1/4RRK1 w - - 2 18","eval":-165,"mark":""},{"ply":35,"san":"Ng5","from":"f3","to":"g5","side":"w","cls":"best","drop":0.3,"best":"Ng5","note":"","fen":"r3r1k1/1p1qpp1p/p2p1np1/2p3N1/2Q5/3P3P/PPP2PP1/4RRK1 b - - 3 18","eval":-168,"mark":""},{"ply":36,"san":"e6","from":"e7","to":"e6","side":"b","cls":"best","drop":0.6,"best":"e6","note":"Good defending. Qc4 and Ng5 were both aiming at f7; e6 shuts the c4\u2013f7 diagonal.","fen":"r3r1k1/1p1q1p1p/p2ppnp1/2p3N1/2Q5/3P3P/PPP2PP1/4RRK1 w - - 0 19","eval":-161,"mark":""},{"ply":37,"san":"Qc3","from":"c4","to":"c3","side":"w","cls":"","drop":2.9,"best":"Qh4","note":"","fen":"r3r1k1/1p1q1p1p/p2ppnp1/2p3N1/8/2QP3P/PPP2PP1/4RRK1 b - - 1 19","eval":-196,"mark":""},{"ply":38,"san":"Nd5","from":"f6","to":"d5","side":"b","cls":"best","drop":1.9,"best":"Nd5","note":"","fen":"r3r1k1/1p1q1p1p/p2pp1p1/2pn2N1/8/2QP3P/PPP2PP1/4RRK1 w - - 2 20","eval":-173,"mark":""},{"ply":39,"san":"Qc4","from":"c3","to":"c4","side":"w","cls":"","drop":5.0,"best":"Qd2","note":"","fen":"r3r1k1/1p1q1p1p/p2pp1p1/2pn2N1/2Q5/3P3P/PPP2PP1/4RRK1 b - - 3 20","eval":-235,"mark":""},{"ply":40,"san":"b5","from":"b7","to":"b5","side":"b","cls":"","drop":6.3,"best":"Kg7","note":"","fen":"r3r1k1/3q1p1p/p2pp1p1/1ppn2N1/2Q5/3P3P/PPP2PP1/4RRK1 w - - 0 21","eval":-157,"mark":""},{"ply":41,"san":"Qh4","from":"c4","to":"h4","side":"w","cls":"best","drop":-0.4,"best":"Qh4","note":"","fen":"r3r1k1/3q1p1p/p2pp1p1/1ppn2N1/7Q/3P3P/PPP2PP1/4RRK1 b - - 1 21","eval":-152,"mark":""},{"ply":42,"san":"h5","from":"h7","to":"h5","side":"b","cls":"","drop":1.6,"best":"Nf6","note":"","fen":"r3r1k1/3q1p2/p2pp1p1/1ppn2Np/7Q/3P3P/PPP2PP1/4RRK1 w - - 0 22","eval":-133,"mark":""},{"ply":43,"san":"Qe4","from":"h4","to":"e4","side":"w","cls":"","drop":3.0,"best":"f4","note":"","fen":"r3r1k1/3q1p2/p2pp1p1/1ppn2Np/4Q3/3P3P/PPP2PP1/4RRK1 b - - 1 22","eval":-168,"mark":""},{"ply":44,"san":"Nf6","from":"d5","to":"f6","side":"b","cls":"","drop":0.7,"best":"Rac8","note":"","fen":"r3r1k1/3q1p2/p2ppnp1/1pp3Np/4Q3/3P3P/PPP2PP1/4RRK1 w - - 2 23","eval":-160,"mark":""},{"ply":45,"san":"Qf3","from":"e4","to":"f3","side":"w","cls":"","drop":-1.1,"best":"Qe2","note":"","fen":"r3r1k1/3q1p2/p2ppnp1/1pp3Np/8/3P1Q1P/PPP2PP1/4RRK1 b - - 3 23","eval":-147,"mark":""},{"ply":46,"san":"Qe7","from":"d7","to":"e7","side":"b","cls":"","drop":-1.5,"best":"Nh7","note":"","fen":"r3r1k1/4qp2/p2ppnp1/1pp3Np/8/3P1Q1P/PPP2PP1/4RRK1 w - - 4 24","eval":-165,"mark":""},{"ply":47,"san":"Ne4","from":"g5","to":"e4","side":"w","cls":"","drop":2.0,"best":"Qg3","note":"","fen":"r3r1k1/4qp2/p2ppnp1/1pp4p/4N3/3P1Q1P/PPP2PP1/4RRK1 b - - 5 24","eval":-189,"mark":""},{"ply":48,"san":"Nxe4","from":"f6","to":"e4","side":"b","cls":"","drop":6.0,"best":"Kg7","note":"Trading knights when you are the one a pawn up helps the defender. Coach Li's rule: never trade just because you can.","fen":"r3r1k1/4qp2/p2pp1p1/1pp4p/4n3/3P1Q1P/PPP2PP1/4RRK1 w - - 0 25","eval":-118,"mark":""},{"ply":49,"san":"dxe4","from":"d3","to":"e4","side":"w","cls":"best","drop":-1.3,"best":"dxe4","note":"","fen":"r3r1k1/4qp2/p2pp1p1/1pp4p/4P3/5Q1P/PPP2PP1/4RRK1 b - - 0 25","eval":-103,"mark":""},{"ply":50,"san":"d5","from":"d6","to":"d5","side":"b","cls":"turn","drop":8.6,"best":"Red8","note":"The one that let it slip. After 26.exd5 the position opens and the extra pawn is gone \u2014 from clearly better back to level. Check your pieces before you push a pawn.","fen":"r3r1k1/4qp2/p3p1p1/1ppp3p/4P3/5Q1P/PPP2PP1/4RRK1 w - - 0 26","eval":-8,"mark":"?!"}],"sheetnote":"<b>About the score sheet.</b> This one is written on two paper slips \u2014 the second carries on where the first runs out, with the numbering restarted at 1. Every move up to <b>25\u2026d5</b> reads cleanly and was checked for legality. From move 26 the handwriting has two readings that are both legal chess, so those moves are left off rather than guessed. A sharper photo of the bottom half of the second slip would finish it."}];
+let G = GAMES[0];
 const SYM = {k:"p-k", q:"p-q", r:"p-r", b:"p-b", n:"p-n", p:"p-p"};
 const FILES = "abcdefgh";
 let idx = -1;              // -1 = start position
@@ -463,8 +414,10 @@ function drawBoard() {
 }
 
 /* ---------- notation ---------- */
-const LABEL = {good:"a good move", best:"the engine's top move",
-               inaccuracy:"an inaccuracy", mistake:"a mistake", blunder:"a blunder"};
+const LABEL = {brilliant:"a brilliant move — the only one that wins",
+               good:"a good move", best:"the engine's top move",
+               inaccuracy:"an inaccuracy", turn:"where it slipped",
+               mistake:"a mistake", blunder:"a blunder"};
 function buildNotation() {
   const box = document.getElementById("notation");
   box.textContent = "";
@@ -528,7 +481,8 @@ function buildChart() {
   const svg = document.getElementById("evalchart");
   const pts = [{ply: 0, ev: -G.startEval / 100}].concat(
     G.nodes.map(n => ({ply: n.ply, ev: -n.eval / 100, n})));
-  const X = p => CH.padL + (p / 50) * (CH.w - CH.padL - CH.padR);
+  const N = G.nodes.length;
+  const X = p => CH.padL + (p / N) * (CH.w - CH.padL - CH.padR);
   const clamp = v => Math.max(-CH.cap, Math.min(CH.cap, v));
   const Y = v => CH.padT + ((CH.cap - clamp(v)) / (2 * CH.cap)) * (CH.h - CH.padT - CH.padB);
   const y0 = Y(0);
@@ -554,7 +508,7 @@ function buildChart() {
 
   // diverging area: one hue each side of a neutral zero line
   const line = pts.map(p => `${X(p.ply)},${Y(p.ev)}`).join(" L ");
-  const area = `M ${X(0)},${y0} L ${line} L ${X(50)},${y0} Z`;
+  const area = `M ${X(0)},${y0} L ${line} L ${X(N)},${y0} Z`;
   ["up", "dn"].forEach(side => {
     const cp = mk("clipPath", {id: "clip-" + side});
     cp.appendChild(mk("rect", {x: 0, y: side === "up" ? 0 : y0,
@@ -571,7 +525,7 @@ function buildChart() {
   // on hue: good-vs-bad as green-vs-red is exactly the pair red-green colour
   // blindness collapses, so the dots are all one neutral ink and the symbol says
   // which is which.
-  const NOTABLE = {good: 1, inaccuracy: 1, mistake: 1, blunder: 1};
+  const NOTABLE = {brilliant: 1, good: 1, inaccuracy: 1, turn: 1, mistake: 1, blunder: 1};
   pts.forEach(p => {
     if (!p.n || !NOTABLE[p.n.cls]) return;
     svg.appendChild(mk("circle", {class: "dot", cx: X(p.ply), cy: Y(p.ev), r: 5,
@@ -617,7 +571,7 @@ function syncChart() {
   const c = document.getElementById("cross");
   if (!c) return;
   if (idx < 0) { c.style.opacity = 0; return; }
-  const x = CH.padL + ((idx + 1) / 50) * (CH.w - CH.padL - CH.padR);
+  const x = CH.padL + ((idx + 1) / G.nodes.length) * (CH.w - CH.padL - CH.padR);
   c.setAttribute("x1", x); c.setAttribute("x2", x); c.style.opacity = .5;
 }
 
@@ -646,8 +600,59 @@ function play() {
   step();
 }
 
+function selectGame(i) {
+  stop(); G = GAMES[i]; idx = -1;
+  document.querySelectorAll("#gametabs .tab").forEach((t, k) =>
+    t.setAttribute("aria-selected", String(k === i)));
+  document.getElementById("gblurb").textContent = G.blurb;
+  document.getElementById("geco").textContent = G.eco;
+  document.getElementById("gdate").textContent = G.date;
+  buildTally(); buildNotation(); buildChart(); buildProse(); go(-1);
+}
+function buildProse() {
+  const ol = document.getElementById("whathappened");
+  ol.textContent = "";
+  G.nodes.filter(n => n.note).forEach(n => {
+    const li = document.createElement("li");
+    li.innerHTML = "<b>" + Math.ceil(n.ply / 2) + (n.side === "w" ? ". " : "\u2026 ") +
+      n.san + n.mark + "</b> — " + n.note;
+    ol.appendChild(li);
+  });
+  document.getElementById("sheetnote").innerHTML = G.sheetnote || "";
+  const tb = document.getElementById("movetable");
+  tb.textContent = "";
+  G.nodes.forEach(n => {
+    const ev = -n.eval / 100;
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + Math.ceil(n.ply / 2) + (n.side === "w" ? "." : "\u2026") + "</td>" +
+      "<td><b>" + n.san + n.mark + "</b></td>" +
+      "<td>" + (n.side === "b" ? "JJ" : "opponent") + "</td>" +
+      "<td>" + (ev > 0.2 ? "JJ +" + ev.toFixed(1)
+              : ev < -0.2 ? "opponent +" + (-ev).toFixed(1) : "level") + "</td>" +
+      "<td>" + (n.best || "") + "</td>" +
+      "<td>" + (n.cls ? LABEL[n.cls] : "") + "</td>";
+    tb.appendChild(tr);
+  });
+}
+function buildTally() {
+  const c = k => G.nodes.filter(n => n.side === "b" && n.cls === k).length;
+  const set = (id, v) => document.getElementById(id).textContent = v;
+  set("t-blund", c("blunder"));
+  set("t-mist",  c("mistake"));
+  set("t-inacc", c("inaccuracy") + c("turn"));
+  set("t-good",  c("best") + c("good") + c("brilliant"));
+}
 document.addEventListener("DOMContentLoaded", () => {
-  buildNotation(); buildChart(); go(-1);
+  const tabs = document.getElementById("gametabs");
+  GAMES.forEach((g, i) => {
+    const b = document.createElement("button");
+    b.className = "tab"; b.type = "button"; b.setAttribute("role", "tab");
+    b.innerHTML = "<b>" + g.title + "</b><span class='eco'>" + g.result + "</span>";
+    b.onclick = () => selectGame(i);
+    tabs.appendChild(b);
+  });
+  selectGame(0);
   let rz; addEventListener("resize", () => {
     clearTimeout(rz); rz = setTimeout(() => { buildChart(); syncChart(); }, 120);
   });

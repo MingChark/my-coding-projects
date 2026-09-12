@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Class — 12 Sep 2026</title>
+  <style>
+    html { background: #d3ecfb; }
+    /* Background lives in a fixed, composited layer.
+       Using background-attachment:fixed on the body element repaints the
+       viewport every scroll frame (jank), and rescales when a mobile
+       URL bar collapses (jump). It also left the white wash on the
+       default 'scroll' attachment while the image stayed put, so the
+       two layers slid against each other. */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.62)),
+                  url('family-bg.svg') center / cover no-repeat;
+    }
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: transparent;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 18px 70px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      line-height: 1.5;
+    }
+    .page { max-width: 900px; margin: 0 auto; }
+    a.back {
+      display: inline-block; text-decoration: none; color: #1b4f72;
+      font-size: 17px; background: rgba(255,255,255,.9);
+      padding: 7px 16px; border-radius: 18px; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    }
+    h1 {
+      font-size: 40px; color: #1b4f72; margin: 22px 0 4px;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.85);
+    }
+    p.subtitle {
+      font-size: 19px; color: #34495e; margin: 0 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .badge { background: #1b4f72; color: #fff; font-size: 14px; padding: 5px 13px; border-radius: 14px; }
+    .badge.alt { background: #63c15c; }
+    .badge.coach { background: #8e44ad; }
+
+    h2 {
+      font-size: 27px; color: #1b4f72; margin: 44px 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.94);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      padding: 22px 24px;
+      margin: 18px 0;
+    }
+    .card.star { border: 3px solid #63c15c; background: linear-gradient(160deg,#fffef5,#eaf8e6); }
+
+    .rulehead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .num { font-size: 30px; color: #63c15c; font-weight: bold; line-height: 1; }
+    .ruletitle { font-size: 23px; color: #1b4f72; font-weight: bold; }
+    .why { font-size: 17px; margin: 10px 0 0; }
+
+    .said {
+      margin-top: 14px; padding: 12px 16px;
+      background: #f4ecfa; border-left: 6px solid #8e44ad;
+      border-radius: 0 12px 12px 0;
+    }
+    .said .cn {
+      font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      font-size: 18px; color: #4a235a;
+    }
+    .said .en { font-size: 16px; color: #5b2c6f; font-style: italic; margin-top: 3px; }
+    .said .when { font-size: 13px; color: #7d3c98; margin-top: 6px; }
+
+    .strip { display: flex; gap: 12px; margin-top: 18px; }
+    .strip figure { flex: 1 1 0; min-width: 0; margin: 0; text-align: center; }
+    .strip img {
+      width: 100%; height: auto; display: block;
+      border-radius: 10px; border: 3px solid #d5dbdb;
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
+    }
+    .strip figure.key img { border-color: #63c15c; }
+    .strip figcaption { font-size: 14px; margin-top: 7px; }
+    .strip figure.key figcaption { font-weight: bold; color: #217a1f; }
+    .step {
+      display: inline-block; background: #d5dbdb; color: #2c3e50;
+      font-size: 12px; padding: 2px 9px; border-radius: 10px; margin-bottom: 5px;
+    }
+    .strip figure.key .step { background: #63c15c; color: #fff; }
+
+    .movelist {
+      font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+      font-size: 15px; background: #eef3f7; border-radius: 12px;
+      padding: 14px 16px; margin-top: 14px; overflow-x: auto;
+      line-height: 1.9; color: #1b4f72;
+    }
+    .tip { font-size: 17px; margin-top: 12px; }
+    .tip strong { color: #1b4f72; }
+
+    @media (max-width: 700px) {
+      .strip { flex-wrap: wrap; }
+      .strip figure { flex: 1 1 44%; }
+      h1 { font-size: 31px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="chess.html">← All chess records</a>
+
+  <h1>♟️ Saturday Chess Class</h1>
+  <p class="subtitle">“You have to write it down”</p>
+  <div class="badges">
+    <span class="badge">📅 Sat 12 Sep 2026</span>
+    <span class="badge coach">👨‍🏫 Coach IM Li Wenliang (李文良)</span>
+    <span class="badge alt">JJ's own Saturday class</span>
+  </div>
+
+  <!-- ===== the theme ===== -->
+  <div class="card star">
+    <p class="tip"><strong>A second coach in the room.</strong> There was a guest coach helping with the boards and keeping an eye on who was paying attention. Two students got named for chatting — worth knowing.</p>
+    <p class="tip"><strong>And the line that matters most this week.</strong> Five students got all six homework puzzles right. One of them lost the credit anyway:</p>
+    <div class="said">
+      <div class="cn">“没写。没写不行，下次得写上。”</div>
+      <div class="en">You didn't write it down. That's not good enough — write it out next time.</div>
+      <div class="when">📅 12 Sep 2026 · class, 09:10</div>
+    </div>
+    <p class="tip">Getting the answer in your head doesn't count. Write the moves on the sheet.</p>
+  </div>
+
+  <!-- ===== homework ===== -->
+  <h2>📝 Homework 25–30 — the answers</h2>
+  <div class="card">
+    <p class="tip">This is the set JJ had as the <b>hidden</b> one. Coach went through all six, so the <a href="hw-boards-25-30.html">playable boards</a> now show the full lines.</p>
+    <ul style="font-size:17px">
+      <li><b>25 — Rd7.</b> A quiet rook move, no check at all. Coach accepted <b>Rf3</b> too — it also wins. He said Rf3 was the shorter one; the engine says the opposite (<b>Rd7 mates in 4, Rf3 in 7</b>), so Rd7 is the one to remember.</li>
+      <li><b>26 — Nb3+</b>, then throw the queen in with <b>Qa4+</b>. Taking is forced and it opens the road for the bishop. <em>“这步棋特别关键”</em> — this is the key move.</li>
+      <li><b>27 — g8=Q+</b>. The pawn becomes a queen immediately, just to drag the rook off g8.</li>
+      <li><b>28 — Nf5+</b>, then a <b>discovered check</b>. <em>“眼看着将杀，discover check，挡不住了”</em> — you can see the mate coming and there's nothing to do about it.</li>
+      <li><b>29 — Qf8+.</b> Give the queen away with check and the two rooks finish it.</li>
+      <li><b>30 — Rxh6+.</b> Something has to come off h6; then the h-pawn joins in.</li>
+    </ul>
+    <p class="tip"><strong>Coach's standing warning about the workload:</strong></p>
+    <div class="said">
+      <div class="cn">“李老师给你们出的 homework 只是一周的量，一天的量⋯⋯一天要做五六道题。”</div>
+      <div class="en">The homework I set you is a week's sheet, but really it's one day's worth — you should be doing five or six problems a day.</div>
+      <div class="when">📅 12 Sep 2026 · class, 00:40</div>
+    </div>
+    <p class="tip">The new sheet, <b>31–36</b>, is up as <a href="hw-boards-31-36.html">playable boards with the answers hidden</a> — the same way 25–30 started.</p>
+  </div>
+
+  <!-- ===== the game ===== -->
+  <h2>⭐ Fischer – Benko, US Championship 1963</h2>
+  <div class="card star">
+    <p class="why">B09 Pirc Defence, Austrian Attack · US Championship, New York, round 10 · 30 Dec 1963 · Fischer had White · 1–0</p>
+    <p class="tip"><strong>Why this game.</strong> This is round 10 of the championship Fischer won <b>11–0</b> — every single game. He had nine straight wins behind him when he sat down.</p>
+    <div class="said">
+      <div class="cn">“九连胜的眼睛冒火在棋盘上，一坐下来就想赢你。所以他 passive 是正常的。”</div>
+      <div class="en">Nine wins in a row, eyes burning at the board, sitting down wanting to beat you. No wonder his opponent played passively.</div>
+      <div class="when">📅 12 Sep 2026 · class, 27:50</div>
+    </div>
+    <p class="tip"><strong>The position.</strong> Black had found a clever defence — the idea was that <b>…f5</b> holds everything together, because taking on f5 would cost White the queen. Coach called the defensive idea genuinely smart. Then Fischer found the hole in it.</p>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/2026-09-12-f1a.jpg" alt="Position before Rf6">
+        <figcaption>18…exd4 — Black thinks …f5 will hold</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The move</span>
+        <img src="chess-img/2026-09-12-f1b.jpg" alt="19.Rf6 played">
+        <figcaption><b>19.Rf6!!</b> — the rook goes where it can be taken three ways</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/2026-09-12-f1c.jpg" alt="The finish, 21.Ne2">
+        <figcaption>20.e5 h6 <b>21.Ne2</b> and Black resigned</figcaption>
+      </figure>
+    </div>
+    <p class="tip"><strong>Why Rf6 works.</strong> It isn't really a sacrifice — it's a <b>blocker</b>. The rook parks on f6 so that …f5 is no longer available, and the mate on h7 can't be stopped. Taking the rook loses on the spot (19…Bxf6 20.e5) and so does 19…dxc3. Black's king had to shuffle to g8, and it was over.</p>
+    <div class="said">
+      <div class="cn">“你不想生 F5 吗？我送一个车给你，block，block，block。”</div>
+      <div class="en">You want to play f5? Here, have a rook — block, block, block.</div>
+      <div class="when">📅 12 Sep 2026 · class, 30:40</div>
+    </div>
+    <p class="tip"><strong>Next week:</strong> game 11 — the last one of the 11–0 run, and Coach says the hardest. It was nearly a draw and Fischer won it in the endgame.</p>
+  </div>
+
+  <!-- ===== opening ===== -->
+  <h2>📖 How to meet the Center Game</h2>
+  <div class="card">
+    <p class="why">C22 Centre Game · this is the Black side, and it follows on from last week's Danish Gambit</p>
+    <p class="tip"><strong>What it is.</strong> White plays <b>1.e4 e5 2.d4 exd4 3.Qxd4</b>, bringing the queen out on move three. Strong players do use it — it's an opening for people who like sharp, tactical positions — but the early queen is also its weakness.</p>
+    <div class="said">
+      <div class="cn">“如果在开局中出后过早，你就会在开局中损失时间，因为你的皇后碰到对方的攻击，你需要 move。”</div>
+      <div class="en">Bring the queen out too early in the opening and you lose time, because when it gets attacked you have to move it again.</div>
+      <div class="when">📅 12 Sep 2026 · class, 35:10</div>
+    </div>
+    <p class="tip"><strong>Black's plan, in order:</strong></p>
+    <ul style="font-size:17px">
+      <li><b>Attack the queen every time you develop.</b> Each attack is a free move for you.</li>
+      <li><b>Get the bishop out before you play d6</b> — play d6 first and you block your own bishop in.</li>
+      <li>White wants <b>O-O-O</b> and a kingside attack. Don't panic: Black develops faster.</li>
+    </ul>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/2026-09-12-o1a.jpg" alt="Center Game position, Black to move">
+        <figcaption>Shown from <b>Black's</b> side — the side you'll be</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The trap</span>
+        <img src="chess-img/2026-09-12-o1b.jpg" alt="The knight on d4">
+        <figcaption>The knight jump — it looks like it's trapped</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/2026-09-12-o1c.jpg" alt="Winning material">
+        <figcaption>Give it up on purpose, and win more back</figcaption>
+      </figure>
+    </div>
+    <p class="tip"><strong>The trap to know by heart.</strong> After <b>1.e4 e5 2.d4 exd4 3.Qxd4 Nc6 4.Qe3 Nf6 5.e5 Ng4 6.Qe4</b>, the knight on g4 looks lost. The move is <b>6…d6!</b> — not 6…Ngxe5?, which runs into 7.f4 and drops the knight. After <b>7.exd6+ Be6 8.dxc7 Qxc7</b> Black is much better: White has grabbed pawns and has nothing developed.</p>
+    <div class="said">
+      <div class="cn">“这匹马 trap，你送给他 —— 对，叫 sacrifice —— 然后吃掉，win material。”</div>
+      <div class="en">The knight is trapped, so you give it to him — yes, a sacrifice — then you take back, and you win material.</div>
+      <div class="when">📅 12 Sep 2026 · class, 38:30</div>
+    </div>
+    <p class="tip">Coach also showed the main line <b>5.Nc3 Bb4 6.Bd2 O-O 7.O-O-O Re8 8.Qg3</b>, and that after the alternative 8.Bc4 Black equalises with <b>8…d5!</b>. He's been playing this since he was a kid.</p>
+  </div>
+
+  <!-- ===== takeaways ===== -->
+  <h2>🎯 What to take away</h2>
+  <div class="card">
+    <ul style="font-size:17px">
+      <li><b>Write your homework answers down.</b> Solving it in your head doesn't count — a student lost the credit for exactly this.</li>
+      <li><b>Five or six puzzles a day</b>, not six a week.</li>
+      <li><b>A sacrifice can be a blocker.</b> Fischer's 19.Rf6 wasn't about winning material — it was about taking …f5 away.</li>
+      <li><b>Against an early queen, develop with tempo.</b> Every piece you put out should attack it.</li>
+      <li><b>Bishop out before d6</b>, or you block your own bishop.</li>
+      <li><b>A trapped piece isn't always lost</b> — sometimes you give it up on purpose and win more back.</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>

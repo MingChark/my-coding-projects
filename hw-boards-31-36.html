@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Homework 25–30</title>
+<title>Homework 31–36</title>
 <style>
   html { background: #d3ecfb; }
   body::before {
@@ -168,29 +168,33 @@
 
   <a class="back" href="chess-homework.html">← All homework sheets</a>
 
-  <h1>♟️ Homework 25–30</h1>
-  <p class="subtitle">Coach went through this set on 12 Sep — the answers are here now</p>
+  <h1>♟️ Homework 31–36</h1>
+  <p class="subtitle">This week's set — answers hidden. Have a go.</p>
   <div class="badges">
-    <span class="badge">Handed out Sat 5 Sep 2026</span>
-    <span class="badge coach">Answers from class, 12 Sep 2026</span>
-    <span class="badge alt">All six are mates</span>
+    <span class="badge">Handed out Sat 12 Sep 2026</span>
+    <span class="badge coach">🔒 Answers hidden</span>
+    <span class="badge alt">All six are White to move and win</span>
   </div>
 
   <div class="intro">
-    <p><b>Unlocked.</b> This set went out on 5 September and JJ had it as the hidden one — no answers on the page, just a check that told him if he'd found the move. Coach went through all six in class on <b>Saturday 12 September</b>, so they're open now.</p>
-    <p><b>How to use a board.</b> Click a piece and its legal squares light up — then click one to move. Only legal moves are allowed.</p>
-    <p>Press <b>▶ Show the answer</b> and the whole line <b>plays itself</b>, one move at a time. Press it again to pause. <b>Next move</b> steps through by hand instead.</p>
-    <p>All six end in a <b>real checkmate</b> — every line was replayed and checked. The paper sheet is on the <a href="chess-homework.html">homework page</a>, and this week's hidden set is <a href="hw-boards-31-36.html">31–36</a>.</p>
+    <p><b>These are yours to solve.</b> Coach hasn't gone through this set in class yet, so the answers aren't on this page — and they aren't hidden in the code either. All that's stored is a scrambled fingerprint of each move, so nobody can go looking for it.</p>
+    <p><b>How it works.</b> Click a piece and its legal squares light up, then click where you want it to go. Play the move you think is right and the board will tell you whether you've found it. Got it wrong? Press <b>↩ Undo</b> and try again.</p>
+    <p>There's a nudge next to each board if you're stuck — it says how long the mate is, without giving the move away.</p>
+    <p>Five of these are a <b>forced mate</b>. One (number 31) isn't — it just wins a lot of material. Once Coach covers the set in class, the full lines will appear here like the other pages.</p>
   </div>
 
   <h2>The six puzzles</h2>
-  <div data-puzzle="25"></div>
-  <div data-puzzle="26"></div>
-  <div data-puzzle="27"></div>
-  <div data-puzzle="28"></div>
-  <div data-puzzle="29"></div>
-  <div data-puzzle="30"></div>
+  <div data-puzzle="31"></div>
+  <div data-puzzle="32"></div>
+  <div data-puzzle="33"></div>
+  <div data-puzzle="34"></div>
+  <div data-puzzle="35"></div>
+  <div data-puzzle="36"></div>
+  <div class="intro">
+    <p>The paper sheet is on the <a href="chess-homework.html">homework page</a> if you'd rather work from that. Already-covered sets with full answers: <a href="hw-boards-25-30.html">25–30</a>, <a href="hw-boards-7-12.html">7–12</a>, <a href="hw-boards-425-430.html">425–430</a>, <a href="hw-boards-431-436.html">431–436</a>, <a href="hw-boards-bmc21.html">BMC 21</a>, <a href="hw-boards-bmc22.html">BMC 22</a>.</p>
   </div>
+
+</div>
 <script>
 /* Minimal but complete chess rules: legal moves, castling, en passant,
    promotion, check / checkmate / stalemate. Board is 64 cells, index
@@ -417,7 +421,7 @@ const CR = (() => {
            perft, SQ, FROM_SQ, colorOf, idx, rc, kingSq };
 })();
 
-const HWPUZZLES = [{"n":25,"cat":"Mate","fen":"r3rk2/p3Rp1p/1qp1bQ2/8/1p1P4/6R1/PP3PPP/6K1 w - - 0 1","turn":"w","moves":[{"san":"Rd7","uci":"e7d7","from":"e7","to":"d7"},{"san":"Bxd7","uci":"e6d7","from":"e6","to":"d7"},{"san":"Qd6+","uci":"f6d6","from":"f6","to":"d6"},{"san":"Re7","uci":"e8e7","from":"e8","to":"e7"},{"san":"Qh6+","uci":"d6h6","from":"d6","to":"h6"},{"san":"Ke8","uci":"f8e8","from":"f8","to":"e8"},{"san":"Rg8#","uci":"g3g8","from":"g3","to":"g8"}],"note":"A quiet rook move first \u2014 no check at all. Coach accepted Rf3 too: it also wins, but it takes a lot longer. Rd7 is the quick one.","verdict":"Mate in 4","mate":true},{"n":26,"cat":"Mate","fen":"rnb3Br/p1p4p/6p1/kp2b3/2Q1p3/4B3/P1PNKPPP/q6R w - - 0 1","turn":"w","moves":[{"san":"Nb3+","uci":"d2b3","from":"d2","to":"b3"},{"san":"Ka6","uci":"a5a6","from":"a5","to":"a6"},{"san":"Qa4+","uci":"c4a4","from":"c4","to":"a4"},{"san":"bxa4","uci":"b5a4","from":"b5","to":"a4"},{"san":"Bc4+","uci":"g8c4","from":"g8","to":"c4"},{"san":"Kb7","uci":"a6b7","from":"a6","to":"b7"},{"san":"Na5#","uci":"b3a5","from":"b3","to":"a5"}],"note":"Coach's line exactly: knight check, then throw the queen in on a4. Taking it is forced, and it opens the road for the bishop.","verdict":"Mate in 4","mate":true},{"n":27,"cat":"Mate","fen":"r7/6Pk/4p2P/3pp3/3q1r2/pPQ5/P1P5/2K3RR w - - 0 1","turn":"w","moves":[{"san":"g8=Q+","uci":"g7g8q","from":"g7","to":"g8"},{"san":"Rxg8","uci":"a8g8","from":"a8","to":"g8"},{"san":"Qc7+","uci":"c3c7","from":"c3","to":"c7"},{"san":"Kh8","uci":"h7h8","from":"h7","to":"h8"},{"san":"Rxg8+","uci":"g1g8","from":"g1","to":"g8"},{"san":"Kxg8","uci":"h8g8","from":"h8","to":"g8"},{"san":"Qg7#","uci":"c7g7","from":"c7","to":"g7"}],"note":"That pawn on g7 becomes a queen straight away, just to drag the rook off g8.","verdict":"Mate in 4","mate":true},{"n":28,"cat":"Mate","fen":"5rR1/p1n1bP1p/7k/1p2P3/P1p5/1B3KNP/8/8 w - - 0 1","turn":"w","moves":[{"san":"Nf5+","uci":"g3f5","from":"g3","to":"f5"},{"san":"Kh5","uci":"h6h5","from":"h6","to":"h5"},{"san":"Bd1","uci":"b3d1","from":"b3","to":"d1"},{"san":"Rd8","uci":"f8d8","from":"f8","to":"d8"},{"san":"f8=Q","uci":"f7f8q","from":"f7","to":"f8"},{"san":"Bxf8","uci":"e7f8","from":"e7","to":"f8"},{"san":"Kf4+","uci":"f3f4","from":"f3","to":"f4"},{"san":"Rxd1","uci":"d8d1","from":"d8","to":"d1"},{"san":"Rg5#","uci":"g8g5","from":"g8","to":"g5"}],"note":"Nf5+ is the move Coach called out. The king is walked into the corner and the bishop on d1 sets up the discovered check.","verdict":"Mate in 5","mate":true},{"n":29,"cat":"Mate","fen":"6k1/pp3ppp/2b1p3/2Q1P1P1/3rq3/5R2/P4R1P/6K1 w - - 0 1","turn":"w","moves":[{"san":"Qf8+","uci":"c5f8","from":"c5","to":"f8"},{"san":"Kxf8","uci":"g8f8","from":"g8","to":"f8"},{"san":"Rxf7+","uci":"f3f7","from":"f3","to":"f7"},{"san":"Ke8","uci":"f8e8","from":"f8","to":"e8"},{"san":"Rf8+","uci":"f7f8","from":"f7","to":"f8"},{"san":"Kd7","uci":"e8d7","from":"e8","to":"d7"},{"san":"R2f7#","uci":"f2f7","from":"f2","to":"f7"}],"note":"Be brave with the queen \u2014 give it away with check, and the two rooks finish the job.","verdict":"Mate in 4","mate":true},{"n":30,"cat":"Mate","fen":"6r1/1pp1r1pk/3p1pRn/pP1P4/4qN1P/2P3Q1/6R1/6K1 w - - 0 1","turn":"w","moves":[{"san":"Rxh6+","uci":"g6h6","from":"g6","to":"h6"},{"san":"Kxh6","uci":"h7h6","from":"h7","to":"h6"},{"san":"Qg5+","uci":"g3g5","from":"g3","to":"g5"},{"san":"fxg5","uci":"f6g5","from":"f6","to":"g5"},{"san":"hxg5+","uci":"h4g5","from":"h4","to":"g5"},{"san":"Kh7","uci":"h6h7","from":"h6","to":"h7"},{"san":"Rh2#","uci":"g2h2","from":"g2","to":"h2"}],"note":"Something has to come off h6. After the rook goes, the h-pawn joins in and the second rook swings across.","verdict":"Mate in 4","mate":true}];
+const HWPUZZLES = [{"n":31,"fen":"2r1nrk1/p4p1p/1p2p1pQ/nPqbRN2/8/P2B4/1B3PPP/3R2K1 w - - 0 1","turn":"w","hint":"Not a mate \u2014 this one wins a pile of material. Look for the capture that breaks the whole thing open.","answerHash":2087504676,"hidden":true},{"n":32,"fen":"r3n3/pp2q1pk/2p1BnRp/8/2p2P2/1P5P/PB4QK/8 w - - 0 1","turn":"w","hint":"Mate in 4. Start by giving something up on h6.","answerHash":2087571562,"hidden":true},{"n":33,"fen":"rnB3kr/ppp2ppp/1b6/3q4/3pN3/Q4N2/PPP2KPP/R1B1R3 w - - 0 1","turn":"w","hint":"Mate in 4. A knight check the king can't get away from.","answerHash":2087497316,"hidden":true},{"n":34,"fen":"2r4k/1p1b3p/p3p3/3pPp2/1B3Q2/6RK/1q6/7R w - - 0 1","turn":"w","hint":"Mate in 4. Move the queen so it can land on f6. Two different queen moves both work here.","answerHash":[2087535689,2087535691],"hidden":true},{"n":35,"fen":"r2r1bk1/5b1p/p3p1pQ/q1p1Bp2/1nBP1P2/2N3R1/1P4PP/3R2K1 w - - 0 1","turn":"w","hint":"Mate in 4. The pawn shield in front of the king has to go.","answerHash":2087566016,"hidden":true},{"n":36,"fen":"k5r1/p4b2/2P5/5p2/3P1P2/4QBrq/P5P1/4R1K1 w - - 0 1","turn":"w","hint":"Mate in 4. Clear the way for the c-pawn \u2014 it only needs two squares.","answerHash":2087498446,"hidden":true}];
 /* ---------- one independent, playable board per puzzle ---------- */
 const SYM = {k:"p-k", q:"p-q", r:"p-r", b:"p-b", n:"p-n", p:"p-p"};
 const FILES = "abcdefgh";
@@ -684,7 +688,8 @@ class Puzzle {
     this.sel = null;
 
     if (this.d.hidden) {                       // newest set: check, never reveal
-      if (h33(uci) === this.d.answerHash) {
+      const want = Array.isArray(this.d.answerHash) ? this.d.answerHash : [this.d.answerHash];
+      if (want.includes(h33(uci))) {
         this.say("✅ Yes — that's the move. Well done.", "good");
       } else if (CR.isMate(this.st)) {
         this.say("✅ That's checkmate, so it works!", "good");
