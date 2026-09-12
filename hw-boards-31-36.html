@@ -91,6 +91,11 @@
   .pzsay.good { color:#1a7a2e; font-weight:bold; }
   .pzsay.bad  { color:#b03a2e; font-weight:bold; }
   .pzsay.hint { color:#7d3c98; }
+  .pztries {
+    margin-top:9px; font-family:"Trebuchet MS",sans-serif; font-size:13.5px;
+    color:#5b6b7c; background:#f2f5f8; border-radius:8px; padding:6px 10px;
+  }
+  .pztries.open { background:#eaf8e6; color:#1a7a2e; font-weight:bold; }
   .pzsay.promo { display:flex; flex-wrap:wrap; gap:7px; align-items:center; color:#1b4f72; }
   .promoBtn { font-family:inherit; font-size:13px; cursor:pointer; background:#63c15c; color:#fff;
               border:0; border-radius:9px; padding:5px 10px; }
@@ -178,7 +183,8 @@
 
   <div class="intro">
     <p><b>These are yours to solve.</b> Coach hasn't gone through this set in class yet, so the answers aren't on this page — and they aren't hidden in the code either. All that's stored is a scrambled fingerprint of each move, so nobody can go looking for it.</p>
-    <p><b>How it works.</b> Click a piece and its legal squares light up, then click where you want it to go. Play the move you think is right and the board will tell you whether you've found it. Got it wrong? Press <b>↩ Undo</b> and try again.</p>
+    <p><b>How it works.</b> Click a piece and its legal squares light up, then click where you want it to go. Got it wrong? Press <b>↩ Undo</b> and try again.</p>
+    <p><b>The board stays quiet at first.</b> It won't say whether a move is right until you've had <b>30 goes</b> at that puzzle — otherwise you could just click every legal move until one turned green, which isn't solving it. Work the line out in your head, play it, and keep going. Once the 30 are used the board starts marking your answers. Only a move from the starting position counts as a go; exploring further down a line is free, and the count is remembered per puzzle.</p>
     <p>There's a nudge next to each board if you're stuck — it says how long the mate is, without giving the move away.</p>
     <p>Five of these are a <b>forced mate</b>. One (number 31) isn't — it just wins a lot of material. Once Coach covers the set in class, the full lines will appear here like the other pages.</p>
   </div>
@@ -435,10 +441,24 @@ function h33(str) {
   return h >>> 0;
 }
 
+/* You have to actually work these out. The board keeps quiet about whether a
+   move is right until you have had TRY_LIMIT goes at it, so you can't just
+   click your way through every legal move until it lights up green. The count
+   is per puzzle and survives a reload. */
+const TRY_LIMIT = 30;
+function tryKey(n) {
+  const page = location.pathname.replace(/^.*\//, "").replace(/\.html$/, "") || "hw";
+  return "hwtries:" + page + ":" + n;
+}
+function readTries(n) {
+  try { return Number(localStorage.getItem(tryKey(n))) || 0; } catch (e) { return 0; }
+}
+
 class Puzzle {
   constructor(data, host) {
     this.d = data;
     this.host = host;
+    this.tries = data.hidden ? readTries(data.n) : 0;
     this.reset(true);
     this.build();
     this.render();
@@ -491,14 +511,17 @@ class Puzzle {
       this.solEl.innerHTML =
         "<b>🔒 Answer hidden</b>" +
         "<div class='pzhide'>This is the newest homework, so the answer isn't on this page — " +
-        "not even hidden in the code. Play the move you think is right and the board will tell " +
-        "you if you've got it.</div>";
+        "not even hidden in the code. And the board won't tell you whether a move is right " +
+        "until you've had <b>" + TRY_LIMIT + " goes</b> at it, so there's no point clicking " +
+        "through every move to see what turns green. Work it out, then check.</div>" +
+        "<div class='pztries'></div>";
     }
     this.sayEl   = this.host.querySelector(".pzsay");
     this.host.querySelectorAll(".pzctl button").forEach(b => {
       b.onclick = () => this.act(b.dataset.a);
     });
     this.drawSolution();
+    this.syncTries();
   }
 
   stopAuto() {
@@ -525,6 +548,21 @@ class Puzzle {
   say(msg, kind) {
     this.sayEl.textContent = msg;
     this.sayEl.className = "pzsay" + (kind ? " " + kind : "");
+  }
+
+  bumpTries() {
+    this.tries += 1;
+    try { localStorage.setItem(tryKey(this.d.n), String(this.tries)); } catch (e) {}
+    this.syncTries();
+  }
+
+  syncTries() {
+    const el = this.host.querySelector(".pztries");
+    if (!el) return;
+    el.textContent = this.tries >= TRY_LIMIT
+      ? "You've had your " + TRY_LIMIT + " goes — the board is marking your answers now."
+      : "Goes used: " + this.tries + " of " + TRY_LIMIT + ".";
+    el.classList.toggle("open", this.tries >= TRY_LIMIT);
   }
 
   act(a) {
@@ -688,8 +726,16 @@ class Puzzle {
     this.sel = null;
 
     if (this.d.hidden) {                       // newest set: check, never reveal
+      // Only a move from the starting position counts as a go at the puzzle;
+      // playing on down a line you are already exploring is free.
+      if (this.hist.length === 1) this.bumpTries();
       const want = Array.isArray(this.d.answerHash) ? this.d.answerHash : [this.d.answerHash];
-      if (want.includes(h33(uci))) {
+      if (this.tries < TRY_LIMIT) {
+        const left = TRY_LIMIT - this.tries;
+        this.say("Go " + this.tries + " of " + TRY_LIMIT + ". Work it out on the board — " +
+                 "no marking yet, " + left + (left === 1 ? " go" : " goes") + " to come. " +
+                 "Press ↩ Undo to take it back.", "hint");
+      } else if (want.includes(h33(uci))) {
         this.say("✅ Yes — that's the move. Well done.", "good");
       } else if (CR.isMate(this.st)) {
         this.say("✅ That's checkmate, so it works!", "good");
