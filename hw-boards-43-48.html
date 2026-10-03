@@ -184,7 +184,7 @@
   <div class="intro">
     <p><b>These are yours to solve.</b> Coach hasn't gone through this set in class yet, so the answers aren't on this page — and they aren't hidden in the code either. All that's stored is a scrambled fingerprint of each move, so nobody can go looking for it.</p>
     <p><b>How it works.</b> Click a piece and its legal squares light up, then click where you want it to go. Got it wrong? Press <b>↩ Undo</b> and try again.</p>
-    <p><b>The board stays quiet at first.</b> It won't say whether a move is right until you've had <b>30 goes</b> at that puzzle — otherwise you could just click every legal move until one turned green, which isn't solving it. Work the line out in your head, play it, and keep going. Once the 30 are used the board starts marking your answers. Only a move from the starting position counts as a go; exploring further down a line is free, and the count is remembered per puzzle.</p>
+    <p><b>The board stays quiet at first.</b> It won't say whether a move is right until you've had <b>10 goes</b> at that puzzle — otherwise you could just click every legal move until one turned green, which isn't solving it. Work the line out in your head, play it, and keep going. Once the 30 are used the board starts marking your answers. Only a move from the starting position counts as a go; exploring further down a line is free, and the count is remembered per puzzle.</p>
     <p>There's a nudge next to each board if you're stuck — it says how long the mate is, without giving the move away.</p>
     <p><b>Read the triangle.</b> On this sheet it's filled in — <b>▲</b> — and the result says <b>−+</b>. That means it's <b>Black</b> to move and <b>Black</b> who wins, the other way round from every sheet so far. The boards below are already turned round so Black is at the bottom.</p><p>All six are a <b>forced mate in 4</b>. Two of them (43 and 48) have two right first moves — the same idea either way round. Once Coach covers the set in class, the full lines will appear here like the other pages.</p>
   </div>
@@ -445,7 +445,7 @@ function h33(str) {
    move is right until you have had TRY_LIMIT goes at it, so you can't just
    click your way through every legal move until it lights up green. The count
    is per puzzle and survives a reload. */
-const TRY_LIMIT = 30;
+const TRY_LIMIT = 10;
 function tryKey(n) {
   const page = location.pathname.replace(/^.*\//, "").replace(/\.html$/, "") || "hw";
   return "hwtries:" + page + ":" + n;

@@ -184,7 +184,7 @@
   <div class="intro">
     <p><b>These are yours to solve.</b> Coach hasn't gone through this set in class yet, so the answers aren't on this page — and they aren't hidden in the code either. All that's stored is a scrambled fingerprint of each move, so nobody can go looking for it.</p>
     <p><b>How it works.</b> Click a piece and its legal squares light up, then click where you want it to go. Got it wrong? Press <b>↩ Undo</b> and try again.</p>
-    <p><b>The board stays quiet at first.</b> It won't say whether a move is right until you've had <b>30 goes</b> at that puzzle — otherwise you could just click every legal move until one turned green, which isn't solving it. Work the line out in your head, play it, and keep going. Once the 30 are used the board starts marking your answers. Only a move from the starting position counts as a go; exploring further down a line is free, and the count is remembered per puzzle.</p>
+    <p><b>The board stays quiet at first.</b> It won't say whether a move is right until you've had <b>10 goes</b> at that puzzle — otherwise you could just click every legal move until one turned green, which isn't solving it. Work the line out in your head, play it, and keep going. Once the 30 are used the board starts marking your answers. Only a move from the starting position counts as a go; exploring further down a line is free, and the count is remembered per puzzle.</p>
     <p>There's a nudge next to each board if you're stuck — it says how long the mate is, without giving the move away.</p>
     <p><b>A different book.</b> These come from a new one — page 155, numbered 595 to 600 — so they look different from the sheets so far: shaded squares instead of stripes, and no little triangle printed under the board. In this book it is <b>always White to move</b>.</p>
     <p><b>These aren't mates.</b> Every sheet up to now ended in checkmate. This set is about <b>winning material</b> — a piece, or a rook, or enough that the game is over. Four of the six start by giving something away first.</p>
@@ -447,7 +447,7 @@ function h33(str) {
    move is right until you have had TRY_LIMIT goes at it, so you can't just
    click your way through every legal move until it lights up green. The count
    is per puzzle and survives a reload. */
-const TRY_LIMIT = 30;
+const TRY_LIMIT = 10;
 function tryKey(n) {
   const page = location.pathname.replace(/^.*\//, "").replace(/\.html$/, "") || "hw";
   return "hwtries:" + page + ":" + n;
