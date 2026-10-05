@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Class — 3 Oct 2026</title>
+  <style>
+    html { background: #d3ecfb; }
+    /* Background lives in a fixed, composited layer.
+       Using background-attachment:fixed on the body element repaints the
+       viewport every scroll frame (jank), and rescales when a mobile
+       URL bar collapses (jump). It also left the white wash on the
+       default 'scroll' attachment while the image stayed put, so the
+       two layers slid against each other. */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.62)),
+                  url('family-bg.svg') center / cover no-repeat;
+    }
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: transparent;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 18px 70px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      line-height: 1.5;
+    }
+    .page { max-width: 900px; margin: 0 auto; }
+    a.back {
+      display: inline-block; text-decoration: none; color: #1b4f72;
+      font-size: 17px; background: rgba(255,255,255,.9);
+      padding: 7px 16px; border-radius: 18px; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    }
+    h1 {
+      font-size: 40px; color: #1b4f72; margin: 22px 0 4px;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.85);
+    }
+    p.subtitle {
+      font-size: 19px; color: #34495e; margin: 0 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .badge { background: #1b4f72; color: #fff; font-size: 14px; padding: 5px 13px; border-radius: 14px; }
+    .badge.alt { background: #63c15c; }
+    .badge.coach { background: #8e44ad; }
+
+    h2 {
+      font-size: 27px; color: #1b4f72; margin: 44px 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.94);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      padding: 22px 24px;
+      margin: 18px 0;
+    }
+    .card.star { border: 3px solid #63c15c; background: linear-gradient(160deg,#fffef5,#eaf8e6); }
+
+    .rulehead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .num { font-size: 30px; color: #63c15c; font-weight: bold; line-height: 1; }
+    .ruletitle { font-size: 23px; color: #1b4f72; font-weight: bold; }
+    .why { font-size: 17px; margin: 10px 0 0; }
+
+    .said {
+      margin-top: 14px; padding: 12px 16px;
+      background: #f4ecfa; border-left: 6px solid #8e44ad;
+      border-radius: 0 12px 12px 0;
+    }
+    .said .cn {
+      font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      font-size: 18px; color: #4a235a;
+    }
+    .said .en { font-size: 16px; color: #5b2c6f; font-style: italic; margin-top: 3px; }
+    .said .when { font-size: 13px; color: #7d3c98; margin-top: 6px; }
+
+    .strip { display: flex; gap: 12px; margin-top: 18px; }
+    .strip figure { flex: 1 1 0; min-width: 0; margin: 0; text-align: center; }
+    .strip img {
+      width: 100%; height: auto; display: block;
+      border-radius: 10px; border: 3px solid #d5dbdb;
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
+    }
+    .strip figure.key img { border-color: #63c15c; }
+    .strip figcaption { font-size: 14px; margin-top: 7px; }
+    .strip figure.key figcaption { font-weight: bold; color: #217a1f; }
+    .step {
+      display: inline-block; background: #d5dbdb; color: #2c3e50;
+      font-size: 12px; padding: 2px 9px; border-radius: 10px; margin-bottom: 5px;
+    }
+    .strip figure.key .step { background: #63c15c; color: #fff; }
+
+    .movelist {
+      font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+      font-size: 15px; background: #eef3f7; border-radius: 12px;
+      padding: 14px 16px; margin-top: 14px; overflow-x: auto;
+      line-height: 1.9; color: #1b4f72;
+    }
+    .tip { font-size: 17px; margin-top: 12px; }
+    .tip strong { color: #1b4f72; }
+
+    @media (max-width: 700px) {
+      .strip { flex-wrap: wrap; }
+      .strip figure { flex: 1 1 44%; }
+      h1 { font-size: 31px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="chess.html">← All chess records</a>
+
+  <h1>♟️ Saturday Chess Class</h1>
+  <p class="subtitle">“Sleep well the night before”</p>
+  <div class="badges">
+    <span class="badge">📅 Sat 3 Oct 2026</span>
+    <span class="badge coach">👨‍🏫 Coach IM Li Wenliang (李文良)</span>
+    <span class="badge alt">JJ's own Saturday class</span>
+  </div>
+
+  <!-- ===== the theme ===== -->
+  <div class="card star">
+    <p class="tip"><strong>The puzzles are getting harder on purpose.</strong> Coach opened by saying so, and then said why it's worth it:</p>
+    <div class="said">
+      <div class="cn">“我们的题肯定是越来越难，但是越来越有意思。当你解出来之后，你会很欣喜，因为它的战术非常的精彩，想象力非常的丰富。”</div>
+      <div class="en">The problems are definitely getting harder — but they're getting more interesting too. When you crack one you'll be delighted, because the tactics are brilliant and the imagination in them is enormous.</div>
+      <div class="when">📅 3 Oct 2026 · class, 00:10</div>
+    </div>
+    <p class="tip"><strong>The seven-round Swiss finished.</strong> Twenty students in the Saturday group; the top two places both went to girls, and third was a big tie. Next comes a <b>round-robin</b>, and Coach was clear about how to treat it: <em>“训练对局不要在意结果，要注重过程，要注重学到了什么”</em> — in training games don't worry about the result, pay attention to the process and to what you learned. Especially when you lose: work out <em>where</em> you lost, so you don't repeat it at a real tournament.</p>
+  </div>
+
+  <!-- ===== homework ===== -->
+  <h2>📝 Homework 43–48 — the answers</h2>
+  <div class="card">
+    <p class="tip">This was JJ's hidden set, so the <a href="hw-boards-43-48.html">playable boards</a> now show the full lines. All six are <b>Black to move</b>, and all six are mates. <strong>Only two students in the room got all six.</strong></p>
+    <p class="tip"><strong>The word for the week is <em>decoy</em></strong>, and Coach explained it with sweets:</p>
+    <div class="said">
+      <div class="cn">“比如我拿一个大白兔糖，我说过来过来谁要 —— 很多小朋友被我 decoy 过来了⋯⋯用一点的牺牲，我牺牲了什么？我牺牲了大白兔。”</div>
+      <div class="en">Say I hold up a White Rabbit sweet and call out, who wants it? Plenty of you get decoyed straight over. That's a small sacrifice — what did I give up? One sweet.</div>
+      <div class="when">📅 3 Oct 2026 · class, 02:30</div>
+    </div>
+    <ul style="font-size:17px">
+      <li><b>43 — Rh6+.</b> Two decoys in a row, not one. <b>Bd7+ first works just as well</b> — Coach said the two orders are <em>“两个价值相等的两个 variation”</em>, two lines of equal value.</li>
+      <li><b>44 — Rxh3+</b>, then <b>Qh2+</b>. <em>“我把一袋大白兔都拿出来了 —— for checkmate”</em> — the whole bag of sweets this time, for the mate.</li>
+      <li><b>45 — Rxh2+.</b> Same first idea as 44, but here the quiet <b>bishop</b> finishes it, not the queen.</li>
+      <li><b>46 — Re1+</b>, then <b>Rh1+</b>. The hardest one on the sheet. The g2 pawn is <b>pinned</b> and can't take the rook — that's the whole trick.</li>
+      <li><b>47 — Qh1+.</b> The queen goes right next to the king where it has to be taken, and the bishop on c6 delivers.</li>
+      <li><b>48 — Bg1+.</b> <b>Ng4+ also mates</b>, but Coach wanted Bg1 and said why: get the order wrong and White's queen gets a chance to come back and defend.</li>
+    </ul>
+    <p class="tip">The new sheet, <b>49–54</b>, is up as <a href="hw-boards-49-54.html">playable boards with the answers hidden</a>. Watch the triangles on that one — five are Black to move but <b>52 is White</b>.</p>
+  </div>
+
+  <!-- ===== the story ===== -->
+  <h2>⭐ Fischer – Larsen, Denver 1971 · 6–0 again</h2>
+  <div class="card star">
+    <p class="why">Candidates semi-final, Denver, July 1971 · Fischer won all six · game 1 was a French Winawer (C19) on 6 July</p>
+    <p class="tip"><strong>Last week it was Taimanov 6–0. This week's opponent was supposed to stop him.</strong> Bent Larsen of Denmark was rated the strongest player in the Western world and widely thought to be Fischer's hardest test. The result was <b>6–0 again</b> — and Coach's point is that two 6–0 scores in a row at that level had never happened before and almost certainly never will again.</p>
+    <p class="tip"><strong>Larsen made three mistakes, and only one of them was on the board.</strong></p>
+    <ol style="font-size:17px">
+      <li><b>He picked the venue badly.</b> The match could have been played in London or another European city. Larsen agreed to <b>Denver</b> — Fischer's own country, a short flight from his home, while Larsen crossed an ocean to get there.</li>
+      <li><b>He didn't sleep.</b> July 1971 in Denver hit about <b>100°F</b>. Larsen was over ten years older than Fischer and couldn't sleep through the heat even with air conditioning. Coach drew the lesson straight at the class: <em>“比赛前晚间好好睡觉”</em> — sleep properly the night before you play.</li>
+      <li><b>He wouldn't take a draw.</b> Larsen's belief was that he'd rather lose one game than draw two. He played every game for a win, even when the position didn't deserve it. Fischer also played for wins — but he wouldn't argue with the position to do it.</li>
+    </ol>
+    <p class="tip"><strong>Game 1.</strong> A French Winawer, and genuinely level for three hours. Then at the critical moment the tiredness showed and Larsen played <b>…g5?</b> instead of bringing the king up with …Kg6 or …Kg5. Fischer pushed a pawn through and it couldn't be stopped.</p>
+    <div class="strip">
+      <figure>
+        <span class="step">Before</span>
+        <img src="chess-img/2026-10-03-g1a.jpg" alt="The ending, shown from Larsen's side of the board">
+        <figcaption>Shown from <b>Larsen's</b> side — the two white bishops</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The point</span>
+        <img src="chess-img/2026-10-03-g1b.jpg" alt="The bishop pair dominating">
+        <figcaption>The <b>bishop pair</b> — Coach said that's what won it</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/2026-10-03-g1c.jpg" alt="Outside passed pawn decides">
+        <figcaption>King up, <b>outside passed pawn</b>, over</figcaption>
+      </figure>
+    </div>
+    <p class="tip"><strong>Two things to take from the endings.</strong> Larsen counted material, saw he wasn't worse, and missed how strong <b>two bishops</b> are together — <em>“double bishop 太强了，Bishop pair 太强了”</em>. And the win came the way these wins usually come: walk the king up, make an <b>outside passed pawn</b>, and the defender runs out of moves.</p>
+    <p class="tip"><strong>And the detail nobody forgets.</strong> Taimanov went to hospital for three days during the last match. Larsen went to hospital for three days during this one — and Fischer again agreed to wait rather than claim the game. <em>“Fischer 把两个对手打进医院里”</em> — he put both opponents in hospital. Coach's wry note: that happens in boxing, not in chess.</p>
+  </div>
+
+  <!-- ===== opening ===== -->
+  <h2>📖 The Evans Gambit, and how to answer it</h2>
+  <div class="card">
+    <p class="why">C52 Evans Gambit · 1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 · you'll be Black again</p>
+    <p class="tip"><strong>Where it comes from.</strong> Captain Evans was a ship's captain. Before aeroplanes, sailing to China took a month, and he worked on chess during the voyages — he invented this gambit at sea. It's not a toy: plenty of professionals have used it, and <b>Kasparov played it twice in 1995 and won both games</b>.</p>
+    <p class="tip"><strong>What White wants.</strong> <b>4.b4</b> offers a pawn to make your bishop move again, then <b>5.c3</b> and <b>6.d4</b> build a big centre with tempo. If you drift, your knight ends up with nowhere to go.</p>
+    <div class="strip">
+      <figure>
+        <span class="step">The gambit</span>
+        <img src="chess-img/2026-10-03-o1a.jpg" alt="Evans Gambit after 4.b4">
+        <figcaption>After <b>4.b4</b> — take it, says Coach</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">The key move</span>
+        <img src="chess-img/2026-10-03-o1b.jpg" alt="The Lasker Defence with Qe7">
+        <figcaption><b>…Qe7!</b> — the move that makes it work</figcaption>
+      </figure>
+      <figure>
+        <span class="step">After</span>
+        <img src="chess-img/2026-10-03-o1c.jpg" alt="Black has Bb6 and castles">
+        <figcaption><b>…Bb6</b>, castle, and Black is fine</figcaption>
+      </figure>
+    </div>
+    <p class="tip"><strong>The answer is the Lasker Defence</strong>, and it's over a hundred years old. Lasker's treatment is the reason you don't see the Evans Gambit very often any more, and it's still regarded as the best reply today.</p>
+    <p class="tip"><strong>How it goes.</strong> <b>1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4</b> — take the pawn; Steinitz's rule is that the way to meet a gambit is to accept it. Then <b>5.c3 Ba5 6.d4 d6</b>, and after <b>7.Qb3</b> comes the move: <b>7…Qe7!</b></p>
+    <div class="said">
+      <div class="cn">“记住后 E7 这步棋 —— 这是 Lasker Defense 的一个重点。”</div>
+      <div class="en">Remember Qe7. That's the key point of the Lasker Defence.</div>
+      <div class="when">📅 3 Oct 2026 · class, 40:30</div>
+    </div>
+    <p class="tip"><strong>Why Qe7 and not Qf6.</strong> Coach was emphatic about the square, and the engine backs him hard: after <b>7…Qe7</b> Black finishes the opening a touch <b>better</b> than White once …Bb6 and castling follow. After <b>7…Qf6</b> instead, Black is nearly <b>four pawns worse</b>. Same-looking move, completely different game.</p>
+    <p class="tip"><strong>Then the plan is simple:</strong> <b>…Bb6</b> and castle, and be happy to trade off White's good bishop. Don't get greedy for a second pawn — sometimes handing it back is the better deal. White is the one left a pawn down with a damaged structure.</p>
+    <div class="said">
+      <div class="cn">“当你走出象 B6 的时候，无论你的对手和旁边看棋的人都知道 —— 这个小朋友厉害，他会下 Lasker。”</div>
+      <div class="en">When you play Bb6, your opponent and everyone watching knows it: this kid knows what he's doing — he plays the Lasker.</div>
+      <div class="when">📅 3 Oct 2026 · class, 42:40</div>
+    </div>
+  </div>
+
+  <!-- ===== takeaways ===== -->
+  <h2>🎯 What to take away</h2>
+  <div class="card">
+    <ul style="font-size:17px">
+      <li><b>Decoy.</b> Give something up to pull a defender onto the wrong square — that's five of this week's six puzzles.</li>
+      <li><b>Sleep before you play.</b> Larsen lost a world-class match partly to a heatwave and no sleep.</li>
+      <li><b>Two bishops are stronger than they look.</b> Counting material misses it.</li>
+      <li><b>Outside passed pawn plus an active king</b> wins endings.</li>
+      <li><b>Against the Evans Gambit: take the pawn, then …d6 and …Qe7</b> — not Qf6 — and follow with …Bb6 and castling.</li>
+      <li><b>In training games, the result doesn't matter.</b> What you learned does — especially from the losses.</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>

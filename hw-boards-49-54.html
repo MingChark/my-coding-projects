@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Homework 43–48</title>
+<title>Homework 49–54</title>
 <style>
   html { background: #d3ecfb; }
   body::before {
@@ -91,6 +91,11 @@
   .pzsay.good { color:#1a7a2e; font-weight:bold; }
   .pzsay.bad  { color:#b03a2e; font-weight:bold; }
   .pzsay.hint { color:#7d3c98; }
+  .pztries {
+    margin-top:9px; font-family:"Trebuchet MS",sans-serif; font-size:13.5px;
+    color:#5b6b7c; background:#f2f5f8; border-radius:8px; padding:6px 10px;
+  }
+  .pztries.open { background:#eaf8e6; color:#1a7a2e; font-weight:bold; }
   .pzsay.promo { display:flex; flex-wrap:wrap; gap:7px; align-items:center; color:#1b4f72; }
   .promoBtn { font-family:inherit; font-size:13px; cursor:pointer; background:#63c15c; color:#fff;
               border:0; border-radius:9px; padding:5px 10px; }
@@ -168,29 +173,35 @@
 
   <a class="back" href="chess-homework.html">← All homework sheets</a>
 
-  <h1>♟️ Homework 43–48</h1>
-  <p class="subtitle">Coach went through all six on 3 Oct — the answers are here now</p>
+  <h1>♟️ Homework 49–54</h1>
+  <p class="subtitle">This week’s set — answers hidden. Have a go.</p>
   <div class="badges">
-    <span class="badge">Handed out Sun 27 Sep 2026</span>
-    <span class="badge coach">Answers from class, 3 Oct 2026</span>
-    <span class="badge alt">▲ All six are Black to move</span>
+    <span class="badge">Handed out Sat 3 Oct 2026</span>
+    <span class="badge coach">🔒 Answers hidden</span>
+    <span class="badge alt">Five are Black to move, one is White</span>
   </div>
 
   <div class="intro">
-    <p><b>Unlocked.</b> This was the hidden set. Coach went through all six in class on <b>Saturday 3 October</b>, so the full lines are on the page now. Only two students in the room got all six.</p>
-    <p><b>Every one of these is Black to move</b> — the filled triangle ▲ on the sheet — so the boards are turned round with Black at the bottom.</p>
-    <p><b>How to use a board.</b> Click a piece and its legal squares light up — then click one to move. Press <b>▶ Show the answer</b> and the whole line <b>plays itself</b>; press again to pause. <b>Next move</b> steps through by hand.</p>
-    <p>All six end in a <b>real checkmate</b> — every line was replayed and checked. Two of them (43 and 48) have a second first move that works just as well, and Coach said so himself. This week’s hidden set is <a href="hw-boards-49-54.html">49–54</a>.</p>
+    <p><b>These are yours to solve.</b> Coach hasn't gone through this set in class yet, so the answers aren't on this page — and they aren't hidden in the code either. All that's stored is a scrambled fingerprint of each move, so nobody can go looking for it.</p>
+    <p><b>How it works.</b> Click a piece and its legal squares light up, then click where you want it to go. Got it wrong? Press <b>↩ Undo</b> and try again.</p>
+    <p><b>The board stays quiet at first.</b> It won't say whether a move is right until you've had <b>10 goes</b> at that puzzle — otherwise you could just click every legal move until one turned green, which isn't solving it. Work the line out in your head, play it, and keep going. Once the 30 are used the board starts marking your answers. Only a move from the starting position counts as a go; exploring further down a line is free, and the count is remembered per puzzle.</p>
+    <p>There's a nudge next to each board if you're stuck — it says how long the mate is, without giving the move away.</p>
+    <p><b>Check the triangle on each one.</b> This sheet is mixed. Five of the six are <b>▲ −+</b> — Black to move, Black wins — and those boards are turned round so Black is at the bottom. <b>Number 52 is the odd one out</b>: <b>△ +−</b>, White to move. Read it the wrong way round and the position makes no sense.</p>
+    <p>All six are a <b>forced mate</b>. Number 49 is a mate in <b>three</b> — the shortest of the set — and the rest are mates in four. Once Coach covers the set in class, the full lines will appear here like the other pages.</p>
   </div>
 
   <h2>The six puzzles</h2>
-  <div data-puzzle="43"></div>
-  <div data-puzzle="44"></div>
-  <div data-puzzle="45"></div>
-  <div data-puzzle="46"></div>
-  <div data-puzzle="47"></div>
-  <div data-puzzle="48"></div>
+  <div data-puzzle="49"></div>
+  <div data-puzzle="50"></div>
+  <div data-puzzle="51"></div>
+  <div data-puzzle="52"></div>
+  <div data-puzzle="53"></div>
+  <div data-puzzle="54"></div>
+  <div class="intro">
+    <p>The paper sheet is on the <a href="chess-homework.html">homework page</a> if you'd rather work from that. The other set still waiting for answers is <a href="hw-boards-595-600.html">595–600</a>. Already-covered sets with full answers: <a href="hw-boards-43-48.html">43–48</a>, <a href="hw-boards-31-36.html">31–36</a>, <a href="hw-boards-25-30.html">25–30</a>, <a href="hw-boards-7-12.html">7–12</a>, <a href="hw-boards-425-430.html">425–430</a>, <a href="hw-boards-431-436.html">431–436</a>, <a href="hw-boards-bmc21.html">BMC 21</a>, <a href="hw-boards-bmc22.html">BMC 22</a>.</p>
   </div>
+
+</div>
 <script>
 /* Minimal but complete chess rules: legal moves, castling, en passant,
    promotion, check / checkmate / stalemate. Board is 64 cells, index
@@ -417,7 +428,7 @@ const CR = (() => {
            perft, SQ, FROM_SQ, colorOf, idx, rc, kingSq };
 })();
 
-const HWPUZZLES = [{"n":43,"cat":"Mate","fen":"7k/5p1p/p1b2pr1/8/3R1Q2/2N2P1K/PP2Nqr1/7R b - - 0 1","turn":"b","moves":[{"san":"Rh6+","uci":"g6h6","from":"g6","to":"h6"},{"san":"Qxh6","uci":"f4h6","from":"f4","to":"h6"},{"san":"Bd7+","uci":"c6d7","from":"c6","to":"d7"},{"san":"Rxd7","uci":"d4d7","from":"d4","to":"d7"},{"san":"Qxf3+","uci":"f2f3","from":"f2","to":"f3"},{"san":"Kh4","uci":"h3h4","from":"h3","to":"h4"},{"san":"Qg4#","uci":"f3g4","from":"f3","to":"g4"}],"note":"Coach's word for this is <b>decoy</b> \u2014 give something away to drag a defender onto the wrong square. Here it takes two of them. Bd7+ first works just as well: he said the two orders are of equal value.","verdict":"Mate in 4","mate":true},{"n":44,"cat":"Mate","fen":"1k6/1pp3Q1/p2b3p/8/3P1r2/1N2r2P/Pq4P1/R5RK b - - 0 1","turn":"b","moves":[{"san":"Rxh3+","uci":"e3h3","from":"e3","to":"h3"},{"san":"gxh3","uci":"g2h3","from":"g2","to":"h3"},{"san":"Qh2+","uci":"b2h2","from":"b2","to":"h2"},{"san":"Kxh2","uci":"h1h2","from":"h1","to":"h2"},{"san":"Rf2+","uci":"f4f2","from":"f4","to":"f2"},{"san":"Kh1","uci":"h2h1","from":"h2","to":"h1"},{"san":"Rh2#","uci":"f2h2","from":"f2","to":"h2"}],"note":"Take the h-pawn, then hand over the queen. Coach: <em>\u201c\u6211\u628a\u4e00\u888b\u5927\u767d\u5154\u90fd\u62ff\u51fa\u6765\u4e86 \u2014\u2014 for checkmate\u201d</em> \u2014 the whole bag of sweets, for the mate.","verdict":"Mate in 4","mate":true},{"n":45,"cat":"Mate","fen":"r1b3k1/p5pp/1p5r/6q1/2pPP3/P1P1P3/1B1QB2P/4R1RK b - - 0 1","turn":"b","moves":[{"san":"Rxh2+","uci":"h6h2","from":"h6","to":"h2"},{"san":"Kxh2","uci":"h1h2","from":"h1","to":"h2"},{"san":"Qh4+","uci":"g5h4","from":"g5","to":"h4"},{"san":"Kg2","uci":"h2g2","from":"h2","to":"g2"},{"san":"Bh3+","uci":"c8h3","from":"c8","to":"h3"},{"san":"Kh2","uci":"g2h2","from":"g2","to":"h2"},{"san":"Bf1#","uci":"h3f1","from":"h3","to":"f1"}],"note":"The same opening idea as 44 \u2014 rook takes on h2 \u2014 but it is the quiet bishop that finishes, not the queen.","verdict":"Mate in 4","mate":true},{"n":46,"cat":"Mate","fen":"6k1/pbR2p1p/1p1p2pQ/4r3/6qP/6N1/P4PP1/6K1 b - - 0 1","turn":"b","moves":[{"san":"Re1+","uci":"e5e1","from":"e5","to":"e1"},{"san":"Kh2","uci":"g1h2","from":"g1","to":"h2"},{"san":"Rh1+","uci":"e1h1","from":"e1","to":"h1"},{"san":"Kxh1","uci":"h2h1","from":"h2","to":"h1"},{"san":"Qh3+","uci":"g4h3","from":"g4","to":"h3"},{"san":"Kg1","uci":"h1g1","from":"h1","to":"g1"},{"san":"Qxg2#","uci":"h3g2","from":"h3","to":"g2"}],"note":"Give the rook on the back rank, then give it again on h1. The g2 pawn is <b>pinned</b> and can't take \u2014 that is the whole point.","verdict":"Mate in 4","mate":true},{"n":47,"cat":"Mate","fen":"r4r1k/pppb2pp/8/3q4/2N5/P1P3Q1/BP2R2P/R3n1K1 b - - 0 1","turn":"b","moves":[{"san":"Qh1+","uci":"d5h1","from":"d5","to":"h1"},{"san":"Kxh1","uci":"g1h1","from":"g1","to":"h1"},{"san":"Rf1+","uci":"f8f1","from":"f8","to":"f1"},{"san":"Qg1","uci":"g3g1","from":"g3","to":"g1"},{"san":"Bc6+","uci":"d7c6","from":"d7","to":"c6"},{"san":"Rg2","uci":"e2g2","from":"e2","to":"g2"},{"san":"Bxg2#","uci":"c6g2","from":"c6","to":"g2"}],"note":"Put the queen right next to the king where it must be taken, and the bishop on c6 does the rest.","verdict":"Mate in 4","mate":true},{"n":48,"cat":"Mate","fen":"6k1/5ppp/4p3/p1b1n3/PpP1Pq2/5bBP/4B2K/R3RQ2 b - - 0 1","turn":"b","moves":[{"san":"Bg1+","uci":"c5g1","from":"c5","to":"g1"},{"san":"Qxg1","uci":"f1g1","from":"f1","to":"g1"},{"san":"Ng4+","uci":"e5g4","from":"e5","to":"g4"},{"san":"hxg4","uci":"h3g4","from":"h3","to":"g4"},{"san":"Qh6+","uci":"f4h6","from":"f4","to":"h6"},{"san":"Bh4","uci":"g3h4","from":"g3","to":"h4"},{"san":"Qxh4#","uci":"h6h4","from":"h6","to":"h4"}],"note":"Coach: <b>Bg1</b> is the move to remember. Ng4+ first also mates, but he wanted Bg1 \u2014 play the other order and White gets a chance to bring the queen back to defend.","verdict":"Mate in 4","mate":true}];
+const HWPUZZLES = [{"n":49,"fen":"r3k3/ppp2p1r/2n3p1/1Q4B1/3PP1b1/6p1/PPP1NbBq/R2R1K2 b q - 0 1","turn":"b","hint":"Mate in 3 \u2014 the shortest on the sheet. Black has a queen and two bishops pointing at the white king; start by taking the pawn that is guarding it.","answerHash":2087896682,"hidden":true},{"n":50,"fen":"6k1/2p3b1/p2p2Q1/3P1P1P/4q3/3Bp3/P1K5/1r3R2 b - - 0 1","turn":"b","hint":"Mate in 4. The white king is out in the open on c2. Chase it with checks and don't let it rest.","answerHash":2087497345,"hidden":true},{"n":51,"fen":"6k1/1pQ3p1/3B3p/1P1rnr1q/4pp2/2P5/P2P1PPP/R4R1K b - - 0 1","turn":"b","hint":"Mate in 4. Take on h2 even though the king can take back \u2014 the knight and both rooks are waiting.","answerHash":2087886850,"hidden":true},{"n":52,"fen":"3q1rk1/6pp/5pb1/3N4/R1Q5/8/6PP/7K w - - 0 1","turn":"w","hint":"<b>This one is White to move</b> \u2014 the only one on the sheet. Mate in 4, starting with a knight check.","answerHash":2087464550,"hidden":true},{"n":53,"fen":"5k2/3p1p1p/pq1P1pr1/7N/2Q5/2Pn1P2/Pr4PP/R4R1K b - - 0 1","turn":"b","hint":"Mate in 4. Offer the queen on g1; the two rooks finish on the g- and h-files.","answerHash":2087672743,"hidden":true},{"n":54,"fen":"7r/3P2k1/1p5r/1Pp1pp2/2Pn2p1/3PR1P1/R4KB1/4Q2q b - - 0 1","turn":"b","hint":"Mate in 4. Both rooks are already on the h-file \u2014 clear the way for them.","answerHash":2087891497,"hidden":true}];
 /* ---------- one independent, playable board per puzzle ---------- */
 const SYM = {k:"p-k", q:"p-q", r:"p-r", b:"p-b", n:"p-n", p:"p-p"};
 const FILES = "abcdefgh";
@@ -431,10 +442,24 @@ function h33(str) {
   return h >>> 0;
 }
 
+/* You have to actually work these out. The board keeps quiet about whether a
+   move is right until you have had TRY_LIMIT goes at it, so you can't just
+   click your way through every legal move until it lights up green. The count
+   is per puzzle and survives a reload. */
+const TRY_LIMIT = 10;
+function tryKey(n) {
+  const page = location.pathname.replace(/^.*\//, "").replace(/\.html$/, "") || "hw";
+  return "hwtries:" + page + ":" + n;
+}
+function readTries(n) {
+  try { return Number(localStorage.getItem(tryKey(n))) || 0; } catch (e) { return 0; }
+}
+
 class Puzzle {
   constructor(data, host) {
     this.d = data;
     this.host = host;
+    this.tries = data.hidden ? readTries(data.n) : 0;
     this.reset(true);
     this.build();
     this.render();
@@ -487,14 +512,17 @@ class Puzzle {
       this.solEl.innerHTML =
         "<b>🔒 Answer hidden</b>" +
         "<div class='pzhide'>This is the newest homework, so the answer isn't on this page — " +
-        "not even hidden in the code. Play the move you think is right and the board will tell " +
-        "you if you've got it.</div>";
+        "not even hidden in the code. And the board won't tell you whether a move is right " +
+        "until you've had <b>" + TRY_LIMIT + " goes</b> at it, so there's no point clicking " +
+        "through every move to see what turns green. Work it out, then check.</div>" +
+        "<div class='pztries'></div>";
     }
     this.sayEl   = this.host.querySelector(".pzsay");
     this.host.querySelectorAll(".pzctl button").forEach(b => {
       b.onclick = () => this.act(b.dataset.a);
     });
     this.drawSolution();
+    this.syncTries();
   }
 
   stopAuto() {
@@ -521,6 +549,21 @@ class Puzzle {
   say(msg, kind) {
     this.sayEl.textContent = msg;
     this.sayEl.className = "pzsay" + (kind ? " " + kind : "");
+  }
+
+  bumpTries() {
+    this.tries += 1;
+    try { localStorage.setItem(tryKey(this.d.n), String(this.tries)); } catch (e) {}
+    this.syncTries();
+  }
+
+  syncTries() {
+    const el = this.host.querySelector(".pztries");
+    if (!el) return;
+    el.textContent = this.tries >= TRY_LIMIT
+      ? "You've had your " + TRY_LIMIT + " goes — the board is marking your answers now."
+      : "Goes used: " + this.tries + " of " + TRY_LIMIT + ".";
+    el.classList.toggle("open", this.tries >= TRY_LIMIT);
   }
 
   act(a) {
@@ -684,7 +727,16 @@ class Puzzle {
     this.sel = null;
 
     if (this.d.hidden) {                       // newest set: check, never reveal
-      if (h33(uci) === this.d.answerHash) {
+      // Only a move from the starting position counts as a go at the puzzle;
+      // playing on down a line you are already exploring is free.
+      if (this.hist.length === 1) this.bumpTries();
+      const want = Array.isArray(this.d.answerHash) ? this.d.answerHash : [this.d.answerHash];
+      if (this.tries < TRY_LIMIT) {
+        const left = TRY_LIMIT - this.tries;
+        this.say("Go " + this.tries + " of " + TRY_LIMIT + ". Work it out on the board — " +
+                 "no marking yet, " + left + (left === 1 ? " go" : " goes") + " to come. " +
+                 "Press ↩ Undo to take it back.", "hint");
+      } else if (want.includes(h33(uci))) {
         this.say("✅ Yes — that's the move. Well done.", "good");
       } else if (CR.isMate(this.st)) {
         this.say("✅ That's checkmate, so it works!", "good");
