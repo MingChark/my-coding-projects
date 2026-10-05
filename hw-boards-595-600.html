@@ -182,13 +182,14 @@
   </div>
 
   <div class="intro">
-    <p><b>These are yours to solve.</b> Coach hasn't gone through this set in class yet, so the answers aren't on this page — and they aren't hidden in the code either. All that's stored is a scrambled fingerprint of each move, so nobody can go looking for it.</p>
+    <p><b>These are yours to solve.</b> Coach hasn't gone through this set in class yet, so the answers start out hidden.</p>
     <p><b>How it works.</b> Click a piece and its legal squares light up, then click where you want it to go. Got it wrong? Press <b>↩ Undo</b> and try again.</p>
-    <p><b>The board stays quiet at first.</b> It won't say whether a move is right until you've had <b>10 goes</b> at that puzzle — otherwise you could just click every legal move until one turned green, which isn't solving it. Work the line out in your head, play it, and keep going. Once the 30 are used the board starts marking your answers. Only a move from the starting position counts as a go; exploring further down a line is free, and the count is remembered per puzzle.</p>
+    <p><b>The board stays quiet at first.</b> It won't say whether a move is right until you've had <b>10 goes</b> at that puzzle — otherwise you could just click every legal move until one turned green, which isn't solving it. Work the line out in your head, play it, and keep going.</p>
+    <p><b>Then you get the lot.</b> Once the 10 goes are used the board starts marking your answers <em>and</em> the <b>whole line appears in notation</b> beside the board — so you can see how it finishes, press <b>▶ Show the answer</b> to watch it play itself out, or click any move to jump straight there. Only a move from the starting position counts as a go; exploring further down a line is free, and the count is remembered per puzzle.</p>
     <p>There's a nudge next to each board if you're stuck — it says how long the mate is, without giving the move away.</p>
     <p><b>A different book.</b> These come from a new one — page 155, numbered 595 to 600 — so they look different from the sheets so far: shaded squares instead of stripes, and no little triangle printed under the board. In this book it is <b>always White to move</b>.</p>
     <p><b>These aren't mates.</b> Every sheet up to now ended in checkmate. This set is about <b>winning material</b> — a piece, or a rook, or enough that the game is over. Four of the six start by giving something away first.</p>
-    <p>Puzzle <b>597</b> has two right first moves, and <b>599</b> is the odd one out: no sacrifice at all, just a quiet pawn move. Once Coach covers the set in class, the full lines will appear here like the other pages.</p>
+    <p>Puzzle <b>597</b> has two right first moves, and <b>599</b> is the odd one out: no sacrifice at all, just a quiet pawn move. After your 10 goes the full line shows up right here; when Coach covers the set in class this page is rebuilt in the normal open style.</p>
   </div>
 
   <h2>The six puzzles</h2>
@@ -429,7 +430,7 @@ const CR = (() => {
            perft, SQ, FROM_SQ, colorOf, idx, rc, kingSq };
 })();
 
-const HWPUZZLES = [{"n":595,"fen":"r1bqn1nk/ppp4p/3p4/3Pp1r1/2P1Pp2/2NB1P2/PP2N3/2K1Q1RR w - - 0 1","turn":"w","hint":"Not a mate \u2014 it wins a lot of material. Black's rook has wandered to g5 and White's rooks are stacked up. Start by giving one away.","answerHash":2087891203,"hidden":true},{"n":596,"fen":"r1b1r1k1/ppq1bppp/4pn2/6B1/8/P2B1QN1/1PP2PPP/R3R1K1 w - - 0 1","turn":"w","hint":"Take something first to pull a defender off, then the queen swings across to the weak square.","answerHash":2087576487,"hidden":true},{"n":597,"fen":"2kr3r/pRp3q1/2Pppn2/4p2p/B2bP1p1/7P/2P2PP1/2BQ2RK w - - 0 1","turn":"w","hint":"A quiet queen move \u2014 no check at all. Two squares work; both do the same job of guarding f2 so the rook on b7 can get on with it.","answerHash":[2087460423,2087460455],"hidden":true},{"n":598,"fen":"rnbq3r/pp3kbR/2p2pp1/3pp3/3P4/2NBPNP1/PPP2PP1/R2QK3 w Q - 0 1","turn":"w","hint":"The rook on h7 is hanging, so you have no time to lose. Hit the king first.","answerHash":2087466787,"hidden":true},{"n":599,"fen":"4r3/p2qppkp/3p2b1/1p1N4/2r1P1RQ/2P4P/PP4P1/5RK1 w - - 0 1","turn":"w","hint":"No sacrifice here. Look at Black's rook on c4 and count the squares it can actually go to.","answerHash":2087676932,"hidden":true},{"n":600,"fen":"r2qrbk1/5ppp/pn1p4/np2P1P1/3p4/5N2/PPB2PP1/R1BQR1K1 w - - 0 1","turn":"w","hint":"The classic one. Give the bishop on h7, drag the king out, and bring the pawn and knight in behind it.","answerHash":2087710955,"hidden":true}];
+const HWPUZZLES = [{"n":595,"fen":"r1bqn1nk/ppp4p/3p4/3Pp1r1/2P1Pp2/2NB1P2/PP2N3/2K1Q1RR w - - 0 1","turn":"w","hint":"Not a mate \u2014 it wins a lot of material. Black's rook has wandered to g5 and White's rooks are stacked up. Start by giving one away.","hidden":true,"moves":[{"san":"Rxh7+","uci":"h1h7","from":"h1","to":"h7"},{"san":"Kxh7","uci":"h8h7","from":"h8","to":"h7"},{"san":"Qh4+","uci":"e1h4","from":"e1","to":"h4"},{"san":"Nh6","uci":"g8h6","from":"g8","to":"h6"},{"san":"Rxg5","uci":"g1g5","from":"g1","to":"g5"}],"accept":["h1h7"],"verdict":"Wins a rook","mate":false},{"n":596,"fen":"r1b1r1k1/ppq1bppp/4pn2/6B1/8/P2B1QN1/1PP2PPP/R3R1K1 w - - 0 1","turn":"w","hint":"Take something first to pull a defender off, then the queen swings across to the weak square.","hidden":true,"moves":[{"san":"Bxf6","uci":"g5f6","from":"g5","to":"f6"},{"san":"Bxf6","uci":"e7f6","from":"e7","to":"f6"},{"san":"Qf5","uci":"f3f5","from":"f3","to":"f5"},{"san":"Kf8","uci":"g8f8","from":"g8","to":"f8"},{"san":"Qxh7","uci":"f5h7","from":"f5","to":"h7"}],"accept":["g5f6"],"verdict":"Wins two pawns and the attack","mate":false},{"n":597,"fen":"2kr3r/pRp3q1/2Pppn2/4p2p/B2bP1p1/7P/2P2PP1/2BQ2RK w - - 0 1","turn":"w","hint":"A quiet queen move \u2014 no check at all. Two squares work; both do the same job of guarding f2 so the rook on b7 can get on with it.","hidden":true,"moves":[{"san":"Qf1","uci":"d1f1","from":"d1","to":"f1"},{"san":"Nxe4","uci":"f6e4","from":"f6","to":"e4"},{"san":"Rxa7","uci":"b7a7","from":"b7","to":"a7"},{"san":"Nxf2+","uci":"e4f2","from":"e4","to":"f2"},{"san":"Qxf2","uci":"f1f2","from":"f1","to":"f2"},{"san":"Kb8","uci":"c8b8","from":"c8","to":"b8"},{"san":"Rb7+","uci":"a7b7","from":"a7","to":"b7"},{"san":"Kc8","uci":"b8c8","from":"b8","to":"c8"}],"accept":["d1f1","d1e2"],"verdict":"Wins a rook","mate":false},{"n":598,"fen":"rnbq3r/pp3kbR/2p2pp1/3pp3/3P4/2NBPNP1/PPP2PP1/R2QK3 w Q - 0 1","turn":"w","hint":"The rook on h7 is hanging, so you have no time to lose. Hit the king first.","hidden":true,"moves":[{"san":"Bxg6+","uci":"d3g6","from":"d3","to":"g6"},{"san":"Kg8","uci":"f7g8","from":"f7","to":"g8"},{"san":"Rxh8+","uci":"h7h8","from":"h7","to":"h8"},{"san":"Bxh8","uci":"g7h8","from":"g7","to":"h8"},{"san":"Nh4","uci":"f3h4","from":"f3","to":"h4"}],"accept":["d3g6"],"verdict":"Wins a rook","mate":false},{"n":599,"fen":"4r3/p2qppkp/3p2b1/1p1N4/2r1P1RQ/2P4P/PP4P1/5RK1 w - - 0 1","turn":"w","hint":"No sacrifice here. Look at Black's rook on c4 and count the squares it can actually go to.","hidden":true,"moves":[{"san":"b3","uci":"b2b3","from":"b2","to":"b3"},{"san":"Rc5","uci":"c4c5","from":"c4","to":"c5"},{"san":"Rf5","uci":"f1f5","from":"f1","to":"f5"},{"san":"Rxd5","uci":"c5d5","from":"c5","to":"d5"},{"san":"Rxd5","uci":"f5d5","from":"f5","to":"d5"}],"accept":["b2b3"],"verdict":"Traps the rook","mate":false},{"n":600,"fen":"r2qrbk1/5ppp/pn1p4/np2P1P1/3p4/5N2/PPB2PP1/R1BQR1K1 w - - 0 1","turn":"w","hint":"The classic one. Give the bishop on h7, drag the king out, and bring the pawn and knight in behind it.","hidden":true,"moves":[{"san":"Bxh7+","uci":"c2h7","from":"c2","to":"h7"},{"san":"Kxh7","uci":"g8h7","from":"g8","to":"h7"},{"san":"g6+","uci":"g5g6","from":"g5","to":"g6"},{"san":"fxg6","uci":"f7g6","from":"f7","to":"g6"},{"san":"Ng5+","uci":"f3g5","from":"f3","to":"g5"},{"san":"Qxg5","uci":"d8g5","from":"d8","to":"g5"},{"san":"Bxg5","uci":"c1g5","from":"c1","to":"g5"}],"accept":["c2h7"],"verdict":"Wins the queen","mate":false}];
 /* ---------- one independent, playable board per puzzle ---------- */
 const SYM = {k:"p-k", q:"p-q", r:"p-r", b:"p-b", n:"p-n", p:"p-p"};
 const FILES = "abcdefgh";
@@ -437,11 +438,6 @@ const NAMES = {k:"king", q:"queen", r:"rook", b:"bishop", n:"knight", p:"pawn"};
 
 /* Same hash the build script uses. Puzzles still waiting to be covered in
    class ship with only this hash, so the answer isn't in the page at all. */
-function h33(str) {
-  let h = 5381;
-  for (const ch of str) h = ((h * 33) ^ ch.codePointAt(0)) & 0xFFFFFFFF;
-  return h >>> 0;
-}
 
 /* You have to actually work these out. The board keeps quiet about whether a
    move is right until you have had TRY_LIMIT goes at it, so you can't just
@@ -452,6 +448,9 @@ function tryKey(n) {
   const page = location.pathname.replace(/^.*\//, "").replace(/\.html$/, "") || "hw";
   return "hwtries:" + page + ":" + n;
 }
+/* A hidden puzzle's answer is in the page, but the board only shows it
+   once the goes are used up. Before that the controls that would play it
+   out are not even rendered. */
 function readTries(n) {
   try { return Number(localStorage.getItem(tryKey(n))) || 0; } catch (e) { return 0; }
 }
@@ -492,8 +491,8 @@ class Puzzle {
           <div class="pzleft">
             <div class="board-frame"><div class="board"></div></div>
             <div class="pzctl">
-              ${d.hidden ? "" : '<button data-a="solve">▶ Show the answer</button>' +
-                                '<button data-a="step">Next move</button>'}
+              <button data-a="solve" ${d.hidden && readTries(d.n) < TRY_LIMIT ? 'hidden' : ''}>▶ Show the answer</button>
+              <button data-a="step" ${d.hidden && readTries(d.n) < TRY_LIMIT ? 'hidden' : ''}>Next move</button>
               <button data-a="undo">↩ Undo</button>
               <button data-a="reset">⟲ Reset</button>
               <button data-a="flip">⤢</button>
@@ -509,14 +508,7 @@ class Puzzle {
     this.boardEl = this.host.querySelector(".board");
     this.solEl   = this.host.querySelector(".pzsol");
     if (this.d.hidden) {
-      this.solEl.className = "pzsol locked";
-      this.solEl.innerHTML =
-        "<b>🔒 Answer hidden</b>" +
-        "<div class='pzhide'>This is the newest homework, so the answer isn't on this page — " +
-        "not even hidden in the code. And the board won't tell you whether a move is right " +
-        "until you've had <b>" + TRY_LIMIT + " goes</b> at it, so there's no point clicking " +
-        "through every move to see what turns green. Work it out, then check.</div>" +
-        "<div class='pztries'></div>";
+      this.drawLockInit();
     }
     this.sayEl   = this.host.querySelector(".pzsay");
     this.host.querySelectorAll(".pzctl button").forEach(b => {
@@ -552,10 +544,33 @@ class Puzzle {
     this.sayEl.className = "pzsay" + (kind ? " " + kind : "");
   }
 
+  drawLockInit() { this.drawLock(); }
+
+  drawLock() {
+    this.solEl.className = "pzsol locked";
+    this.solEl.innerHTML =
+      "<b>\u{1F512} Answer hidden</b>" +
+      "<div class='pzhide'>This is the newest homework, so the answer is not shown yet. " +
+      "The board will not tell you whether a move is right until you have had <b>" + TRY_LIMIT +
+      " goes</b> at this puzzle \u2014 and once you have, the <b>whole line</b> appears here in " +
+      "notation and you can play it out. Work it out first, then check.</div>" +
+      "<div class='pztries'></div>";
+    this.syncTries();
+  }
+
+  unlocked() { return !this.d.hidden || this.tries >= TRY_LIMIT; }
+
+  revealIfDue() {
+    if (!this.d.hidden || !this.unlocked()) return;
+    this.host.querySelectorAll('[data-a="solve"],[data-a="step"]').forEach(b => b.hidden = false);
+    this.drawSolution();
+  }
+
   bumpTries() {
     this.tries += 1;
     try { localStorage.setItem(tryKey(this.d.n), String(this.tries)); } catch (e) {}
     this.syncTries();
+    this.revealIfDue();
   }
 
   syncTries() {
@@ -605,7 +620,7 @@ class Puzzle {
   }
 
   stepSolution() {
-    if (this.d.hidden) return false;
+    if (this.d.hidden && !this.unlocked()) return false;
     const nxt = this.solveAt + 1;
     if (nxt >= this.d.moves.length) { this.say("That's the whole line.", "good"); return false; }
     const m = this.d.moves[nxt];
@@ -627,15 +642,18 @@ class Puzzle {
 
   drawSolution() {
     const d = this.d;
-    if (d.hidden) return;
-    let html = "<b>Coach's answer</b><div class='pzline'>";
+    if (d.hidden && !this.unlocked()) { this.drawLock(); return; }
+    let html = "<b>" + (d.hidden ? "The answer" : "Coach's answer") + "</b><div class='pzline'>";
     d.moves.forEach((m, i) => {
       const on = i <= this.solveAt ? " on" : "";
       html += `<span class="mv${on}" data-i="${i}">${m.san}</span>`;
     });
     html += "</div>";
     if (d.alt) html += `<div class="pzalt">Also wins: <b>${d.alt.san}</b></div>`;
-    if (this.solveAt < 0) html += `<div class="pzhide">Press <b>Show the answer</b> to play it out on the board.</div>`;
+    if (d.hidden) html += `<div class="pzhide">You've used your ${TRY_LIMIT} goes, so here is the whole line. `
+      + `Press <b>Show the answer</b> to watch it play out, or click any move above to jump there.</div>`;
+    else if (this.solveAt < 0) html += `<div class="pzhide">Press <b>Show the answer</b> to play it out on the board.</div>`;
+    this.solEl.className = "pzsol";
     this.solEl.innerHTML = html;
     this.solEl.querySelectorAll(".mv").forEach(el => {
       el.onclick = () => {
@@ -731,14 +749,20 @@ class Puzzle {
       // Only a move from the starting position counts as a go at the puzzle;
       // playing on down a line you are already exploring is free.
       if (this.hist.length === 1) this.bumpTries();
-      const want = Array.isArray(this.d.answerHash) ? this.d.answerHash : [this.d.answerHash];
+      const want = this.d.accept;
       if (this.tries < TRY_LIMIT) {
         const left = TRY_LIMIT - this.tries;
         this.say("Go " + this.tries + " of " + TRY_LIMIT + ". Work it out on the board — " +
                  "no marking yet, " + left + (left === 1 ? " go" : " goes") + " to come. " +
                  "Press ↩ Undo to take it back.", "hint");
-      } else if (want.includes(h33(uci))) {
-        this.say("✅ Yes — that's the move. Well done.", "good");
+      } else if (want.includes(uci)) {
+        // A puzzle can have more than one right first move; name the one that was
+        // actually played, and point at the line being shown if it differs.
+        const main = this.d.moves[0];
+        this.say(uci === main.uci
+          ? "✅ Yes — " + main.san + " is the move. The whole line is on the right now."
+          : "✅ Yes — that works too. The line on the right starts with " + main.san +
+            ", but both come to the same thing.", "good");
       } else if (CR.isMate(this.st)) {
         this.say("✅ That's checkmate, so it works!", "good");
       } else {
