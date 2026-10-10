@@ -35,6 +35,9 @@
   .pzhead { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px; }
   .pznum { font-size:30px; font-weight:bold; color:#63c15c; line-height:1; }
   .pzwho { font-size:19px; font-weight:bold; color:#1b4f72; }
+  .card.q10 { background: rgba(255,255,255,.94); border-radius: 20px;
+               box-shadow: 0 8px 20px rgba(0,0,0,.18); padding: 18px 22px; margin-top: 18px; }
+  .card.q10 summary { cursor: pointer; color: #1b4f72; font-weight: bold; }
   .pzcat { font-size:12px; font-weight:bold; letter-spacing:.06em; text-transform:uppercase;
            background:#1b4f72; color:#fff; border-radius:10px; padding:3px 9px; }
   .pzverdict { font-size:13px; color:#7d3c98; background:#f4ecfa;
@@ -193,6 +196,16 @@
   <div data-puzzle="7"></div>
   <div data-puzzle="8"></div>
   <div data-puzzle="9"></div>
+
+  <div class="card q10">
+    <h2 style="margin-top:0">❓ And question 10</h2>
+    <p style="font-size:18px"><b>“Which move can never be a capture?”</b></p>
+    <p>That one is printed under the nine diagrams on the sheet and it isn't a position — it's a thinking question, so there's no board for it.</p>
+    <details>
+      <summary>Show the answer</summary>
+      <p style="margin-top:10px"><b>Castling.</b> Every other move a piece can make is able to take something: a pawn captures diagonally, a knight lands on an occupied square, a rook, bishop or queen takes the piece it runs into, and the king takes what is next to it. Castling is the one move where the king and rook only ever move to <em>empty</em> squares — so it can never be a capture. It's also the only move where two of your own pieces move at once.</p>
+    </details>
+  </div>
 
 </div>
 <script>
