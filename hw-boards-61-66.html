@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homework 61–66</title>
+<style>
+  html { background: #d3ecfb; }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.7)),
+                url('family-bg.svg') center / cover no-repeat;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Comic Sans MS","Trebuchet MS",sans-serif; background: transparent;
+         color: #2c3e50; margin: 0; padding: 26px 16px 70px; min-height: 100vh; line-height: 1.5; }
+  .page { max-width: 1000px; margin: 0 auto; }
+  a.back { display:inline-block; text-decoration:none; color:#1b4f72; font-size:17px;
+           background:rgba(255,255,255,.9); padding:7px 16px; border-radius:18px;
+           box-shadow:0 3px 8px rgba(0,0,0,.15); }
+  h1 { font-size:38px; color:#1b4f72; margin:20px 0 4px; text-shadow:2px 2px 0 rgba(255,255,255,.85); }
+  p.subtitle { font-size:18px; color:#34495e; margin:0; text-shadow:1px 1px 0 rgba(255,255,255,.85); }
+  .badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .badge { background:#1b4f72; color:#fff; font-size:14px; padding:5px 13px; border-radius:14px; }
+  .badge.coach { background:#8e44ad; } .badge.alt { background:#63c15c; }
+  h2 { font-size:26px; color:#1b4f72; margin:40px 0 6px; text-shadow:1px 1px 0 rgba(255,255,255,.85); }
+  .intro { background:rgba(255,255,255,.94); border-radius:20px; box-shadow:0 8px 20px rgba(0,0,0,.18);
+           padding:20px 24px; margin-top:16px; }
+  .intro p { font-size:17px; margin:0 0 10px; } .intro p:last-child { margin-bottom:0; }
+  .intro b { color:#1b4f72; }
+
+  /* ---- one puzzle ---- */
+  .pz { background:rgba(255,255,255,.95); border-radius:20px; box-shadow:0 8px 20px rgba(0,0,0,.18);
+        padding:18px 20px; margin:18px 0; }
+  .pzhead { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px; }
+  .pznum { font-size:30px; font-weight:bold; color:#63c15c; line-height:1; }
+  .pzwho { font-size:19px; font-weight:bold; color:#1b4f72; }
+  .pzcat { font-size:12px; font-weight:bold; letter-spacing:.06em; text-transform:uppercase;
+           background:#1b4f72; color:#fff; border-radius:10px; padding:3px 9px; }
+  .pzverdict { font-size:13px; color:#7d3c98; background:#f4ecfa;
+               border:1px solid #e0cdee; border-radius:12px; padding:3px 10px; }
+  .pzbody { display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start; }
+  .pzleft { flex:1 1 300px; max-width:400px; min-width:0; display:flex; flex-direction:column; gap:10px; }
+  .pzright { flex:1 1 300px; min-width:0; }
+
+  .board-frame { background:#3f5a80; padding:8px; border-radius:6px;
+                 box-shadow:0 4px 12px rgba(0,0,0,.25); width:100%; }
+  .board { width:100%; display:grid; grid-template-columns:18px repeat(8,1fr);
+           grid-template-rows:repeat(8,auto) 16px; }
+  .sq { position:relative; aspect-ratio:1/1; min-width:0; display:flex;
+        align-items:center; justify-content:center; cursor:pointer; }
+  .sq.light { background:#eef1f5; } .sq.dark { background:#8ca9cf; }
+  .sq.last::before { content:""; position:absolute; inset:0; background:rgba(255,214,61,.42); }
+  .sq.sel::before  { content:""; position:absolute; inset:0; background:rgba(255,214,61,.62); }
+  .sq.chk::before  { content:""; position:absolute; inset:0;
+                     background:radial-gradient(circle,rgba(220,60,60,.75),rgba(220,60,60,0) 72%); }
+  .pc { position:relative; z-index:2; width:88%; height:88%; display:block;
+        stroke-linejoin:round; stroke-linecap:round; pointer-events:none; }
+  .pc.w { fill:#fdfdfd; stroke:#1c1c1c; } .pc.b { fill:#262626; stroke:#0b0b0b; }
+  .dot { position:absolute; z-index:3; width:26%; height:26%; border-radius:50%;
+         background:rgba(40,90,40,.55); pointer-events:none; }
+  .dot.cap { width:86%; height:86%; background:none;
+             box-shadow:inset 0 0 0 6px rgba(40,90,40,.5); }
+  .rank,.file { display:flex; align-items:center; justify-content:center;
+                font-family:"Trebuchet MS",sans-serif; font-size:10px; color:#eaf0f7; }
+
+  .pzctl { display:flex; flex-wrap:wrap; gap:7px; }
+  .pzctl button { font-family:inherit; font-size:14px; cursor:pointer; background:#1b4f72;
+                  color:#fff; border:0; border-radius:11px; padding:7px 12px;
+                  box-shadow:0 3px 8px rgba(0,0,0,.2); }
+  .pzctl button:hover:not(:disabled) { background:#2a6f9e; }
+  .pzctl button:disabled { opacity:.4; cursor:default; }
+  .pzctl button[data-a="solve"] { background:#63c15c; min-width:11.5em; }
+  .pzctl button[data-a="solve"]:hover { background:#4faa49; }
+  .pzctl button:focus-visible { outline:3px solid #63c15c; outline-offset:2px; }
+
+  .pznote { font-size:16px; margin:0 0 12px; }
+  .pzsol { background:#f7fafc; border:1px solid #dbe4ec; border-radius:12px; padding:12px 14px; font-size:15px; }
+  .pzsol.locked { background:#fdf6e3; border-color:#e8d9a8; }
+  .pzsol.locked > b { color:#8a5a1c; }
+  .pzsol > b { color:#1b4f72; }
+  .pzline { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+  .pzline .mv { font-family:"SFMono-Regular",Consolas,monospace; font-size:14px; cursor:pointer;
+                background:#e6edf4; color:#5b6b7c; border-radius:6px; padding:3px 7px; }
+  .pzline .mv:hover { background:#d3e2f0; }
+  .pzline .mv.on { background:#1b4f72; color:#fff; }
+  .pzalt { margin-top:9px; font-size:14px; color:#5b6b7c; }
+  .pzalt b { font-family:"SFMono-Regular",Consolas,monospace; color:#1b4f72; }
+  .pzhide { margin-top:9px; font-size:14px; color:#7d3c98; }
+  .pzsay { margin-top:12px; font-size:16px; min-height:1.5em; }
+  .pzsay.good { color:#1a7a2e; font-weight:bold; }
+  .pzsay.bad  { color:#b03a2e; font-weight:bold; }
+  .pzsay.hint { color:#7d3c98; }
+  .pztries {
+    margin-top:9px; font-family:"Trebuchet MS",sans-serif; font-size:13.5px;
+    color:#5b6b7c; background:#f2f5f8; border-radius:8px; padding:6px 10px;
+  }
+  .pztries.open { background:#eaf8e6; color:#1a7a2e; font-weight:bold; }
+  .pzsay.promo { display:flex; flex-wrap:wrap; gap:7px; align-items:center; color:#1b4f72; }
+  .promoBtn { font-family:inherit; font-size:13px; cursor:pointer; background:#63c15c; color:#fff;
+              border:0; border-radius:9px; padding:5px 10px; }
+
+  @media (max-width:430px) {
+    body { padding-left:8px; padding-right:8px; }
+    .pz { padding:14px 12px; }
+    .board-frame { padding:5px; }
+    .board { grid-template-columns:13px repeat(8,1fr); }
+    .rank,.file { font-size:9px; }
+  }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <defs>
+    <symbol id="p-p" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <circle cx="22.5" cy="13.5" r="5.8"/>
+        <path d="M17.3 20.2c-1.9 2.2-2.9 4.4-2.9 7 0 3.3 1.7 5.6 3.1 7.3h10c1.4-1.7 3.1-4 3.1-7.3 0-2.6-1-4.8-2.9-7z"/>
+        <path d="M13 34.5h19l2.7 5.2H10.3z"/>
+      </g>
+    </symbol>
+
+    <symbol id="p-r" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <path d="M11.5 39.5h22v-3.6h-22z"/>
+        <path d="M14 35.9h17l-1.4-13.4H15.4z"/>
+        <path d="M12.6 22.5h19.8v-3.4H12.6z"/>
+        <path d="M13.2 19.1V9.4h4.3v3.9h3.1V9.4h3.8v3.9h3.1V9.4h4.3v9.7z"/>
+      </g>
+    </symbol>
+
+    <symbol id="p-n" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <path d="M11.5 39.5h22v-3.6h-22z"/>
+        <path d="M14.2 35.9c-.3-4.8.6-9.2 2.8-12.6 1.7-2.6 4-4.4 5.7-6.1-.5-1.1-1.5-1.9-2.9-2.1-1 1.5-2.4 2.6-4.1 3.1-.9.3-1.6-.1-1.7-1-.1-1.1.5-2.2 1.4-3.4 1.6-2.1 3.6-3.8 5.6-5 .3-1.3.5-2.5 1.4-3.4.7-.7 1.7-.6 2.2.2.3.5.3 1.1.2 1.7 3.6 1.1 6.7 3.4 8.4 6.9 1.8 3.6 2.2 8.1 2.2 12.6v9.1z"/>
+      </g>
+    </symbol>
+
+    <symbol id="p-b" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <path d="M11.5 39.5h22v-3.6h-22z"/>
+        <path d="M15.2 35.9h14.6c-.4-2.6-1.9-4.2-1.9-4.2H17.1s-1.5 1.6-1.9 4.2z"/>
+        <path d="M22.5 9.6c-4.3 2.9-7.4 6.6-7.4 11.3 0 3.8 2.8 6.7 7.4 8.4 4.6-1.7 7.4-4.6 7.4-8.4 0-4.7-3.1-8.4-7.4-11.3z"/>
+        <circle cx="22.5" cy="7.2" r="2.3"/>
+        <path d="M19.4 17.6h6.2M22.5 14.5v6.2" fill="none" stroke-width="1.5"/>
+      </g>
+    </symbol>
+
+    <symbol id="p-q" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <path d="M10.5 39.5h24v-3.6h-24z"/>
+        <path d="M13.4 35.9h18.2c1.1-4.3 1.7-8.6 1.7-12.4H11.7c0 3.8.6 8.1 1.7 12.4z"/>
+        <path d="M11.7 23.5 9.4 12.8l6.4 5.1 3.2-9.1 3.5 8.6 3.5-8.6 3.2 9.1 6.4-5.1-2.3 10.7z"/>
+        <circle cx="8.6" cy="11.4" r="2.1"/>
+        <circle cx="16.4" cy="8.3" r="2.1"/>
+        <circle cx="22.5" cy="6.9" r="2.1"/>
+        <circle cx="28.6" cy="8.3" r="2.1"/>
+        <circle cx="36.4" cy="11.4" r="2.1"/>
+      </g>
+    </symbol>
+
+    <symbol id="p-k" viewBox="0 0 45 45">
+      <g stroke-linejoin="round" stroke-linecap="round" stroke-width="1.4">
+        <path d="M11 39.5h23v-3.6H11z"/>
+        <path d="M13.6 35.9h17.8c1.2-3.9 1.9-7.6 1.9-10.6 0-3.4-2.4-5.7-5.3-5.7-2.1 0-3.9 1.2-5.5 3.4-1.6-2.2-3.4-3.4-5.5-3.4-2.9 0-5.3 2.3-5.3 5.7 0 3 .7 6.7 1.9 10.6z"/>
+        <path d="M22.5 19.6V8.4" fill="none" stroke-width="2"/>
+        <path d="M17.6 12.4h9.8" fill="none" stroke-width="2"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+<div class="page">
+
+  <a class="back" href="chess-homework.html">← All homework sheets</a>
+
+  <h1>♟️ Homework 61–66</h1>
+  <p class="subtitle">This week’s set — answers hidden. Have a go.</p>
+  <div class="badges">
+    <span class="badge">Handed out Fri 17 Oct 2026</span>
+    <span class="badge coach">🔒 Answers hidden</span>
+    <span class="badge alt">Four Black to move, two White</span>
+  </div>
+
+  <div class="intro">
+    <p><b>These are yours to solve.</b> Coach hasn't gone through this set in class yet, so the answers start out hidden.</p>
+    <p><b>How it works.</b> Click a piece and its legal squares light up, then click where you want it to go. Got it wrong? Press <b>↩ Undo</b> and try again.</p>
+    <p><b>The board stays quiet at first.</b> It won't say whether a move is right until you've had <b>10 goes</b> at that puzzle — otherwise you could just click every legal move until one turned green, which isn't solving it. Work the line out in your head, play it, and keep going.</p>
+    <p><b>Then you get the lot.</b> Once the 10 goes are used the board starts marking your answers <em>and</em> the <b>whole line appears in notation</b> beside the board — so you can see how it finishes, press <b>▶ Show the answer</b> to watch it play itself out, or click any move to jump straight there. Only a move from the starting position counts as a go; exploring further down a line is free, and the count is remembered per puzzle.</p>
+    <p>There's a nudge next to each board if you're stuck — it says how long the mate is, without giving the move away.</p>
+    <p><b>Check the triangle on each one.</b> Mixed again, and in a new split: <b>four</b> of the six are <b>▲ −+</b> — Black to move, Black wins — and those boards are turned round so Black is at the bottom. <b>65 and 66 are <b>△ +−</b>, White to move.</b> Read it the wrong way round and the position makes no sense.</p>
+    <p>Five of the six are a <b>forced mate in four</b>. <b>62 is the odd one out</b> — an endgame rather than a combination, where Black wins by walking pawns at the white king. It takes ten moves, and the board will play the whole thing out once you have found the first move. After your 10 goes the full line shows up right here; when Coach covers the set in class this page is rebuilt in the normal open style.</p>
+  </div>
+
+  <h2>The six puzzles</h2>
+  <div data-puzzle="61"></div>
+  <div data-puzzle="62"></div>
+  <div data-puzzle="63"></div>
+  <div data-puzzle="64"></div>
+  <div data-puzzle="65"></div>
+  <div data-puzzle="66"></div>
+  <div class="intro">
+    <p>The paper sheet is on the <a href="chess-homework.html">homework page</a> if you'd rather work from that. The other sets still waiting for answers are <a href="hw-boards-pos7-12.html">Positions 7–12</a>, <a href="hw-boards-55-60.html">55–60</a> and <a href="hw-boards-595-600.html">595–600</a>. Already-covered sets with full answers: <a href="hw-boards-49-54.html">49–54</a>, <a href="hw-boards-43-48.html">43–48</a>, <a href="hw-boards-31-36.html">31–36</a>, <a href="hw-boards-25-30.html">25–30</a>, <a href="hw-boards-7-12.html">7–12</a>, <a href="hw-boards-425-430.html">425–430</a>, <a href="hw-boards-431-436.html">431–436</a>, <a href="hw-boards-bmc21.html">BMC 21</a>, <a href="hw-boards-bmc22.html">BMC 22</a>.</p>
+  </div>
+
+</div>
+<script>
+/* Minimal but complete chess rules: legal moves, castling, en passant,
+   promotion, check / checkmate / stalemate. Board is 64 cells, index
+   r*8+c with r=0 at rank 8 and c=0 at file a. */
+const CR = (() => {
+  const WHITE = "w", BLACK = "b";
+  const isW = p => p && p === p.toUpperCase();
+  const colorOf = p => (p ? (isW(p) ? WHITE : BLACK) : null);
+  const idx = (r, c) => r * 8 + c;
+  const rc  = i => [i >> 3, i & 7];
+  const onBoard = (r, c) => r >= 0 && r < 8 && c >= 0 && c < 8;
+  const SQ = i => "abcdefgh"[i & 7] + (8 - (i >> 3));
+  const FROM_SQ = s => idx(8 - Number(s[1]), "abcdefgh".indexOf(s[0]));
+
+  const N_DIRS = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+  const B_DIRS = [[-1,-1],[-1,1],[1,-1],[1,1]];
+  const R_DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
+  const K_DIRS = [...B_DIRS, ...R_DIRS];
+
+  function fromFen(fen) {
+    const [pos, turn, cast, ep, half, full] = fen.trim().split(/\s+/);
+    const b = new Array(64).fill("");
+    let r = 0, c = 0;
+    for (const ch of pos) {
+      if (ch === "/") { r++; c = 0; }
+      else if (/\d/.test(ch)) c += Number(ch);
+      else { b[idx(r, c)] = ch; c++; }
+    }
+    return {
+      b, turn,
+      cast: { K: cast.includes("K"), Q: cast.includes("Q"),
+              k: cast.includes("k"), q: cast.includes("q") },
+      ep: ep && ep !== "-" ? FROM_SQ(ep) : null,
+      half: Number(half || 0), full: Number(full || 1),
+    };
+  }
+
+  function toFen(s) {
+    let pos = "";
+    for (let r = 0; r < 8; r++) {
+      let empty = 0;
+      for (let c = 0; c < 8; c++) {
+        const p = s.b[idx(r, c)];
+        if (!p) { empty++; continue; }
+        if (empty) { pos += empty; empty = 0; }
+        pos += p;
+      }
+      if (empty) pos += empty;
+      if (r < 7) pos += "/";
+    }
+    const cast = (s.cast.K ? "K" : "") + (s.cast.Q ? "Q" : "") +
+                 (s.cast.k ? "k" : "") + (s.cast.q ? "q" : "");
+    return [pos, s.turn, cast || "-", s.ep == null ? "-" : SQ(s.ep),
+            s.half, s.full].join(" ");
+  }
+
+  /* is square i attacked by `by`? */
+  function attacked(s, i, by) {
+    const [r, c] = rc(i);
+    // pawns
+    const pr = by === WHITE ? r + 1 : r - 1;   // attacker sits "behind" the square
+    for (const dc of [-1, 1]) {
+      if (!onBoard(pr, c + dc)) continue;
+      const p = s.b[idx(pr, c + dc)];
+      if (p && colorOf(p) === by && p.toLowerCase() === "p") return true;
+    }
+    // knights
+    for (const [dr, dc] of N_DIRS) {
+      if (!onBoard(r + dr, c + dc)) continue;
+      const p = s.b[idx(r + dr, c + dc)];
+      if (p && colorOf(p) === by && p.toLowerCase() === "n") return true;
+    }
+    // king
+    for (const [dr, dc] of K_DIRS) {
+      if (!onBoard(r + dr, c + dc)) continue;
+      const p = s.b[idx(r + dr, c + dc)];
+      if (p && colorOf(p) === by && p.toLowerCase() === "k") return true;
+    }
+    // sliders
+    const slide = (dirs, kinds) => {
+      for (const [dr, dc] of dirs) {
+        let rr = r + dr, cc = c + dc;
+        while (onBoard(rr, cc)) {
+          const p = s.b[idx(rr, cc)];
+          if (p) {
+            if (colorOf(p) === by && kinds.includes(p.toLowerCase())) return true;
+            break;
+          }
+          rr += dr; cc += dc;
+        }
+      }
+      return false;
+    };
+    return slide(R_DIRS, ["r", "q"]) || slide(B_DIRS, ["b", "q"]);
+  }
+
+  function kingSq(s, color) {
+    const want = color === WHITE ? "K" : "k";
+    for (let i = 0; i < 64; i++) if (s.b[i] === want) return i;
+    return -1;
+  }
+
+  const inCheck = (s, color = s.turn) => {
+    const k = kingSq(s, color);
+    return k >= 0 && attacked(s, k, color === WHITE ? BLACK : WHITE);
+  };
+
+  function pseudo(s) {
+    const out = [], me = s.turn, opp = me === WHITE ? BLACK : WHITE;
+    for (let i = 0; i < 64; i++) {
+      const p = s.b[i];
+      if (!p || colorOf(p) !== me) continue;
+      const [r, c] = rc(i), kind = p.toLowerCase();
+
+      if (kind === "p") {
+        const dir = me === WHITE ? -1 : 1;
+        const startRow = me === WHITE ? 6 : 1;
+        const lastRow = me === WHITE ? 0 : 7;
+        const one = idx(r + dir, c);
+        if (onBoard(r + dir, c) && !s.b[one]) {
+          if (r + dir === lastRow) for (const q of "qrbn") out.push({from:i,to:one,promo:q});
+          else out.push({from:i, to:one});
+          const two = idx(r + 2*dir, c);
+          if (r === startRow && !s.b[two]) out.push({from:i, to:two, dbl:true});
+        }
+        for (const dc of [-1, 1]) {
+          if (!onBoard(r + dir, c + dc)) continue;
+          const t = idx(r + dir, c + dc), tp = s.b[t];
+          if (tp && colorOf(tp) === opp) {
+            if (r + dir === lastRow) for (const q of "qrbn") out.push({from:i,to:t,promo:q});
+            else out.push({from:i, to:t});
+          } else if (!tp && s.ep === t) {
+            out.push({from:i, to:t, ep:true});
+          }
+        }
+        continue;
+      }
+
+      if (kind === "n" || kind === "k") {
+        const dirs = kind === "n" ? N_DIRS : K_DIRS;
+        for (const [dr, dc] of dirs) {
+          if (!onBoard(r + dr, c + dc)) continue;
+          const t = idx(r + dr, c + dc);
+          if (!s.b[t] || colorOf(s.b[t]) === opp) out.push({from:i, to:t});
+        }
+      } else {
+        const dirs = kind === "b" ? B_DIRS : kind === "r" ? R_DIRS : K_DIRS;
+        for (const [dr, dc] of dirs) {
+          let rr = r + dr, cc = c + dc;
+          while (onBoard(rr, cc)) {
+            const t = idx(rr, cc);
+            if (!s.b[t]) out.push({from:i, to:t});
+            else { if (colorOf(s.b[t]) === opp) out.push({from:i, to:t}); break; }
+            rr += dr; cc += dc;
+          }
+        }
+      }
+    }
+
+    // castling
+    const homeRow = me === WHITE ? 7 : 0;
+    const kSide = me === WHITE ? s.cast.K : s.cast.k;
+    const qSide = me === WHITE ? s.cast.Q : s.cast.q;
+    const kIdx = idx(homeRow, 4);
+    if ((kSide || qSide) && s.b[kIdx] && s.b[kIdx].toLowerCase() === "k" && !inCheck(s, me)) {
+      const oppC = me === WHITE ? BLACK : WHITE;
+      if (kSide && !s.b[idx(homeRow,5)] && !s.b[idx(homeRow,6)] &&
+          s.b[idx(homeRow,7)] && s.b[idx(homeRow,7)].toLowerCase() === "r" &&
+          !attacked(s, idx(homeRow,5), oppC) && !attacked(s, idx(homeRow,6), oppC))
+        out.push({from:kIdx, to:idx(homeRow,6), castle:"k"});
+      if (qSide && !s.b[idx(homeRow,3)] && !s.b[idx(homeRow,2)] && !s.b[idx(homeRow,1)] &&
+          s.b[idx(homeRow,0)] && s.b[idx(homeRow,0)].toLowerCase() === "r" &&
+          !attacked(s, idx(homeRow,3), oppC) && !attacked(s, idx(homeRow,2), oppC))
+        out.push({from:kIdx, to:idx(homeRow,2), castle:"q"});
+    }
+    return out;
+  }
+
+  function make(s, mv) {
+    const n = { b: s.b.slice(), turn: s.turn === WHITE ? BLACK : WHITE,
+                cast: {...s.cast}, ep: null, half: s.half + 1,
+                full: s.full + (s.turn === BLACK ? 1 : 0) };
+    const p = n.b[mv.from], kind = p.toLowerCase();
+    if (kind === "p" || n.b[mv.to]) n.half = 0;
+
+    n.b[mv.to] = mv.promo ? (isW(p) ? mv.promo.toUpperCase() : mv.promo) : p;
+    n.b[mv.from] = "";
+
+    if (mv.ep) {                              // remove the captured pawn
+      const [tr, tc] = rc(mv.to);
+      n.b[idx(isW(p) ? tr + 1 : tr - 1, tc)] = "";
+    }
+    if (mv.dbl) {
+      const [fr, fc] = rc(mv.from);
+      n.ep = idx(isW(p) ? fr - 1 : fr + 1, fc);
+    }
+    if (mv.castle) {
+      const [kr] = rc(mv.to);
+      if (mv.castle === "k") { n.b[idx(kr,5)] = n.b[idx(kr,7)]; n.b[idx(kr,7)] = ""; }
+      else                   { n.b[idx(kr,3)] = n.b[idx(kr,0)]; n.b[idx(kr,0)] = ""; }
+    }
+    // castling rights
+    if (kind === "k") { if (isW(p)) { n.cast.K = n.cast.Q = false; } else { n.cast.k = n.cast.q = false; } }
+    for (const [sq, key] of [[63,"K"],[56,"Q"],[7,"k"],[0,"q"]])
+      if (mv.from === sq || mv.to === sq) n.cast[key] = false;
+    return n;
+  }
+
+  function legal(s) {
+    return pseudo(s).filter(mv => !inCheck(make(s, mv), s.turn));
+  }
+
+  const isMate      = s => legal(s).length === 0 && inCheck(s);
+  const isStalemate = s => legal(s).length === 0 && !inCheck(s);
+
+  function perft(s, d) {
+    if (d === 0) return 1;
+    let n = 0;
+    for (const mv of legal(s)) n += perft(make(s, mv), d - 1);
+    return n;
+  }
+
+  return { fromFen, toFen, legal, make, inCheck, isMate, isStalemate,
+           perft, SQ, FROM_SQ, colorOf, idx, rc, kingSq };
+})();
+
+const HWPUZZLES = [{"n":61,"fen":"2k3r1/1pp5/p1p5/4R2p/7n/2NP1r1P/PPP4K/6R1 b - - 0 1","turn":"b","hint":"Mate in 4. The white king is shut in on h2 with its own rook and pawn around it. Start with the rook check that cannot be declined for long.","hidden":true,"moves":[{"san":"Rf2+","uci":"f3f2","from":"f3","to":"f2"},{"san":"Kh1","uci":"h2h1","from":"h2","to":"h1"},{"san":"Rh2+","uci":"f2h2","from":"f2","to":"h2"},{"san":"Kxh2","uci":"h1h2","from":"h1","to":"h2"},{"san":"Nf3+","uci":"h4f3","from":"h4","to":"f3"},{"san":"Kh1","uci":"h2h1","from":"h2","to":"h1"},{"san":"Rxg1#","uci":"g8g1","from":"g8","to":"g1"}],"accept":["f3f2"],"verdict":"Mate in 4","mate":true},{"n":62,"fen":"8/5p2/1pp4k/p5p1/2P1P1K1/P3Q2P/8/5q2 b - - 0 1","turn":"b","hint":"<b>The odd one out on this sheet.</b> Not a quick mate \u2014 this is an endgame. Black wins, but by pushing pawns at the white king rather than by a combination. Give the engine's line a watch once you've found the first move; it takes ten moves.","hidden":true,"moves":[{"san":"f5+","uci":"f7f5","from":"f7","to":"f5"},{"san":"Kg3","uci":"g4g3","from":"g4","to":"g3"},{"san":"f4+","uci":"f5f4","from":"f5","to":"f4"},{"san":"Qxf4","uci":"e3f4","from":"e3","to":"f4"},{"san":"gxf4+","uci":"g5f4","from":"g5","to":"f4"},{"san":"Kg4","uci":"g3g4","from":"g3","to":"g4"},{"san":"f3","uci":"f4f3","from":"f4","to":"f3"},{"san":"c5","uci":"c4c5","from":"c4","to":"c5"},{"san":"f2","uci":"f3f2","from":"f3","to":"f2"},{"san":"Kf5","uci":"g4f5","from":"g4","to":"f5"},{"san":"Qc4","uci":"f1c4","from":"f1","to":"c4"},{"san":"cxb6","uci":"c5b6","from":"c5","to":"b6"},{"san":"f1=Q+","uci":"f2f1q","from":"f2","to":"f1"},{"san":"Ke5","uci":"f5e5","from":"f5","to":"e5"},{"san":"Qff7","uci":"f1f7","from":"f1","to":"f7"},{"san":"Kd6","uci":"e5d6","from":"e5","to":"d6"},{"san":"Qd4+","uci":"c4d4","from":"c4","to":"d4"},{"san":"Kxc6","uci":"d6c6","from":"d6","to":"c6"},{"san":"Qfd7#","uci":"f7d7","from":"f7","to":"d7"}],"accept":["f7f5"],"verdict":"Black wins \u2014 the pawns break through","mate":true},{"n":63,"fen":"6k1/pp3p1p/2p3p1/3p3n/1P1P1q2/P4N1P/3Qn1B1/1RR4K b - - 0 1","turn":"b","hint":"Mate in 4, and the prettiest on the page \u2014 both black knights work together and the queen is given away to set up a smothered finish. Which knight goes to g3 matters.","hidden":true,"moves":[{"san":"Nhg3+","uci":"h5g3","from":"h5","to":"g3"},{"san":"Kh2","uci":"h1h2","from":"h1","to":"h2"},{"san":"Nf1+","uci":"g3f1","from":"g3","to":"f1"},{"san":"Kh1","uci":"h2h1","from":"h2","to":"h1"},{"san":"Qh2+","uci":"f4h2","from":"f4","to":"h2"},{"san":"Nxh2","uci":"f3h2","from":"f3","to":"h2"},{"san":"Nfg3#","uci":"f1g3","from":"f1","to":"g3"}],"accept":["h5g3"],"verdict":"Mate in 4","mate":true},{"n":64,"fen":"4r3/1Q3pbk/1p4pp/8/1BPp4/1P2q3/P3PnB1/R3R1K1 b - - 0 1","turn":"b","hint":"Mate in 4. Knight check first, then hand over the queen on g1 \u2014 and the bishop that has been sitting quietly on g7 all along delivers it.","hidden":true,"moves":[{"san":"Nh3+","uci":"f2h3","from":"f2","to":"h3"},{"san":"Kh1","uci":"g1h1","from":"g1","to":"h1"},{"san":"Qg1+","uci":"e3g1","from":"e3","to":"g1"},{"san":"Rxg1","uci":"e1g1","from":"e1","to":"g1"},{"san":"Nf2+","uci":"h3f2","from":"h3","to":"f2"},{"san":"Kh2","uci":"h1h2","from":"h1","to":"h2"},{"san":"Be5#","uci":"g7e5","from":"g7","to":"e5"}],"accept":["f2h3"],"verdict":"Mate in 4","mate":true},{"n":65,"fen":"r1b3kn/1pqr2p1/2p4p/p3P2N/1n1N1P2/3Q2RP/PP4P1/3B1R1K w - - 0 1","turn":"w","hint":"<b>White to move.</b> Mate in 4 that opens with the queen walking straight up to the king. Everything after it is forced.","hidden":true,"moves":[{"san":"Qh7+","uci":"d3h7","from":"d3","to":"h7"},{"san":"Kxh7","uci":"g8h7","from":"g8","to":"h7"},{"san":"Rxg7+","uci":"g3g7","from":"g3","to":"g7"},{"san":"Rxg7","uci":"d7g7","from":"d7","to":"g7"},{"san":"Nf6+","uci":"h5f6","from":"h5","to":"f6"},{"san":"Kg6","uci":"h7g6","from":"h7","to":"g6"},{"san":"Bh5#","uci":"d1h5","from":"d1","to":"h5"}],"accept":["d3h7"],"verdict":"Mate in 4","mate":true},{"n":66,"fen":"1krb2qr/p1p3pp/PpQp4/1Pn1p3/1N2P3/5N2/2P2PPP/R4RK1 w - - 0 1","turn":"w","hint":"<b>White to move.</b> Mate in 4. Give the queen on b7 so the knight can come to c6 with check, and the a-pawn finishes the job.","hidden":true,"moves":[{"san":"Qb7+","uci":"c6b7","from":"c6","to":"b7"},{"san":"Nxb7","uci":"c5b7","from":"c5","to":"b7"},{"san":"Nc6+","uci":"b4c6","from":"b4","to":"c6"},{"san":"Ka8","uci":"b8a8","from":"b8","to":"a8"},{"san":"axb7+","uci":"a6b7","from":"a6","to":"b7"},{"san":"Kxb7","uci":"a8b7","from":"a8","to":"b7"},{"san":"Rxa7#","uci":"a1a7","from":"a1","to":"a7"}],"accept":["c6b7"],"verdict":"Mate in 4","mate":true}];
+/* ---------- one independent, playable board per puzzle ---------- */
+const SYM = {k:"p-k", q:"p-q", r:"p-r", b:"p-b", n:"p-n", p:"p-p"};
+const FILES = "abcdefgh";
+const NAMES = {k:"king", q:"queen", r:"rook", b:"bishop", n:"knight", p:"pawn"};
+
+/* Same hash the build script uses. Puzzles still waiting to be covered in
+   class ship with only this hash, so the answer isn't in the page at all. */
+
+/* You have to actually work these out. The board keeps quiet about whether a
+   move is right until you have had TRY_LIMIT goes at it, so you can't just
+   click your way through every legal move until it lights up green. The count
+   is per puzzle and survives a reload. */
+const TRY_LIMIT = 10;
+function tryKey(n) {
+  const page = location.pathname.replace(/^.*\//, "").replace(/\.html$/, "") || "hw";
+  return "hwtries:" + page + ":" + n;
+}
+/* A hidden puzzle's answer is in the page, but the board only shows it
+   once the goes are used up. Before that the controls that would play it
+   out are not even rendered. */
+function readTries(n) {
+  try { return Number(localStorage.getItem(tryKey(n))) || 0; } catch (e) { return 0; }
+}
+
+class Puzzle {
+  constructor(data, host) {
+    this.d = data;
+    this.host = host;
+    this.tries = data.hidden ? readTries(data.n) : 0;
+    this.reset(true);
+    this.build();
+    this.render();
+  }
+
+  reset(quiet) {
+    this.stopAuto();
+    this.st = CR.fromFen(this.d.fen);
+    this.flipped = this.d.turn === "b";
+    this.sel = null;
+    this.hist = [];
+    this.solveAt = -1;      // -1 = solution not started
+    this.solving = false;
+    this.pending = null;
+    if (!quiet) { this.say("", ""); this.render(); }
+  }
+
+  build() {
+    const d = this.d;
+    this.host.innerHTML = `
+      <div class="pz">
+        <div class="pzhead">
+          <span class="pznum">${d.n}</span>
+          ${d.cat ? '<span class="pzcat">' + d.cat + '</span>' : ""}
+          <span class="pzwho">${d.turn === "w" ? "White" : "Black"} to move</span>
+          <span class="pzverdict">${d.verdict}</span>
+        </div>
+        <div class="pzbody">
+          <div class="pzleft">
+            <div class="board-frame"><div class="board"></div></div>
+            <div class="pzctl">
+              <button data-a="solve" ${d.hidden && readTries(d.n) < TRY_LIMIT ? 'hidden' : ''}>▶ Show the answer</button>
+              <button data-a="step" ${d.hidden && readTries(d.n) < TRY_LIMIT ? 'hidden' : ''}>Next move</button>
+              <button data-a="undo">↩ Undo</button>
+              <button data-a="reset">⟲ Reset</button>
+              <button data-a="flip">⤢</button>
+            </div>
+          </div>
+          <div class="pzright">
+            <p class="pznote">${d.hidden ? d.hint : d.note}</p>
+            <div class="pzsol"></div>
+            <div class="pzsay"></div>
+          </div>
+        </div>
+      </div>`;
+    this.boardEl = this.host.querySelector(".board");
+    this.solEl   = this.host.querySelector(".pzsol");
+    if (this.d.hidden) {
+      this.drawLockInit();
+    }
+    this.sayEl   = this.host.querySelector(".pzsay");
+    this.host.querySelectorAll(".pzctl button").forEach(b => {
+      b.onclick = () => this.act(b.dataset.a);
+    });
+    this.drawSolution();
+    this.syncTries();
+  }
+
+  stopAuto() {
+    if (this.timer) { clearTimeout(this.timer); this.timer = null; }
+    this.syncSolveBtn();
+  }
+
+  syncSolveBtn() {
+    const b = this.host && this.host.querySelector('[data-a="solve"]');
+    if (b) b.textContent = this.timer ? "⏸ Pause" : "▶ Show the answer";
+  }
+
+  /* play the rest of the line by itself, one move at a time */
+  autoNext(delay) {
+    this.timer = setTimeout(() => {
+      this.timer = null;
+      const more = this.stepSolution();
+      if (more) this.autoNext(1000);
+      else this.syncSolveBtn();
+    }, delay);
+    this.syncSolveBtn();
+  }
+
+  say(msg, kind) {
+    this.sayEl.textContent = msg;
+    this.sayEl.className = "pzsay" + (kind ? " " + kind : "");
+  }
+
+  drawLockInit() { this.drawLock(); }
+
+  drawLock() {
+    this.solEl.className = "pzsol locked";
+    this.solEl.innerHTML =
+      "<b>\u{1F512} Answer hidden</b>" +
+      "<div class='pzhide'>This is the newest homework, so the answer is not shown yet. " +
+      "The board will not tell you whether a move is right until you have had <b>" + TRY_LIMIT +
+      " goes</b> at this puzzle \u2014 and once you have, the <b>whole line</b> appears here in " +
+      "notation and you can play it out. Work it out first, then check.</div>" +
+      "<div class='pztries'></div>";
+    this.syncTries();
+  }
+
+  unlocked() { return !this.d.hidden || this.tries >= TRY_LIMIT; }
+
+  revealIfDue() {
+    if (!this.d.hidden || !this.unlocked()) return;
+    this.host.querySelectorAll('[data-a="solve"],[data-a="step"]').forEach(b => b.hidden = false);
+    this.drawSolution();
+  }
+
+  bumpTries() {
+    this.tries += 1;
+    try { localStorage.setItem(tryKey(this.d.n), String(this.tries)); } catch (e) {}
+    this.syncTries();
+    this.revealIfDue();
+  }
+
+  syncTries() {
+    const el = this.host.querySelector(".pztries");
+    if (!el) return;
+    el.textContent = this.tries >= TRY_LIMIT
+      ? "You've had your " + TRY_LIMIT + " goes — the board is marking your answers now."
+      : "Goes used: " + this.tries + " of " + TRY_LIMIT + ".";
+    el.classList.toggle("open", this.tries >= TRY_LIMIT);
+  }
+
+  act(a) {
+    if (a === "reset")  { this.reset(); this.drawSolution(); return; }
+    if (a === "flip")   { this.flipped = !this.flipped; this.render(); return; }
+    if (a === "undo") {
+      this.stopAuto();
+      if (!this.hist.length) return;
+      this.st = this.hist.pop();
+      this.sel = null; this.pending = null;
+      if (this.solving) { this.solveAt--; if (this.solveAt < 0) { this.solving = false; this.solveAt = -1; } }
+      this.say("", ""); this.render(); this.drawSolution(); return;
+    }
+    if (a === "solve") {
+      if (this.timer) {                  // already playing -> pause here
+        this.stopAuto();
+        this.say("Paused. Press “Next move”, or ▶ to play on.", "hint");
+        return;
+      }
+      if (this.solving && this.solveAt >= 0 &&
+          this.solveAt < this.d.moves.length - 1) {
+        this.autoNext(250);              // resume from where it paused
+        return;
+      }
+      this.reset(true);                  // otherwise start from the top
+      this.solving = true; this.solveAt = -1;
+      this.say("Playing the answer…", "hint");
+      this.render(); this.drawSolution();
+      this.autoNext(700);
+      return;
+    }
+    if (a === "step") {                  // one move, by hand
+      this.stopAuto();
+      if (!this.solving) { this.solving = true; this.solveAt = -1; }
+      this.stepSolution();
+      return;
+    }
+  }
+
+  stepSolution() {
+    if (this.d.hidden && !this.unlocked()) return false;
+    const nxt = this.solveAt + 1;
+    if (nxt >= this.d.moves.length) { this.say("That's the whole line.", "good"); return false; }
+    const m = this.d.moves[nxt];
+    const mv = CR.legal(this.st).find(x =>
+      CR.SQ(x.from) === m.from && CR.SQ(x.to) === m.to &&
+      (!m.uci[4] || (x.promo || "") === m.uci[4]));
+    if (!mv) { this.say("Couldn't play " + m.san + " here.", "bad"); return false; }
+    this.hist.push(this.st);
+    this.st = CR.make(this.st, mv);
+    this.solveAt = nxt;
+    this.sel = null;
+    const last = nxt === this.d.moves.length - 1;
+    this.say(last
+      ? (this.d.mate ? "Checkmate. " + m.san : "Key move: " + m.san)
+      : m.san, last ? "good" : "");
+    this.render(); this.drawSolution();
+    return nxt < this.d.moves.length - 1;
+  }
+
+  drawSolution() {
+    const d = this.d;
+    if (d.hidden && !this.unlocked()) { this.drawLock(); return; }
+    let html = "<b>" + (d.hidden ? "The answer" : "Coach's answer") + "</b><div class='pzline'>";
+    d.moves.forEach((m, i) => {
+      const on = i <= this.solveAt ? " on" : "";
+      html += `<span class="mv${on}" data-i="${i}">${m.san}</span>`;
+    });
+    html += "</div>";
+    if (d.alt) html += `<div class="pzalt">Also wins: <b>${d.alt.san}</b></div>`;
+    if (d.hidden) html += `<div class="pzhide">You've used your ${TRY_LIMIT} goes, so here is the whole line. `
+      + `Press <b>Show the answer</b> to watch it play out, or click any move above to jump there.</div>`;
+    else if (this.solveAt < 0) html += `<div class="pzhide">Press <b>Show the answer</b> to play it out on the board.</div>`;
+    this.solEl.className = "pzsol";
+    this.solEl.innerHTML = html;
+    this.solEl.querySelectorAll(".mv").forEach(el => {
+      el.onclick = () => {
+        this.stopAuto();
+        const target = Number(el.dataset.i);
+        this.reset(true); this.solving = true; this.solveAt = -1;
+        while (this.solveAt < target) this.stepSolution();
+      };
+    });
+  }
+
+  legalFrom(from) { return CR.legal(this.st).filter(m => m.from === from); }
+
+  render() {
+    const b = this.boardEl;
+    b.textContent = "";
+    const ranks = this.flipped ? [1,2,3,4,5,6,7,8] : [8,7,6,5,4,3,2,1];
+    const files = this.flipped ? [...FILES].reverse() : [...FILES];
+    const targets = this.sel == null ? [] : this.legalFrom(this.sel).map(m => m.to);
+    const inChk = CR.inCheck(this.st) ? CR.kingSq(this.st, this.st.turn) : -1;
+    const lastM = this.solveAt >= 0 ? this.d.moves[this.solveAt] : null;
+
+    for (const rk of ranks) {
+      const lab = document.createElement("div");
+      lab.className = "rank"; lab.textContent = rk; b.appendChild(lab);
+      for (const fl of files) {
+        const name = fl + rk, i = CR.FROM_SQ(name);
+        const sq = document.createElement("div");
+        sq.className = "sq " + (((FILES.indexOf(fl) + rk) % 2 === 1) ? "dark" : "light");
+        if (i === this.sel) sq.classList.add("sel");
+        if (i === inChk) sq.classList.add("chk");
+        if (lastM && (name === lastM.from || name === lastM.to)) sq.classList.add("last");
+        const p = this.st.b[i];
+        if (p) {
+          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("viewBox", "0 0 45 45");
+          svg.setAttribute("class", "pc " + (p === p.toUpperCase() ? "w" : "b"));
+          const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+          use.setAttribute("href", "#" + SYM[p.toLowerCase()]);
+          svg.appendChild(use); sq.appendChild(svg);
+        }
+        if (targets.includes(i)) {
+          const dot = document.createElement("span");
+          dot.className = "dot" + (p ? " cap" : "");
+          sq.appendChild(dot);
+        }
+        sq.onclick = () => this.click(i);
+        b.appendChild(sq);
+      }
+    }
+    b.appendChild(document.createElement("div"));
+    for (const fl of files) {
+      const lab = document.createElement("div");
+      lab.className = "file"; lab.textContent = fl.toUpperCase(); b.appendChild(lab);
+    }
+    this.host.querySelector('[data-a="undo"]').disabled = this.hist.length === 0;
+  }
+
+  click(i) {
+    if (this.pending) return;
+    this.stopAuto();
+    const p = this.st.b[i];
+    if (this.sel != null) {
+      const opts = this.legalFrom(this.sel).filter(m => m.to === i);
+      if (opts.length) {
+        if (opts.length > 1 && opts[0].promo) { this.askPromo(opts); return; }
+        this.play(opts[0]); return;
+      }
+    }
+    this.sel = (p && CR.colorOf(p) === this.st.turn) ? i : null;
+    this.render();
+  }
+
+  askPromo(opts) {
+    this.pending = true;
+    this.sayEl.className = "pzsay promo";
+    this.sayEl.textContent = "Promote to: ";
+    for (const o of opts) {
+      const btn = document.createElement("button");
+      btn.className = "promoBtn"; btn.textContent = NAMES[o.promo];
+      btn.onclick = () => { this.pending = null; this.play(o); };
+      this.sayEl.appendChild(btn);
+    }
+  }
+
+  play(mv) {
+    const uci = CR.SQ(mv.from) + CR.SQ(mv.to) + (mv.promo || "");
+    this.hist.push(this.st);
+    this.st = CR.make(this.st, mv);
+    this.sel = null;
+
+    if (this.d.hidden) {                       // newest set: check, never reveal
+      // Only a move from the starting position counts as a go at the puzzle;
+      // playing on down a line you are already exploring is free.
+      if (this.hist.length === 1) this.bumpTries();
+      const want = this.d.accept;
+      if (this.tries < TRY_LIMIT) {
+        const left = TRY_LIMIT - this.tries;
+        this.say("Go " + this.tries + " of " + TRY_LIMIT + ". Work it out on the board — " +
+                 "no marking yet, " + left + (left === 1 ? " go" : " goes") + " to come. " +
+                 "Press ↩ Undo to take it back.", "hint");
+      } else if (want.includes(uci)) {
+        // A puzzle can have more than one right first move; name the one that was
+        // actually played, and point at the line being shown if it differs.
+        const main = this.d.moves[0];
+        this.say(uci === main.uci
+          ? "✅ Yes — " + main.san + " is the move. The whole line is on the right now."
+          : "✅ Yes — that works too. The line on the right starts with " + main.san +
+            ", but both come to the same thing.", "good");
+      } else if (CR.isMate(this.st)) {
+        this.say("✅ That's checkmate, so it works!", "good");
+      } else {
+        this.say("Not the one. Press Undo and have another look.", "bad");
+      }
+      this.render();
+      return;
+    }
+
+    const want = this.d.moves[0].uci;
+    if (uci === want) {
+      this.say("✅ That's the move — " + this.d.moves[0].san +
+               (this.d.moves.length > 1 ? ". Press ▶ to see the rest play out." : "."), "good");
+      this.solving = true; this.solveAt = 0;
+      this.drawSolution();
+    } else if (CR.isMate(this.st)) {
+      this.say("✅ Checkmate! (Coach played " + this.d.moves[0].san + ".)", "good");
+    } else if (this.d.alt && uci === this.d.alt.uci) {
+      this.say("Good — that wins too. Coach preferred " + this.d.moves[0].san + ".", "good");
+    } else {
+      this.say("Not the move Coach was after. Undo and look again.", "bad");
+    }
+    this.render();
+  }
+}
+
+document.querySelectorAll("[data-puzzle]").forEach(host => {
+  const n = Number(host.dataset.puzzle);
+  const d = HWPUZZLES.find(x => x.n === n);
+  if (d) new Puzzle(d, host);
+});
+
+</script>
+<script src="punch.js" defer></script>
+</body>
+</html>
