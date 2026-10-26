@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guitar Lesson — 25 Oct 2026</title>
+<style>
+  html { background: #fdf2e3; }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.72)),
+                url('family-bg.svg') center / cover no-repeat;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Comic Sans MS","Trebuchet MS",sans-serif; background: transparent;
+         color: #2c3e50; margin: 0; padding: 26px 16px 70px; min-height: 100vh; line-height: 1.5; }
+  .page { max-width: 1000px; margin: 0 auto; }
+  a.back { display:inline-block; text-decoration:none; color:#9c4221; font-size:17px;
+           background:rgba(255,255,255,.9); padding:7px 16px; border-radius:18px;
+           box-shadow:0 3px 8px rgba(0,0,0,.15); }
+  h1 { font-size:38px; color:#9c4221; margin:20px 0 4px; text-shadow:2px 2px 0 rgba(255,255,255,.85); }
+  p.subtitle { font-size:18px; color:#34495e; margin:0; text-shadow:1px 1px 0 rgba(255,255,255,.85); }
+  .badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .badge { background:#9c4221; color:#fff; font-size:14px; padding:5px 13px; border-radius:14px; }
+  .badge.teacher { background:#2c7a7b; } .badge.alt { background:#b7791f; }
+  h2 { font-size:26px; color:#9c4221; margin:40px 0 6px; text-shadow:1px 1px 0 rgba(255,255,255,.85); }
+  .card { background:rgba(255,255,255,.95); border-radius:20px; box-shadow:0 8px 20px rgba(0,0,0,.18);
+          padding:20px 24px; margin-top:16px; }
+  .card p { font-size:17px; margin:0 0 11px; } .card p:last-child { margin-bottom:0; }
+  .card b { color:#9c4221; }
+  .why { font-family:"Trebuchet MS",sans-serif; font-size:14px; color:#7b5230;
+         background:#fdf0e0; border-radius:10px; padding:7px 12px; display:inline-block; }
+
+  /* ---- the marked-up score ---- */
+  .scorewrap { position:relative; margin-top:14px; border-radius:14px; overflow:hidden;
+               box-shadow:0 8px 20px rgba(0,0,0,.22); background:#fff; line-height:0; }
+  .scorewrap img { width:100%; display:block; }
+  .band { position:absolute; border-radius:7px; cursor:pointer;
+          background:rgba(255,214,61,.26); outline:2px solid rgba(214,158,20,.55);
+          transition:background .15s, outline-color .15s; }
+  .band:hover, .band.on { background:rgba(255,160,60,.38); outline-color:#d35400; }
+  .band .pin { position:absolute; left:-13px; top:-13px; width:28px; height:28px;
+               border-radius:50%; background:#9c4221; color:#fff; font-size:15px;
+               font-family:"Trebuchet MS",sans-serif; font-weight:bold;
+               display:flex; align-items:center; justify-content:center; line-height:1;
+               box-shadow:0 2px 6px rgba(0,0,0,.35); }
+  .band.on .pin { background:#d35400; }
+  .legend { font-family:"Trebuchet MS",sans-serif; font-size:14px; color:#6b4a2f; margin-top:9px; }
+
+  /* ---- one comment ---- */
+  .note { background:rgba(255,255,255,.96); border-radius:18px; box-shadow:0 6px 16px rgba(0,0,0,.16);
+          padding:17px 20px; margin:16px 0; scroll-margin-top:14px; }
+  .note.on { outline:3px solid #d35400; }
+  .nhead { display:flex; align-items:center; flex-wrap:wrap; gap:11px; margin-bottom:10px; }
+  .npin { width:30px; height:30px; border-radius:50%; background:#9c4221; color:#fff;
+          font-family:"Trebuchet MS",sans-serif; font-weight:bold; font-size:16px;
+          display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .nwhere { font-size:19px; font-weight:bold; color:#9c4221; }
+  .nwhen { font-family:"Trebuchet MS",sans-serif; font-size:13px; color:#7b5230;
+           background:#fdf0e0; border-radius:9px; padding:3px 9px; }
+  .said { background:#f0f7f7; border-left:5px solid #2c7a7b; border-radius:0 12px 12px 0;
+          padding:10px 14px; margin:10px 0; }
+  .said .q { font-size:17px; color:#1d4e4f; }
+  .said .q em { color:#2c7a7b; }
+  .means { font-size:16.5px; margin:10px 0 0; }
+  .means b { color:#9c4221; }
+  .closeup { margin-top:12px; border-radius:12px; overflow:hidden; border:2px solid #e8d5bb;
+             background:#fff; }
+  .closeup img { width:100%; display:block; }
+  .cap { font-family:"Trebuchet MS",sans-serif; font-size:13px; color:#7b5230;
+         background:#fdf0e0; padding:6px 11px; }
+
+  .pieces { display:flex; flex-wrap:wrap; gap:12px; margin-top:14px; }
+  .piece { background:rgba(255,255,255,.95); border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,.14);
+           padding:11px 15px; flex:1 1 260px; }
+  .piece .pn { font-size:17px; font-weight:bold; color:#9c4221; }
+  .piece .pm { font-family:"Trebuchet MS",sans-serif; font-size:13.5px; color:#5b6b7c; margin-top:2px; }
+  .piece.here { border:3px solid #d35400; }
+
+  .gallery { display:flex; flex-wrap:wrap; gap:12px; margin-top:14px; }
+  .gallery a { flex:1 1 200px; max-width:260px; text-decoration:none; }
+  .gallery img { width:100%; display:block; border-radius:10px; border:2px solid #e8d5bb;
+                 box-shadow:0 4px 10px rgba(0,0,0,.15); background:#fff; }
+  .gallery .gl { font-family:"Trebuchet MS",sans-serif; font-size:13px; color:#7b5230;
+                 text-align:center; margin-top:5px; }
+
+  ul.todo { font-size:17px; line-height:1.8; padding-left:24px; margin:0; }
+  ul.todo b { color:#9c4221; }
+
+  @media (max-width:560px) {
+    h1 { font-size:30px; } .card { padding:16px 15px; } .note { padding:14px 14px; }
+    .band .pin { width:23px; height:23px; font-size:13px; left:-10px; top:-10px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="guitar.html">← All guitar lessons</a>
+
+  <h1>🎸 Waltz, bar by bar</h1>
+  <p class="subtitle">Everything Teacher Bowen said, pinned to the exact bar he said it about</p>
+  <div class="badges">
+    <span class="badge">Recorded Sun 25 Oct 2026</span>
+    <span class="badge teacher">👨‍🏫 Teacher Bowen</span>
+    <span class="badge alt">14 minutes · one piece</span>
+  </div>
+
+  <h2>🎼 The piece</h2>
+  <div class="card">
+    <p class="why">No. 5 · <b>Waltz</b> from Sonata #9 · N. Paganini · 3/8 · page 10 of the folder</p>
+    <p><b>The whole lesson is this one page.</b> Six lines of music, bars 1 to 23, and Teacher Bowen
+       worked through them in order — first the right hand, then the left hand, then the position
+       shifts near the end.</p>
+    <p><b>How we know which piece it is.</b> The recording never says the name, but the page gives it
+       away: Teacher Bowen talks about a <b>Roman numeral telling you it's the sixth position</b> and
+       a <b>number in a circle telling you which string</b> — and this is the only page in the folder
+       with <b>VI V IV V</b> and the circled <b>②</b> and <b>⑤</b> printed over the same two bars. He
+       also ends with <em>"practise all six of these lines"</em>, and this page has exactly six lines.</p>
+  </div>
+
+  <h2>🖍️ The page, marked up</h2>
+  <div class="card">
+    <p>Tap any <b>highlighted stretch</b> of music to jump to what Teacher Bowen said about it.
+       The numbers match the notes underneath.</p>
+    <div class="scorewrap" id="score">
+      <img src="guitar-img/score-p05.jpg" alt="Waltz by Paganini, page 10, with Jason's pencil markings">
+      <div class="band" data-note="n1" style="left:19.20%; top:15.69%; width:77.98%; height:10.98%"><span class="pin">1</span></div>
+      <div class="band" data-note="n2" style="left:10.83%; top:29.86%; width:81.09%; height:10.98%"><span class="pin">2</span></div>
+      <div class="band" data-note="n3" style="left:11.48%; top:44.98%; width:85.70%; height:10.92%"><span class="pin">3</span></div>
+      <div class="band" data-note="n4" style="left:10.83%; top:59.06%; width:81.09%; height:10.95%"><span class="pin">4</span></div>
+      <div class="band" data-note="n5" style="left:11.44%; top:73.05%; width:51.72%; height:12.42%"><span class="pin">5</span></div>
+      <div class="band" data-note="n6" style="left:63.15%; top:73.05%; width:34.03%; height:12.42%"><span class="pin">6</span></div>
+      <div class="band" data-note="n7" style="left:10.83%; top:88.60%; width:81.09%; height:10.98%"><span class="pin">7</span></div>
+    </div>
+    <div class="legend">The pencil on the page is Jason's own, written during the lesson — the
+      <b>ring ↑ / middle ↓</b> at the top, the note names under the staves, and the circles
+      Teacher Bowen asked for.</div>
+  </div>
+
+  <h2>🗣️ What Teacher Bowen said</h2>
+
+  <!-- 1 -->
+  <div class="note" id="n1">
+    <div class="nhead"><div class="npin">1</div><div class="nwhere">Bars 1–4 · the right-hand rule</div>
+      <span class="nwhen">📅 25 Oct 2026 · 0:21 and again at 2:58</span></div>
+    <div class="said"><div class="q">“Every time you're playing the two notes together — if it's on the
+      <em>first string</em>, you're going to use <em>ring</em>. If it's on the <em>second</em>, you're
+      going to use the <em>middle</em>.”</div></div>
+    <p class="means">One rule for the whole opening: <b>a (ring) for anything on the first string,
+       m (middle) for anything on the second</b>. That is exactly what Jason wrote at the top of the
+       page — <b>ring ↑, middle ↓</b> — and the printed <b>a i a i a i</b> over bar 1 is the pattern
+       it produces.</p>
+    <div class="closeup">
+      <img src="guitar-img/close-bars1-4.jpg" alt="Bars 1 to 4 close up">
+      <div class="cap">Bars 1–4. The circled <b>a</b> and <b>i</b> above the notes are the right-hand fingers.</div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="note" id="n2">
+    <div class="nhead"><div class="npin">2</div><div class="nwhere">Bars 1–7 · the open G has to be quiet</div>
+      <span class="nwhen">📅 25 Oct 2026 · 3:28</span></div>
+    <div class="said"><div class="q">“This time I want you to play <em>all</em> the open G quietly. All of
+      them. Your index finger is going to be very quiet — <em>but not the other notes</em>. Only your
+      index finger playing that open G.”</div></div>
+    <p class="means">The open G is the note that keeps coming back underneath the tune — it is the
+       <b>i</b> finger every time. It is meant to sit <b>under</b> the melody, not next to it. Teacher
+       Bowen made Jason play the line four times over; each time it crept back up and he stopped him
+       and asked for it again.</p>
+    <p class="means">Then a check: <em>“just touch, so you're relaxing here — is your hand hurting?”</em>
+       <b>Quiet comes from a relaxed hand, not from a careful one.</b></p>
+    <div class="closeup">
+      <img src="guitar-img/close-bars5-7.jpg" alt="Bars 5 to 7 close up">
+      <div class="cap">Bars 5–7 — the same pattern carrying on.</div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="note" id="n3">
+    <div class="nhead"><div class="npin">3</div><div class="nwhere">Bar 8 on · a new pattern — middle first</div>
+      <span class="nwhen">📅 25 Oct 2026 · 4:35 and 5:32</span></div>
+    <div class="said"><div class="q">“You're going to start with your <em>middle</em> finger, right?
+      <em>m, i, m, i, m.</em> … Middle first — you're doing index first.”</div></div>
+    <p class="means">At bar 8 the right hand changes. Each group is <b>five notes: m i m i m</b>, and it
+       <b>starts on m</b>. Jason kept starting on <b>i</b> out of habit from the first line — Teacher
+       Bowen stopped him on it three separate times.</p>
+  </div>
+
+  <!-- 4 -->
+  <div class="note" id="n4">
+    <div class="nhead"><div class="npin">4</div><div class="nwhere">Bar 8 on · those basses are E, not A</div>
+      <span class="nwhen">📅 25 Oct 2026 · 6:10 — and he asked for it in writing</span></div>
+    <div class="said"><div class="q">“Just make a note for yourself on the paper. <em>One</em>, circle the
+      bass notes — those are <em>E's, not A's</em>. And <em>two</em>, circle the m, i, m, i — just to
+      remind yourself.”</div></div>
+    <p class="means">This is the one piece of written homework in the whole lesson, and it is the
+       correction he came back to most: Jason was reading the low notes a string too low. <b>They are
+       E.</b> You can see the circles he drew round them on the page above, with <b>E</b> pencilled
+       underneath.</p>
+    <div class="closeup">
+      <img src="guitar-img/close-bars8-12.jpg" alt="Bars 8 to 12 close up showing circled bass notes">
+      <div class="cap">Bars 8–12. The circled bass notes, and <b>E</b> written under each one.</div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="note" id="n5">
+    <div class="nhead"><div class="npin">5</div><div class="nwhere">Bars 16–18 · two fast, two not</div>
+      <span class="nwhen">📅 25 Oct 2026 · 9:14</span></div>
+    <div class="said"><div class="q">“For those four notes, we have <em>two sixteenths — faster</em>. And
+      then the <em>last two eighths are not faster</em>. … Last two notes a little bit slower.”</div></div>
+    <p class="means">A rhythm trap, not a notes trap. The group looks even on the page but it isn't:
+       <b>the first two are twice as quick as the last two</b>. The easy mistake is to let the whole
+       group run at one speed.</p>
+    <div class="closeup">
+      <img src="guitar-img/close-bars16-20.jpg" alt="Bars 16 to 20 close up">
+      <div class="cap">Bars 16–20. The position marks <b>VI V IV V</b> are the ones in note 6.</div>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="note" id="n6">
+    <div class="nhead"><div class="npin">6</div><div class="nwhere">Bars 19–20 · the shape that slides</div>
+      <span class="nwhen">📅 25 Oct 2026 · 9:42 → 11:10 — the longest stretch of the lesson</span></div>
+    <div class="said"><div class="q">“You have a <em>Roman numeral</em> telling you it's the sixth
+      position. … Your index finger is going to be at the <em>sixth fret</em>.”</div></div>
+    <div class="said"><div class="q">“You see the number <em>in a circle</em>? It's trying to tell you
+      <em>which string</em> it is. … <em>Second.</em> … And the other note is on the <em>fifth</em>.”</div></div>
+    <div class="said"><div class="q">“So it's <em>F and F</em>. And then you're just going to move this
+      whole thing <em>down a fret</em> — and then <em>down another fret</em> — and then <em>go back up
+      a fret</em>.”</div></div>
+    <p class="means">This is the hardest bar on the page and it is really one shape moved three times.
+       Hold the two notes on the <b>②</b> and <b>⑤</b> strings, index at the <b>6th fret</b>, and walk
+       it: <b>F → E → D♯ → E</b>. That is exactly what the printed <b>VI · V · IV · V</b> above the
+       bars means, and it matches the note names Jason pencilled in underneath.</p>
+    <p class="means">Two asides while they drilled it: <em>“use your ring”</em> for the lower note, and
+       — when the shape wasn't pressed cleanly — <em>“that sounds a little crunchy… that sounds
+       better.”</em></p>
+    <div class="closeup">
+      <img src="guitar-img/close-bars19-20.jpg" alt="Bars 19 to 20 close up showing the circled string numbers">
+      <div class="cap">Bars 19–20 up close: <b>②</b> and <b>⑤</b> are the strings, <b>VI V IV V</b> the
+        positions, and <b>F · E · D♯ · E</b> the notes.</div>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="note" id="n7">
+    <div class="nhead"><div class="npin">7</div><div class="nwhere">Bars 21–23 · read it, don't guess it</div>
+      <span class="nwhen">📅 25 Oct 2026 · 11:38 → 13:00</span></div>
+    <div class="said"><div class="q">“Now it's different after this. <em>Figure out the note.</em> These
+      notes you should know very easily. … <em>F is not sharp in this case.</em>”</div></div>
+    <div class="said"><div class="q">“Look at the book — it wants you to use <em>3–4</em> for your
+      fingering. That's 2–3.”</div></div>
+    <p class="means">Two separate habits caught in a row. First, <b>the F here is natural</b>, not the
+       F♯ Jason had been playing a moment earlier. Second, <b>the fingering printed in the book is
+       3–4</b> and he was using 2–3 — the book's fingering is there so the next shape is reachable.</p>
+    <p class="means">Then the ending: <em>“basically the last line, plus that last note from the line
+       above”</em>, and on the repeat, <em>“the second time is E, right?”</em> — the second-time bar is
+       different from the first.</p>
+    <div class="closeup">
+      <img src="guitar-img/close-bars21-23.jpg" alt="Bars 21 to 23 close up">
+      <div class="cap">Bars 21–23, with the two endings at the finish.</div>
+    </div>
+  </div>
+
+  <h2>🎧 The short clip</h2>
+  <div class="card">
+    <p class="why">A second recording from the same evening · 1 min 49 · the piece is never named</p>
+    <p>Four quick corrections, all about <b>time and the thumb</b>:</p>
+    <div class="said"><div class="q">“Go from the beginning — focus on <em>your fingers</em>, not the
+      thumb.”</div></div>
+    <div class="said"><div class="q">“Remember we're keeping the notes held a little bit <em>longer</em>
+      — so it's <em>less detached</em>, less short.”</div></div>
+    <div class="said"><div class="q">“That bass is too early. … In that bass you're playing <em>a beat</em>
+      too early.”</div></div>
+    <div class="said"><div class="q">“Good, that's perfect. One more time. … Now let's put everything
+      together — play through the <em>four lines</em> one more time from the beginning.”</div></div>
+    <p class="means"><b>Which piece is this one?</b> The clip doesn't say, and the markings alone can't
+       settle it. <b>Greensleeves</b> is the best guess — it is four lines long, it has a thumb bass on
+       every bar, and it is the page with <b>Hold</b> circled on it twice, which is the same note as
+       “keep the notes held longer”. Worth checking with Teacher Bowen rather than assuming.</p>
+  </div>
+
+  <h2>📂 The rest of the folder</h2>
+  <div class="card">
+    <p>Six pieces, numbered in the book. The one from this lesson is marked.</p>
+    <div class="pieces">
+      <div class="piece"><div class="pn">1 · Nonesuch</div><div class="pm">Playford Collection, England, 17th century · 2/4 · ♩ = 60 · “Aeolian mode”</div></div>
+      <div class="piece"><div class="pn">2 · Greensleeves</div><div class="pm">Anonymous · 3/4 · ♩ = 50 · “thumb on the nail”, two <b>Hold</b>s circled</div></div>
+      <div class="piece"><div class="pn">3 · Packington's Pound</div><div class="pm">Anonymous · 6/8 · ♩. = 115 · “write down counting”</div></div>
+      <div class="piece"><div class="pn">4 · Ghiribizzo</div><div class="pm">N. Paganini · 6/8 · “don't force it”, loud at bar 10, soft after</div></div>
+      <div class="piece here"><div class="pn">5 · Waltz, from Sonata #9</div><div class="pm">N. Paganini · 3/8 · <b>this lesson</b></div></div>
+      <div class="piece"><div class="pn">6 · Andantino</div><div class="pm">F. Carulli · 2/4 · p i m a patterns</div></div>
+    </div>
+    <div class="gallery">
+      <a href="guitar-img/score-p01.jpg" target="_blank" rel="noopener"><img src="guitar-img/score-p01.jpg" alt="Nonesuch"><div class="gl">1 · Nonesuch</div></a>
+      <a href="guitar-img/score-p02.jpg" target="_blank" rel="noopener"><img src="guitar-img/score-p02.jpg" alt="Greensleeves"><div class="gl">2 · Greensleeves</div></a>
+      <a href="guitar-img/score-p03.jpg" target="_blank" rel="noopener"><img src="guitar-img/score-p03.jpg" alt="Packington's Pound"><div class="gl">3 · Packington's Pound</div></a>
+      <a href="guitar-img/score-p04.jpg" target="_blank" rel="noopener"><img src="guitar-img/score-p04.jpg" alt="Ghiribizzo"><div class="gl">4 · Ghiribizzo</div></a>
+      <a href="guitar-img/score-p05.jpg" target="_blank" rel="noopener"><img src="guitar-img/score-p05.jpg" alt="Waltz"><div class="gl">5 · Waltz ← this lesson</div></a>
+      <a href="guitar-img/score-p06.jpg" target="_blank" rel="noopener"><img src="guitar-img/score-p06.jpg" alt="Waltz end and Andantino"><div class="gl">Waltz, end · 6 · Andantino</div></a>
+    </div>
+  </div>
+
+  <h2>✅ What to practise</h2>
+  <div class="card">
+    <ul class="todo">
+      <li><b>Circle the bass notes</b> in bars 8–12 and write <b>E</b> under them — he asked for this in writing.</li>
+      <li><b>Circle the m i m i</b> above bar 8 so you start that line on the <b>middle</b> finger.</li>
+      <li>Bars 1–7: <b>ring on the first string, middle on the second</b>, and the <b>open G stays quiet</b>.</li>
+      <li>Bars 19–20: one shape on <b>② and ⑤</b> — <b>F → E → D♯ → E</b>, index starting at the 6th fret.</li>
+      <li>Bar 21: the <b>F is natural</b>, and the fingering is <b>3–4</b>, not 2–3.</li>
+      <li>Then <b>all six lines</b>, start to finish.</li>
+    </ul>
+  </div>
+
+</div>
+<script>
+/* Tapping a stretch of music scrolls to its note, and vice versa. Nothing
+   here is needed to read the page — it only saves scrolling. */
+(function () {
+  var bands = document.querySelectorAll(".band");
+  function clear() {
+    document.querySelectorAll(".band.on, .note.on").forEach(function (e) { e.classList.remove("on"); });
+  }
+  bands.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var note = document.getElementById(b.dataset.note);
+      if (!note) return;
+      clear();
+      b.classList.add("on"); note.classList.add("on");
+      note.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+  document.querySelectorAll(".note .npin").forEach(function (p) {
+    p.style.cursor = "pointer";
+    p.addEventListener("click", function () {
+      var id = p.closest(".note").id;
+      var band = document.querySelector('.band[data-note="' + id + '"]');
+      if (!band) return;
+      clear();
+      band.classList.add("on"); p.closest(".note").classList.add("on");
+      document.getElementById("score").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  });
+})();
+</script>
+</body>
+</html>
