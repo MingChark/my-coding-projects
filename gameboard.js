@@ -8,7 +8,7 @@
 
    It only *replays* — there are no legal-move rules in here at all.
    Every position is a FEN worked out ahead of time by python-chess
-   (see ~/Desktop/Chess/games/mkboards.py), so the board can't drift
+   (see ~/Desktop/Jason's Classes/games/mkboards.py), so the board can't drift
    out of step with the moves written in the text beside it.
 
    Board data:
