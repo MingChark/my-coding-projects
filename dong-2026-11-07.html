@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coach Dong — the Caro-Kann · 7 Nov 2026</title>
+  <style>
+    html { background: #d3ecfb; }
+    /* Background lives in a fixed, composited layer.
+       Using background-attachment:fixed on the body element repaints the
+       viewport every scroll frame (jank), and rescales when a mobile
+       URL bar collapses (jump). It also left the white wash on the
+       default 'scroll' attachment while the image stayed put, so the
+       two layers slid against each other. */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.62)),
+                  url('family-bg.svg') center / cover no-repeat;
+    }
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: transparent;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 18px 70px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      line-height: 1.5;
+    }
+    .page { max-width: 900px; margin: 0 auto; }
+    a.back {
+      display: inline-block; text-decoration: none; color: #1b4f72;
+      font-size: 17px; background: rgba(255,255,255,.9);
+      padding: 7px 16px; border-radius: 18px; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    }
+    h1 {
+      font-size: 40px; color: #1b4f72; margin: 22px 0 4px;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.85);
+    }
+    p.subtitle {
+      font-size: 19px; color: #34495e; margin: 0 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .badge { background: #1b4f72; color: #fff; font-size: 14px; padding: 5px 13px; border-radius: 14px; }
+    .badge.alt { background: #63c15c; }
+    .badge.coach { background: #8e44ad; }
+
+    h2 {
+      font-size: 27px; color: #1b4f72; margin: 44px 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.94);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      padding: 22px 24px;
+      margin: 18px 0;
+    }
+    .card.star { border: 3px solid #63c15c; background: linear-gradient(160deg,#fffef5,#eaf8e6); }
+
+    .rulehead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .num { font-size: 30px; color: #63c15c; font-weight: bold; line-height: 1; }
+    .ruletitle { font-size: 23px; color: #1b4f72; font-weight: bold; }
+    .why { font-size: 17px; margin: 10px 0 0; }
+
+    .said {
+      margin-top: 14px; padding: 12px 16px;
+      background: #f4ecfa; border-left: 6px solid #8e44ad;
+      border-radius: 0 12px 12px 0;
+    }
+    .said .cn {
+      font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      font-size: 18px; color: #4a235a;
+    }
+    .said .en { font-size: 16px; color: #5b2c6f; font-style: italic; margin-top: 3px; }
+    .said .when { font-size: 13px; color: #7d3c98; margin-top: 6px; }
+
+    .strip { display: flex; gap: 12px; margin-top: 18px; }
+    .strip figure { flex: 1 1 0; min-width: 0; margin: 0; text-align: center; }
+    .strip img {
+      width: 100%; height: auto; display: block;
+      border-radius: 10px; border: 3px solid #d5dbdb;
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
+    }
+    .strip figure.key img { border-color: #63c15c; }
+    .strip figcaption { font-size: 14px; margin-top: 7px; }
+    .strip figure.key figcaption { font-weight: bold; color: #217a1f; }
+    .step {
+      display: inline-block; background: #d5dbdb; color: #2c3e50;
+      font-size: 12px; padding: 2px 9px; border-radius: 10px; margin-bottom: 5px;
+    }
+    .strip figure.key .step { background: #63c15c; color: #fff; }
+
+    .movelist {
+      font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+      font-size: 15px; background: #eef3f7; border-radius: 12px;
+      padding: 14px 16px; margin-top: 14px; overflow-x: auto;
+      line-height: 1.9; color: #1b4f72;
+    }
+    .tip { font-size: 17px; margin-top: 12px; }
+    .tip strong { color: #1b4f72; }
+
+    @media (max-width: 700px) {
+      .strip { flex-wrap: wrap; }
+      .strip figure { flex: 1 1 44%; }
+      h1 { font-size: 31px; }
+    }
+  </style>
+</head>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="dong.html">← All of Coach Dong's records</a>
+
+  <h1>♟️ The Caro-Kann, both ways</h1>
+  <p class="subtitle">Two studies from Coach Dong — every line on a board you can play</p>
+  <div class="badges">
+    <span class="badge">📅 Fri 7 Nov 2026</span>
+    <span class="badge coach">👨‍🏫 Coach Dong (董老师)</span>
+    <span class="badge alt">卡罗康防御 · Caro-Kann Defence</span>
+  </div>
+
+  <div class="card">
+    <p class="tip"><strong>What this is.</strong> Coach Dong sent two study chapters on the <b>Caro-Kann</b>
+      — the defence that answers <b>1.e4</b> with <b>1…c6</b>. One covers the <b>Exchange</b>, where White
+      trades in the centre straight away; the other covers the <b>Advance</b>, where White pushes past and
+      keeps the position closed. <b>Every line he wrote down is on a board below</b>, so you can play it
+      instead of reading it.</p>
+    <p class="tip">The study sheets themselves are at the bottom of the page if you want the original.</p>
+  </div>
+
+  <!-- ===== exchange ===== -->
+  <h2>⚔️ Part 1 — the Exchange Variation</h2>
+  <div class="card star">
+    <p class="why">B13 · 1.e4 c6 2.d4 d5 <b>3.exd5</b> · you're playing <b>White</b> here</p>
+    <p class="tip"><strong>This one is a setup, not a trap.</strong> White takes on d5 at once and the pawns
+      go symmetrical, so nobody is about to get mated. What decides it is <b>where the pieces go</b>, and
+      the study has an order for that: <b>Bd3 before c3</b>, <b>Bf4 outside the pawn chain</b>, and then
+      <b>Qb3</b> hitting b7 and d5 at the same time.</p>
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong> The main line, move by move:</p>
+    <div data-board="ck-exchange"></div>
+
+    <p class="tip"><strong>The alternative on move six.</strong> Instead of 6.Bf4, White can spend a move on
+      <b>6.h3!?</b> to stop …Bg4 before it ever happens. The cost is that Black gets <b>6…e5!</b> in.</p>
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong></p>
+    <div data-board="ck-exchange-h3"></div>
+
+    <p class="tip"><strong>And the mistake to know.</strong> After <b>7.Qb3</b> Black can offer the queen
+      trade with <b>7…Qb6</b> — but then <b>taking on b3 is wrong</b>, and the study marks it with a
+      question mark.</p>
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong></p>
+    <div data-board="ck-exchange-qb6"></div>
+
+    <p class="tip"><strong>Two more sidelines</strong> from the study, written out in case you meet them:</p>
+    <ul>
+      <li><b>5.Nf3</b> instead of 5.c3, when Black has <b>5…Bg4</b>.</li>
+      <li><b>6…g6</b> instead of 6…Bg4: <b>7.Nd2 Bf5 8.Bxf5 gxf5 9.Ngf3 e6 10.Ne5±</b> — Black's
+        pawns on f5 and f7 are the problem.</li>
+      <li>After 7.Qb3, <b>7…Qc8</b> is the passive third option, and <b>9…Be7</b> (instead of taking
+        on b3) runs into <b>10.Ne5 Nxe5 11.Bxe5±</b>.</li>
+    </ul>
+  </div>
+
+  <!-- ===== advance ===== -->
+  <h2>🚀 Part 2 — the Advance Variation</h2>
+  <div class="card star">
+    <p class="why">B12 · 1.e4 c6 2.d4 d5 <b>3.e5</b> · a complete game, Xinghua 2017</p>
+    <p class="tip"><strong>The opposite idea.</strong> White pushes past instead of trading, grabs space,
+      and the position stays <b>closed</b>. The move that makes the whole Caro-Kann worth playing comes
+      next: <b>3…Bf5</b>, getting the light-squared bishop <b>outside</b> the pawn chain before …e6
+      locks it in. That is the one thing the French Defence can't do.</p>
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong> The study follows a real game
+      all the way to move 21 — press ▶ and let it run:</p>
+    <div data-board="ck-advance"></div>
+    <p class="tip"><strong>Worth noticing how it ended.</strong> The study stops at <b>21.f4±</b> with
+      White better — and <b>Black went on to win in 63 moves</b>. A <b>±</b> is a verdict on the
+      <em>opening</em>, not on the game.</p>
+
+    <p class="tip"><strong>The break that comes too early.</strong> <b>…c5</b> is the standard
+      Caro-Kann lever, but the study marks <b>6…c5?!</b> as premature here — White's knight is already
+      on b3 watching that square.</p>
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong></p>
+    <div data-board="ck-advance-c5"></div>
+
+    <p class="tip"><strong>The rest of the study's sidelines:</strong></p>
+    <ul>
+      <li><b>3.Nc3 dxe4 4.Nxe4 Bf5</b> — the classical main line, if White neither trades nor pushes.</li>
+      <li><b>3.exd5</b> is the Exchange, which is Part 1 of this page.</li>
+      <li><b>5…f6 6.Nf3 Nd7 7.Bd3 Bxd3 8.Qxd3 f5 9.0-0±</b> — from a Wesley So game.</li>
+      <li><b>6…Ne7 7.Be2 Bg6 8.0-0 Nf5 9.a4 a6 10.a5 c5 11.dxc5 Nxc5 12.c4!</b></li>
+      <li><b>8…g5 9.a4 a5 10.Ne1 c5 11.dxc5 Nc6 12.Bb5 Ncxe5 13.f4</b></li>
+    </ul>
+  </div>
+
+  <!-- ===== takeaways ===== -->
+  <h2>🎯 What to take away</h2>
+  <div class="card">
+    <ul>
+      <li><b>The Caro-Kann's whole point is …Bf5</b> — the bishop gets out before the pawns shut it in.</li>
+      <li><b>In the Exchange: Bd3 before c3, Bf4 outside the chain, then Qb3.</b> Order matters more than speed.</li>
+      <li><b>Qb3 hits b7 and d5 together</b> — that double attack is what makes the setup work.</li>
+      <li><b>Don't take on b3</b> after 7…Qb6 — White recaptures towards the centre and opens the a-file.</li>
+      <li><b>…c5 is the right idea at the wrong time</b> in the Advance. Pieces out first.</li>
+      <li><b>± is not a result.</b> The 2017 game was better for White at move 21 and Black still won it.</li>
+    </ul>
+  </div>
+
+  <!-- ===== the sheets ===== -->
+  <h2>📄 The study sheets</h2>
+  <div class="card">
+    <p class="tip">The originals Coach Dong sent, from <b>Chess 诊断室</b>. Tap to open full size.</p>
+    <div class="strip">
+      <figure>
+        <span class="step">Exchange</span>
+        <a href="dong-img/ck-exchange-study-p1.jpg" target="_blank" rel="noopener">
+          <img src="dong-img/ck-exchange-study-p1.jpg" alt="Caro-Kann Exchange study, page 1"></a>
+        <figcaption>Page 1 — the notation</figcaption>
+      </figure>
+      <figure>
+        <span class="step">Exchange</span>
+        <a href="dong-img/ck-exchange-study-p2.jpg" target="_blank" rel="noopener">
+          <img src="dong-img/ck-exchange-study-p2.jpg" alt="Caro-Kann Exchange study, page 2"></a>
+        <figcaption>Page 2 — three more diagrams</figcaption>
+      </figure>
+      <figure class="key">
+        <span class="step">Advance</span>
+        <a href="dong-img/ck-advance-study.jpg" target="_blank" rel="noopener">
+          <img src="dong-img/ck-advance-study.jpg" alt="Caro-Kann Advance study"></a>
+        <figcaption>The Advance chapter</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- ===== homework ===== -->
+  <h2>📝 The sheet that came with it</h2>
+  <div class="card">
+    <p class="why">“Positions 43-48” · page 15 of the third book · side to move printed in words, with a time</p>
+    <p class="tip">Six more positions, from the same book as Positions 7–12 and 19–24 — the one that
+      <b>tells you who is to move</b> and gives you a time limit for each.</p>
+    <p class="tip"><b>▶ <a href="hw-boards-pos43-48.html">Play all six on real boards</a></b> — the
+      answers are <b>hidden</b> until you've had 10 goes at a puzzle, then the whole line appears.</p>
+    <div class="strip">
+      <figure class="key">
+        <span class="step">The sheet</span>
+        <a href="hw-img/2026-11-07-sheet.jpg" target="_blank" rel="noopener">
+          <img src="hw-img/2026-11-07-sheet.jpg" alt="Positions 43 to 48 worksheet"></a>
+        <figcaption>Positions 43–48 · tap for full size</figcaption>
+      </figure>
+    </div>
+    <p class="tip"><b>Careful — these are not the 43–48 you already did.</b> That set was from the first
+      book (all mates, all Black to move, covered on 3 Oct). Same numbers, different book, completely
+      different puzzles.</p>
+  </div>
+
+</div>
+<script>
+window.BOARDS = {"ck-exchange":{"title":"Caro-Kann, Exchange Variation — the main line","meta":"B13 · 1.e4 c6 2.d4 d5 3.exd5 · White's side · straight out of Coach Dong's study","nodes":[{"san":"e4","from":"e2","to":"e4","ply":1,"fen":"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"},{"san":"c6","from":"c7","to":"c6","ply":2,"fen":"rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"},{"san":"d4","from":"d2","to":"d4","ply":3,"fen":"rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2"},{"san":"d5","from":"d7","to":"d5","ply":4,"fen":"rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3"},{"san":"exd5","from":"e4","to":"d5","ply":5,"fen":"rnbqkbnr/pp2pppp/2p5/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3","note":"<b>3.exd5</b> — the Exchange. White takes at once and the position goes symmetrical, so this is about <b>setting pieces up right</b>, not about tricks."},{"san":"cxd5","from":"c6","to":"d5","ply":6,"fen":"rnbqkbnr/pp2pppp/8/3p4/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 4"},{"san":"Bd3","from":"f1","to":"d3","ply":7,"fen":"rnbqkbnr/pp2pppp/8/3p4/3P4/3B4/PPP2PPP/RNBQK1NR b KQkq - 1 4","note":"<b>4.Bd3</b> — the bishop goes here <b>before</b> c3, so it isn't shut in by its own pawn."},{"san":"Nc6","from":"b8","to":"c6","ply":8,"fen":"r1bqkbnr/pp2pppp/2n5/3p4/3P4/3B4/PPP2PPP/RNBQK1NR w KQkq - 2 5"},{"san":"c3","from":"c2","to":"c3","ply":9,"fen":"r1bqkbnr/pp2pppp/2n5/3p4/3P4/2PB4/PP3PPP/RNBQK1NR b KQkq - 0 5","note":"<b>5.c3</b> props up d4. <b>5.Nf3</b> is the other move, and then Black has <b>5…Bg4</b>."},{"san":"Nf6","from":"g8","to":"f6","ply":10,"fen":"r1bqkb1r/pp2pppp/2n2n2/3p4/3P4/2PB4/PP3PPP/RNBQK1NR w KQkq - 1 6"},{"san":"Bf4","from":"c1","to":"f4","ply":11,"fen":"r1bqkb1r/pp2pppp/2n2n2/3p4/3P1B2/2PB4/PP3PPP/RN1QK1NR b KQkq - 2 6","note":"<b>6.Bf4</b> — the other bishop comes out <b>outside</b> the pawn chain. <b>6.h3!?</b> is the big alternative, on its own board below."},{"san":"Bg4","from":"c8","to":"g4","ply":12,"fen":"r2qkb1r/pp2pppp/2n2n2/3p4/3P1Bb1/2PB4/PP3PPP/RN1QK1NR w KQkq - 3 7","note":"<b>6…Bg4</b>, pinning the knight before it gets to f3. <b>6…g6</b> is the other try: 7.Nd2 Bf5 8.Bxf5 gxf5 9.Ngf3 e6 <b>10.Ne5±</b>."},{"san":"Qb3","from":"d1","to":"b3","ply":13,"fen":"r2qkb1r/pp2pppp/2n2n2/3p4/3P1Bb1/1QPB4/PP3PPP/RN2K1NR b KQkq - 4 7","note":"<b>7.Qb3!</b> — hitting <b>b7</b> and <b>d5</b> at the same time. This is the move the whole line is built around."},{"san":"Qd7","from":"d8","to":"d7","ply":14,"fen":"r3kb1r/pp1qpppp/2n2n2/3p4/3P1Bb1/1QPB4/PP3PPP/RN2K1NR w KQkq - 5 8","note":"<b>7…Qd7</b> defends both. <b>7…Qb6</b> is playable (see below) and <b>7…Qc8</b> is the passive one."},{"san":"Nd2","from":"b1","to":"d2","ply":15,"fen":"r3kb1r/pp1qpppp/2n2n2/3p4/3P1Bb1/1QPB4/PP1N1PPP/R3K1NR b KQkq - 6 8"},{"san":"e6","from":"e7","to":"e6","ply":16,"fen":"r3kb1r/pp1q1ppp/2n1pn2/3p4/3P1Bb1/1QPB4/PP1N1PPP/R3K1NR w KQkq - 0 9"},{"san":"Ngf3","from":"g1","to":"f3","ply":17,"fen":"r3kb1r/pp1q1ppp/2n1pn2/3p4/3P1Bb1/1QPB1N2/PP1N1PPP/R3K2R b KQkq - 1 9"},{"san":"Bd6","from":"f8","to":"d6","ply":18,"fen":"r3k2r/pp1q1ppp/2nbpn2/3p4/3P1Bb1/1QPB1N2/PP1N1PPP/R3K2R w KQkq - 2 10"},{"san":"Bxd6","from":"f4","to":"d6","ply":19,"fen":"r3k2r/pp1q1ppp/2nBpn2/3p4/3P2b1/1QPB1N2/PP1N1PPP/R3K2R b KQkq - 0 10","note":"<b>10.Bxd6</b> — happy to trade: Black's dark squares get a little loose."},{"san":"Qxd6","from":"d7","to":"d6","ply":20,"fen":"r3k2r/pp3ppp/2nqpn2/3p4/3P2b1/1QPB1N2/PP1N1PPP/R3K2R w KQkq - 0 11"},{"san":"O-O","from":"e1","to":"g1","ply":21,"fen":"r3k2r/pp3ppp/2nqpn2/3p4/3P2b1/1QPB1N2/PP1N1PPP/R4RK1 b kq - 1 11","note":"<b>11.0-0</b> and White has everything developed, the better bishop and a free game."}],"tail":"Coach Dong's study is the <b>Exchange</b> — the quiet way to meet the Caro-Kann. Nothing here is a trap; it is a <b>setup</b>: <b>Bd3 before c3</b>, <b>Bf4 outside the chain</b>, and <b>Qb3</b> hitting b7 and d5 together.","startFen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"},"ck-exchange-h3":{"title":"Exchange — 6.h3!? instead","meta":"B13 · stopping …Bg4 before it happens","nodes":[{"san":"e4","from":"e2","to":"e4","ply":1,"fen":"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"},{"san":"c6","from":"c7","to":"c6","ply":2,"fen":"rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"},{"san":"d4","from":"d2","to":"d4","ply":3,"fen":"rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2"},{"san":"d5","from":"d7","to":"d5","ply":4,"fen":"rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3"},{"san":"exd5","from":"e4","to":"d5","ply":5,"fen":"rnbqkbnr/pp2pppp/2p5/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3"},{"san":"cxd5","from":"c6","to":"d5","ply":6,"fen":"rnbqkbnr/pp2pppp/8/3p4/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 4"},{"san":"Bd3","from":"f1","to":"d3","ply":7,"fen":"rnbqkbnr/pp2pppp/8/3p4/3P4/3B4/PPP2PPP/RNBQK1NR b KQkq - 1 4"},{"san":"Nc6","from":"b8","to":"c6","ply":8,"fen":"r1bqkbnr/pp2pppp/2n5/3p4/3P4/3B4/PPP2PPP/RNBQK1NR w KQkq - 2 5"},{"san":"c3","from":"c2","to":"c3","ply":9,"fen":"r1bqkbnr/pp2pppp/2n5/3p4/3P4/2PB4/PP3PPP/RNBQK1NR b KQkq - 0 5"},{"san":"Nf6","from":"g8","to":"f6","ply":10,"fen":"r1bqkb1r/pp2pppp/2n2n2/3p4/3P4/2PB4/PP3PPP/RNBQK1NR w KQkq - 1 6"},{"san":"h3","from":"h2","to":"h3","ply":11,"fen":"r1bqkb1r/pp2pppp/2n2n2/3p4/3P4/2PB3P/PP3PP1/RNBQK1NR b KQkq - 0 6","note":"<b>6.h3!?</b> — spend a move to take <b>g4</b> away from the black bishop."},{"san":"e5","from":"e7","to":"e5","ply":12,"fen":"r1bqkb1r/pp3ppp/2n2n2/3pp3/3P4/2PB3P/PP3PP1/RNBQK1NR w KQkq - 0 7","note":"<b>6…e5!</b> — Black hits back in the centre straight away, because White has used a move on a pawn."},{"san":"dxe5","from":"d4","to":"e5","ply":13,"fen":"r1bqkb1r/pp3ppp/2n2n2/3pP3/8/2PB3P/PP3PP1/RNBQK1NR b KQkq - 0 7"},{"san":"Nxe5","from":"c6","to":"e5","ply":14,"fen":"r1bqkb1r/pp3ppp/5n2/3pn3/8/2PB3P/PP3PP1/RNBQK1NR w KQkq - 0 8"},{"san":"Nf3","from":"g1","to":"f3","ply":15,"fen":"r1bqkb1r/pp3ppp/5n2/3pn3/8/2PB1N1P/PP3PP1/RNBQK2R b KQkq - 1 8"},{"san":"Nxd3+","from":"e5","to":"d3","ply":16,"fen":"r1bqkb1r/pp3ppp/5n2/3p4/8/2Pn1N1P/PP3PP1/RNBQK2R w KQkq - 0 9"},{"san":"Qxd3","from":"d1","to":"d3","ply":17,"fen":"r1bqkb1r/pp3ppp/5n2/3p4/8/2PQ1N1P/PP3PP1/RNB1K2R b KQkq - 0 9"},{"san":"Bd6","from":"f8","to":"d6","ply":18,"fen":"r1bqk2r/pp3ppp/3b1n2/3p4/8/2PQ1N1P/PP3PP1/RNB1K2R w KQkq - 1 10"},{"san":"O-O","from":"e1","to":"g1","ply":19,"fen":"r1bqk2r/pp3ppp/3b1n2/3p4/8/2PQ1N1P/PP3PP1/RNB2RK1 b kq - 2 10"},{"san":"O-O","from":"e8","to":"g8","ply":20,"fen":"r1bq1rk1/pp3ppp/3b1n2/3p4/8/2PQ1N1P/PP3PP1/RNB2RK1 w - - 3 11"},{"san":"Bg5","from":"c1","to":"g5","ply":21,"fen":"r1bq1rk1/pp3ppp/3b1n2/3p2B1/8/2PQ1N1P/PP3PP1/RN3RK1 b - - 4 11"},{"san":"h6","from":"h7","to":"h6","ply":22,"fen":"r1bq1rk1/pp3pp1/3b1n1p/3p2B1/8/2PQ1N1P/PP3PP1/RN3RK1 w - - 0 12"},{"san":"Bh4","from":"g5","to":"h4","ply":23,"fen":"r1bq1rk1/pp3pp1/3b1n1p/3p4/7B/2PQ1N1P/PP3PP1/RN3RK1 b - - 1 12"},{"san":"g5","from":"g7","to":"g5","ply":24,"fen":"r1bq1rk1/pp3p2/3b1n1p/3p2p1/7B/2PQ1N1P/PP3PP1/RN3RK1 w - - 0 13","note":"<b>12…g5</b> — and the study's line runs out here. Sharper than the main line, and a fair bit less tidy."}],"tail":"A trade-off: White stops …Bg4 for good, but hands Black the e5 break and a move of time. Worth knowing both, and picking the one that suits you.","startFen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"},"ck-exchange-qb6":{"title":"Exchange — 7…Qb6, and the mistake after it","meta":"B13 · why Black must <em>not</em> take on b3","nodes":[{"san":"e4","from":"e2","to":"e4","ply":1,"fen":"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"},{"san":"c6","from":"c7","to":"c6","ply":2,"fen":"rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"},{"san":"d4","from":"d2","to":"d4","ply":3,"fen":"rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2"},{"san":"d5","from":"d7","to":"d5","ply":4,"fen":"rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3"},{"san":"exd5","from":"e4","to":"d5","ply":5,"fen":"rnbqkbnr/pp2pppp/2p5/3P4/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3"},{"san":"cxd5","from":"c6","to":"d5","ply":6,"fen":"rnbqkbnr/pp2pppp/8/3p4/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 4"},{"san":"Bd3","from":"f1","to":"d3","ply":7,"fen":"rnbqkbnr/pp2pppp/8/3p4/3P4/3B4/PPP2PPP/RNBQK1NR b KQkq - 1 4"},{"san":"Nc6","from":"b8","to":"c6","ply":8,"fen":"r1bqkbnr/pp2pppp/2n5/3p4/3P4/3B4/PPP2PPP/RNBQK1NR w KQkq - 2 5"},{"san":"c3","from":"c2","to":"c3","ply":9,"fen":"r1bqkbnr/pp2pppp/2n5/3p4/3P4/2PB4/PP3PPP/RNBQK1NR b KQkq - 0 5"},{"san":"Nf6","from":"g8","to":"f6","ply":10,"fen":"r1bqkb1r/pp2pppp/2n2n2/3p4/3P4/2PB4/PP3PPP/RNBQK1NR w KQkq - 1 6"},{"san":"Bf4","from":"c1","to":"f4","ply":11,"fen":"r1bqkb1r/pp2pppp/2n2n2/3p4/3P1B2/2PB4/PP3PPP/RN1QK1NR b KQkq - 2 6"},{"san":"Bg4","from":"c8","to":"g4","ply":12,"fen":"r2qkb1r/pp2pppp/2n2n2/3p4/3P1Bb1/2PB4/PP3PPP/RN1QK1NR w KQkq - 3 7"},{"san":"Qb3","from":"d1","to":"b3","ply":13,"fen":"r2qkb1r/pp2pppp/2n2n2/3p4/3P1Bb1/1QPB4/PP3PPP/RN2K1NR b KQkq - 4 7"},{"san":"Qb6","from":"d8","to":"b6","ply":14,"fen":"r3kb1r/pp2pppp/1qn2n2/3p4/3P1Bb1/1QPB4/PP3PPP/RN2K1NR w KQkq - 5 8","note":"<b>7…Qb6</b> — offering the trade instead of defending with …Qd7."},{"san":"Nd2","from":"b1","to":"d2","ply":15,"fen":"r3kb1r/pp2pppp/1qn2n2/3p4/3P1Bb1/1QPB4/PP1N1PPP/R3K1NR b KQkq - 6 8"},{"san":"e6","from":"e7","to":"e6","ply":16,"fen":"r3kb1r/pp3ppp/1qn1pn2/3p4/3P1Bb1/1QPB4/PP1N1PPP/R3K1NR w KQkq - 0 9"},{"san":"Ngf3","from":"g1","to":"f3","ply":17,"fen":"r3kb1r/pp3ppp/1qn1pn2/3p4/3P1Bb1/1QPB1N2/PP1N1PPP/R3K2R b KQkq - 1 9"},{"san":"Qxb3","from":"b6","to":"b3","ply":18,"fen":"r3kb1r/pp3ppp/2n1pn2/3p4/3P1Bb1/1qPB1N2/PP1N1PPP/R3K2R w KQkq - 0 10","note":"<b>9…Qxb3?</b> — the natural move, and the study marks it a <b>mistake</b>."},{"san":"axb3","from":"a2","to":"b3","ply":19,"fen":"r3kb1r/pp3ppp/2n1pn2/3p4/3P1Bb1/1PPB1N2/1P1N1PPP/R3K2R b KQkq - 0 10","note":"<b>10.axb3±</b> — White recaptures <b>towards the centre</b>, the a-file opens straight onto a7, and the rook is already on it. <b>Taking is what Black gets wrong here.</b>"}],"tail":"If Black keeps the queens on with <b>9…Be7</b> instead, the study gives <b>10.Ne5 Nxe5 11.Bxe5±</b> — still pleasant for White, but nothing like as bad.","startFen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"},"ck-advance":{"title":"Caro-Kann, Advance Variation — a full game","meta":"B12 · 1.e4 c6 2.d4 d5 3.e5 · Wang Jue – Lei Tingjie, Xinghua 2017 · 0–1 in 63","nodes":[{"san":"e4","from":"e2","to":"e4","ply":1,"fen":"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"},{"san":"c6","from":"c7","to":"c6","ply":2,"fen":"rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"},{"san":"d4","from":"d2","to":"d4","ply":3,"fen":"rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2"},{"san":"d5","from":"d7","to":"d5","ply":4,"fen":"rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3"},{"san":"e5","from":"e4","to":"e5","ply":5,"fen":"rnbqkbnr/pp2pppp/2p5/3pP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3","note":"<b>3.e5</b> — the Advance. White grabs space and the game stays <b>closed</b>, which is the opposite of the Exchange."},{"san":"Bf5","from":"c8","to":"f5","ply":6,"fen":"rn1qkbnr/pp2pppp/2p5/3pPb2/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 1 4","note":"<b>3…Bf5!</b> — the whole point of the Caro-Kann: the light-squared bishop gets <b>out</b> before …e6 locks it in."},{"san":"Nd2","from":"b1","to":"d2","ply":7,"fen":"rn1qkbnr/pp2pppp/2p5/3pPb2/3P4/8/PPPN1PPP/R1BQKBNR b KQkq - 2 4","note":"<b>4.Nd2!?</b> — the study's choice, heading for <b>b3</b> rather than the usual plans."},{"san":"e6","from":"e7","to":"e6","ply":8,"fen":"rn1qkbnr/pp3ppp/2p1p3/3pPb2/3P4/8/PPPN1PPP/R1BQKBNR w KQkq - 0 5"},{"san":"Nb3","from":"d2","to":"b3","ply":9,"fen":"rn1qkbnr/pp3ppp/2p1p3/3pPb2/3P4/1N6/PPP2PPP/R1BQKBNR b KQkq - 1 5"},{"san":"Nd7","from":"b8","to":"d7","ply":10,"fen":"r2qkbnr/pp1n1ppp/2p1p3/3pPb2/3P4/1N6/PPP2PPP/R1BQKBNR w KQkq - 2 6"},{"san":"Nf3","from":"g1","to":"f3","ply":11,"fen":"r2qkbnr/pp1n1ppp/2p1p3/3pPb2/3P4/1N3N2/PPP2PPP/R1BQKB1R b KQkq - 3 6","note":"<b>6.Nf3</b>. Black has a choice here: <b>6…h6</b> (the game), <b>6…c5?!</b> (own board below) or <b>6…Ne7</b>."},{"san":"h6","from":"h7","to":"h6","ply":12,"fen":"r2qkbnr/pp1n1pp1/2p1p2p/3pPb2/3P4/1N3N2/PPP2PPP/R1BQKB1R w KQkq - 0 7"},{"san":"Be2","from":"f1","to":"e2","ply":13,"fen":"r2qkbnr/pp1n1pp1/2p1p2p/3pPb2/3P4/1N3N2/PPP1BPPP/R1BQK2R b KQkq - 1 7"},{"san":"Ne7","from":"g8","to":"e7","ply":14,"fen":"r2qkb1r/pp1nnpp1/2p1p2p/3pPb2/3P4/1N3N2/PPP1BPPP/R1BQK2R w KQkq - 2 8"},{"san":"O-O","from":"e1","to":"g1","ply":15,"fen":"r2qkb1r/pp1nnpp1/2p1p2p/3pPb2/3P4/1N3N2/PPP1BPPP/R1BQ1RK1 b kq - 3 8"},{"san":"Qc7","from":"d8","to":"c7","ply":16,"fen":"r3kb1r/ppqnnpp1/2p1p2p/3pPb2/3P4/1N3N2/PPP1BPPP/R1BQ1RK1 w kq - 4 9"},{"san":"a4","from":"a2","to":"a4","ply":17,"fen":"r3kb1r/ppqnnpp1/2p1p2p/3pPb2/P2P4/1N3N2/1PP1BPPP/R1BQ1RK1 b kq - 0 9"},{"san":"g5","from":"g7","to":"g5","ply":18,"fen":"r3kb1r/ppqnnp2/2p1p2p/3pPbp1/P2P4/1N3N2/1PP1BPPP/R1BQ1RK1 w kq - 0 10","note":"<b>9…g5</b> — Black grabs kingside space before castling. Committal, and typical of this structure."},{"san":"Bd2","from":"c1","to":"d2","ply":19,"fen":"r3kb1r/ppqnnp2/2p1p2p/3pPbp1/P2P4/1N3N2/1PPBBPPP/R2Q1RK1 b kq - 1 10"},{"san":"a6","from":"a7","to":"a6","ply":20,"fen":"r3kb1r/1pqnnp2/p1p1p2p/3pPbp1/P2P4/1N3N2/1PPBBPPP/R2Q1RK1 w kq - 0 11"},{"san":"a5","from":"a4","to":"a5","ply":21,"fen":"r3kb1r/1pqnnp2/p1p1p2p/P2pPbp1/3P4/1N3N2/1PPBBPPP/R2Q1RK1 b kq - 0 11"},{"san":"Rc8","from":"a8","to":"c8","ply":22,"fen":"2r1kb1r/1pqnnp2/p1p1p2p/P2pPbp1/3P4/1N3N2/1PPBBPPP/R2Q1RK1 w k - 1 12"},{"san":"Rc1","from":"a1","to":"c1","ply":23,"fen":"2r1kb1r/1pqnnp2/p1p1p2p/P2pPbp1/3P4/1N3N2/1PPBBPPP/2RQ1RK1 b k - 2 12"},{"san":"Ng6","from":"e7","to":"g6","ply":24,"fen":"2r1kb1r/1pqn1p2/p1p1p1np/P2pPbp1/3P4/1N3N2/1PPBBPPP/2RQ1RK1 w k - 3 13"},{"san":"Ne1","from":"f3","to":"e1","ply":25,"fen":"2r1kb1r/1pqn1p2/p1p1p1np/P2pPbp1/3P4/1N6/1PPBBPPP/2RQNRK1 b k - 4 13"},{"san":"Ne7","from":"g6","to":"e7","ply":26,"fen":"2r1kb1r/1pqnnp2/p1p1p2p/P2pPbp1/3P4/1N6/1PPBBPPP/2RQNRK1 w k - 5 14"},{"san":"Bd3","from":"e2","to":"d3","ply":27,"fen":"2r1kb1r/1pqnnp2/p1p1p2p/P2pPbp1/3P4/1N1B4/1PPB1PPP/2RQNRK1 b k - 6 14"},{"san":"Rg8","from":"h8","to":"g8","ply":28,"fen":"2r1kbr1/1pqnnp2/p1p1p2p/P2pPbp1/3P4/1N1B4/1PPB1PPP/2RQNRK1 w - - 7 15"},{"san":"c4","from":"c2","to":"c4","ply":29,"fen":"2r1kbr1/1pqnnp2/p1p1p2p/P2pPbp1/2PP4/1N1B4/1P1B1PPP/2RQNRK1 b - - 0 15","note":"<b>15.c4</b> — White finally breaks on the other wing."},{"san":"dxc4","from":"d5","to":"c4","ply":30,"fen":"2r1kbr1/1pqnnp2/p1p1p2p/P3Pbp1/2pP4/1N1B4/1P1B1PPP/2RQNRK1 w - - 0 16"},{"san":"Rxc4","from":"c1","to":"c4","ply":31,"fen":"2r1kbr1/1pqnnp2/p1p1p2p/P3Pbp1/2RP4/1N1B4/1P1B1PPP/3QNRK1 b - - 0 16"},{"san":"Rd8","from":"c8","to":"d8","ply":32,"fen":"3rkbr1/1pqnnp2/p1p1p2p/P3Pbp1/2RP4/1N1B4/1P1B1PPP/3QNRK1 w - - 1 17"},{"san":"Qe2","from":"d1","to":"e2","ply":33,"fen":"3rkbr1/1pqnnp2/p1p1p2p/P3Pbp1/2RP4/1N1B4/1P1BQPPP/4NRK1 b - - 2 17"},{"san":"Qb8","from":"c7","to":"b8","ply":34,"fen":"1q1rkbr1/1p1nnp2/p1p1p2p/P3Pbp1/2RP4/1N1B4/1P1BQPPP/4NRK1 w - - 3 18"},{"san":"Bxf5","from":"d3","to":"f5","ply":35,"fen":"1q1rkbr1/1p1nnp2/p1p1p2p/P3PBp1/2RP4/1N6/1P1BQPPP/4NRK1 b - - 0 18"},{"san":"Nxf5","from":"e7","to":"f5","ply":36,"fen":"1q1rkbr1/1p1n1p2/p1p1p2p/P3Pnp1/2RP4/1N6/1P1BQPPP/4NRK1 w - - 0 19"},{"san":"g4","from":"g2","to":"g4","ply":37,"fen":"1q1rkbr1/1p1n1p2/p1p1p2p/P3Pnp1/2RP2P1/1N6/1P1BQP1P/4NRK1 b - - 0 19"},{"san":"Ne7","from":"f5","to":"e7","ply":38,"fen":"1q1rkbr1/1p1nnp2/p1p1p2p/P3P1p1/2RP2P1/1N6/1P1BQP1P/4NRK1 w - - 1 20"},{"san":"Nd3","from":"e1","to":"d3","ply":39,"fen":"1q1rkbr1/1p1nnp2/p1p1p2p/P3P1p1/2RP2P1/1N1N4/1P1BQP1P/5RK1 b - - 2 20"},{"san":"Nd5","from":"e7","to":"d5","ply":40,"fen":"1q1rkbr1/1p1n1p2/p1p1p2p/P2nP1p1/2RP2P1/1N1N4/1P1BQP1P/5RK1 w - - 3 21"},{"san":"f4","from":"f2","to":"f4","ply":41,"fen":"1q1rkbr1/1p1n1p2/p1p1p2p/P2nP1p1/2RP1PP1/1N1N4/1P1BQ2P/5RK1 b - - 0 21","note":"<b>21.f4±</b> — the study stops here with White better…"}],"tail":"…and <b>Black won anyway</b>, in 63 moves. Worth saying out loud: <b>a ± is not a result.</b> The opening gave White the better game and the rest of the game gave it back.","startFen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"},"ck-advance-c5":{"title":"Advance — 6…c5?! is premature","meta":"B12 · why the usual break doesn't work yet","nodes":[{"san":"e4","from":"e2","to":"e4","ply":1,"fen":"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"},{"san":"c6","from":"c7","to":"c6","ply":2,"fen":"rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"},{"san":"d4","from":"d2","to":"d4","ply":3,"fen":"rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2"},{"san":"d5","from":"d7","to":"d5","ply":4,"fen":"rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3"},{"san":"e5","from":"e4","to":"e5","ply":5,"fen":"rnbqkbnr/pp2pppp/2p5/3pP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3"},{"san":"Bf5","from":"c8","to":"f5","ply":6,"fen":"rn1qkbnr/pp2pppp/2p5/3pPb2/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 1 4"},{"san":"Nd2","from":"b1","to":"d2","ply":7,"fen":"rn1qkbnr/pp2pppp/2p5/3pPb2/3P4/8/PPPN1PPP/R1BQKBNR b KQkq - 2 4"},{"san":"e6","from":"e7","to":"e6","ply":8,"fen":"rn1qkbnr/pp3ppp/2p1p3/3pPb2/3P4/8/PPPN1PPP/R1BQKBNR w KQkq - 0 5"},{"san":"Nb3","from":"d2","to":"b3","ply":9,"fen":"rn1qkbnr/pp3ppp/2p1p3/3pPb2/3P4/1N6/PPP2PPP/R1BQKBNR b KQkq - 1 5"},{"san":"Nd7","from":"b8","to":"d7","ply":10,"fen":"r2qkbnr/pp1n1ppp/2p1p3/3pPb2/3P4/1N6/PPP2PPP/R1BQKBNR w KQkq - 2 6"},{"san":"Nf3","from":"g1","to":"f3","ply":11,"fen":"r2qkbnr/pp1n1ppp/2p1p3/3pPb2/3P4/1N3N2/PPP2PPP/R1BQKB1R b KQkq - 3 6"},{"san":"c5","from":"c6","to":"c5","ply":12,"fen":"r2qkbnr/pp1n1ppp/4p3/2ppPb2/3P4/1N3N2/PPP2PPP/R1BQKB1R w KQkq - 0 7","note":"<b>6…c5?!</b> — the standard Caro-Kann break, but the study marks it <b>dubious here</b>: the knight on b3 is already watching c5."},{"san":"dxc5","from":"d4","to":"c5","ply":13,"fen":"r2qkbnr/pp1n1ppp/4p3/2PpPb2/8/1N3N2/PPP2PPP/R1BQKB1R b KQkq - 0 7"},{"san":"Bxc5","from":"f8","to":"c5","ply":14,"fen":"r2qk1nr/pp1n1ppp/4p3/2bpPb2/8/1N3N2/PPP2PPP/R1BQKB1R w KQkq - 0 8"},{"san":"Nxc5","from":"b3","to":"c5","ply":15,"fen":"r2qk1nr/pp1n1ppp/4p3/2NpPb2/8/5N2/PPP2PPP/R1BQKB1R b KQkq - 0 8","note":"<b>8.Nxc5</b> — the b3 knight does its job."},{"san":"Nxc5","from":"d7","to":"c5","ply":16,"fen":"r2qk1nr/pp3ppp/4p3/2npPb2/8/5N2/PPP2PPP/R1BQKB1R w KQkq - 0 9"},{"san":"Be3","from":"c1","to":"e3","ply":17,"fen":"r2qk1nr/pp3ppp/4p3/2npPb2/8/4BN2/PPP2PPP/R2QKB1R b KQkq - 1 9","note":"<b>9.Be3!?</b> — White piles onto the knight."},{"san":"Rc8","from":"a8","to":"c8","ply":18,"fen":"2rqk1nr/pp3ppp/4p3/2npPb2/8/4BN2/PPP2PPP/R2QKB1R w KQk - 2 10"},{"san":"Nd4","from":"f3","to":"d4","ply":19,"fen":"2rqk1nr/pp3ppp/4p3/2npPb2/3N4/4B3/PPP2PPP/R2QKB1R b KQk - 3 10"},{"san":"Ne7","from":"g8","to":"e7","ply":20,"fen":"2rqk2r/pp2nppp/4p3/2npPb2/3N4/4B3/PPP2PPP/R2QKB1R w KQk - 4 11"},{"san":"Nb5","from":"d4","to":"b5","ply":21,"fen":"2rqk2r/pp2nppp/4p3/1NnpPb2/8/4B3/PPP2PPP/R2QKB1R b KQk - 5 11","note":"<b>11.Nb5±</b> — the knight lands on the hole Black made and White is clearly better."}],"tail":"The lesson: <b>…c5 is the right idea at the wrong moment.</b> Get the pieces out first — the game line plays …h6, …Ne7 and …Qc7 before thinking about it.","startFen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"}};
+</script>
+<script src="gameboard.js" defer></script>
+</body>
+</html>
