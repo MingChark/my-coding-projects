@@ -479,7 +479,7 @@ class Puzzle {
             </div>
           </div>
           <div class="pzright">
-            <p class="pznote">${d.hidden ? d.hint : d.note}</p>
+            <p class="pznote">${d.hidden ? d.hint : (d.note || d.hint)}</p>
             <div class="pzsol"></div>
             <div class="pzsay"></div>
           </div>
