@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Class — 7 Nov 2026</title>
+  <style>
+    html { background: #d3ecfb; }
+    /* Background lives in a fixed, composited layer.
+       Using background-attachment:fixed on the body element repaints the
+       viewport every scroll frame (jank), and rescales when a mobile
+       URL bar collapses (jump). It also left the white wash on the
+       default 'scroll' attachment while the image stayed put, so the
+       two layers slid against each other. */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.62)),
+                  url('family-bg.svg') center / cover no-repeat;
+    }
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: transparent;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 18px 70px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      line-height: 1.5;
+    }
+    .page { max-width: 900px; margin: 0 auto; }
+    a.back {
+      display: inline-block; text-decoration: none; color: #1b4f72;
+      font-size: 17px; background: rgba(255,255,255,.9);
+      padding: 7px 16px; border-radius: 18px; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    }
+    h1 {
+      font-size: 40px; color: #1b4f72; margin: 22px 0 4px;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.85);
+    }
+    p.subtitle {
+      font-size: 19px; color: #34495e; margin: 0 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .badge { background: #1b4f72; color: #fff; font-size: 14px; padding: 5px 13px; border-radius: 14px; }
+    .badge.alt { background: #63c15c; }
+    .badge.coach { background: #8e44ad; }
+
+    h2 {
+      font-size: 27px; color: #1b4f72; margin: 44px 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.94);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      padding: 22px 24px;
+      margin: 18px 0;
+    }
+    .card.star { border: 3px solid #63c15c; background: linear-gradient(160deg,#fffef5,#eaf8e6); }
+
+    .rulehead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .num { font-size: 30px; color: #63c15c; font-weight: bold; line-height: 1; }
+    .ruletitle { font-size: 23px; color: #1b4f72; font-weight: bold; }
+    .why { font-size: 17px; margin: 10px 0 0; }
+
+    .said {
+      margin-top: 14px; padding: 12px 16px;
+      background: #f4ecfa; border-left: 6px solid #8e44ad;
+      border-radius: 0 12px 12px 0;
+    }
+    .said .cn {
+      font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      font-size: 18px; color: #4a235a;
+    }
+    .said .en { font-size: 16px; color: #5b2c6f; font-style: italic; margin-top: 3px; }
+    .said .when { font-size: 13px; color: #7d3c98; margin-top: 6px; }
+
+    .strip { display: flex; gap: 12px; margin-top: 18px; }
+    .strip figure { flex: 1 1 0; min-width: 0; margin: 0; text-align: center; }
+    .strip img {
+      width: 100%; height: auto; display: block;
+      border-radius: 10px; border: 3px solid #d5dbdb;
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
+    }
+    .strip figure.key img { border-color: #63c15c; }
+    .strip figcaption { font-size: 14px; margin-top: 7px; }
+    .strip figure.key figcaption { font-weight: bold; color: #217a1f; }
+    .step {
+      display: inline-block; background: #d5dbdb; color: #2c3e50;
+      font-size: 12px; padding: 2px 9px; border-radius: 10px; margin-bottom: 5px;
+    }
+    .strip figure.key .step { background: #63c15c; color: #fff; }
+
+    .movelist {
+      font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+      font-size: 15px; background: #eef3f7; border-radius: 12px;
+      padding: 14px 16px; margin-top: 14px; overflow-x: auto;
+      line-height: 1.9; color: #1b4f72;
+    }
+    .tip { font-size: 17px; margin-top: 12px; }
+    .tip strong { color: #1b4f72; }
+
+    @media (max-width: 700px) {
+      .strip { flex-wrap: wrap; }
+      .strip figure { flex: 1 1 44%; }
+      h1 { font-size: 31px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="chess.html">← All chess records</a>
+
+  <h1>♟️ Saturday Chess Class</h1>
+  <p class="subtitle">“Too relaxed before a game is as bad as too tense”</p>
+  <div class="badges">
+    <span class="badge">📅 Sat 7 Nov 2026</span>
+    <span class="badge coach">👨‍🏫 Coach IM Li Wenliang (李文良)</span>
+    <span class="badge alt">44 minutes · JJ's own class</span>
+  </div>
+
+  <div class="card">
+    <p class="tip"><strong>Two classes left this term</strong> — the last one lands the week of Thanksgiving. Coach opened with the thing he says most often, and it isn't about chess moves:</p>
+    <div class="said">
+      <div class="cn">“你们可以一周 seven 训练 chess，每天做题，每天下棋，你们水平就不一样了。”</div>
+      <div class="en">You could train chess seven days a week — puzzles every day, games every day. Your level would be a different thing altogether.</div>
+      <div class="when">📅 7 Nov 2026 · class, 01:00</div>
+    </div>
+    <p class="tip">His arithmetic: basketball gets you three, four, five sessions a week. Chess gets one hour with him — <em>“老师这一堂课太少了”</em>, one class is far too little. The rest has to happen at home, and it can: the board is on the laptop.</p>
+  </div>
+
+  <!-- ===== homework ===== -->
+  <h2>📝 Homework 73–78 — the answers</h2>
+  <div class="card star">
+    <p class="tip">He went through <b>all six</b>, and the <a href="hw-boards-73-78.html">playable boards</a> now carry <b>his</b> answers rather than the engine's. Every first move he gave matched the line already stored — which is the second week running that has happened.</p>
+    <ul>
+      <li><b>73 — Queen f3</b>, and <b>Queen f5</b> also wins. He prefers <b>f3</b>: <em>“捆 F3 更简单”</em>, it's simpler. With f5 you have to see the back-rank line first — <em>“它底线有问题”</em> — or you lose the queen instead of winning a rook.</li>
+      <li><b>74 — Rook e1.</b> The tactic has a name: <b>Decoy</b>. Lure the bishop away from the corner and the f-pawn walks in and promotes.</li>
+      <li><b>75</b> — clicked past without comment, so the line on the board is still the engine's: <b>g4+</b>, dragging the king out, and <b>Bh5+</b> wins the queen.</li>
+      <li><b>76 — Rook takes g3</b>, then <b>…Rg8</b>. Coach: this one is <b>a pin and a decoy together</b> — you can't take the queen, because of what the pin is doing.</li>
+      <li><b>77 — Queen takes e3, with check.</b> Black is a whole rook down and it makes no difference: the c-pawn queens.</li>
+      <li><b>78 — Rook b1.</b> He called it <em>“特别有难度”</em>, especially hard, and said exactly why the natural move fails: <em>“你 F2 的话，他守住了”</em> — push the f-pawn and White holds.</li>
+    </ul>
+    <p class="tip"><strong>One child in the room got all six.</strong> He asked for hands and there was one — the same student who had just gone up <b>80 rating points in a week</b> and crossed 1200, having only recently moved up into this class.</p>
+    <div class="said">
+      <div class="cn">“有的时候会有两种下法：一个是有掌声的，一个没掌声的。一个是艺术的，一个是比较朴实的、安全的。”</div>
+      <div class="en">Sometimes there are two ways to play it. One gets the applause and one doesn't — one is art, the other is plain and safe.</div>
+      <div class="when">📅 7 Nov 2026 · class, 03:00 — on choosing between Qf5 and Qf3</div>
+    </div>
+    <p class="tip">That is the whole of puzzle 73 in one sentence, and he added the part that matters: the showy move is only right <b>if you have calculated it</b>. Otherwise take the quiet one and sleep well — <em>“你心里踏实”</em>.</p>
+    <p class="tip">The new sheet, <b>79–84</b>, is up as <a href="hw-boards-79-84.html">playable boards with the answers hidden</a> — all six are Black to move again, and one of them is a mate in four.</p>
+  </div>
+
+  <!-- ===== the game ===== -->
+  <h2>⭐ Spassky – Fischer, Reykjavik 1972 · game 3</h2>
+  <div class="card star">
+    <p class="why">A77 Modern Benoni · World Championship, game 3 · 16 July 1972 · Fischer had Black · 0–1</p>
+    <p class="tip"><strong>Last week ended on a cliff.</strong> Fischer had lost game 1 by taking a poisoned pawn, and Coach wouldn't say what happened next. This is what happened next.</p>
+    <p class="tip"><strong>Why he forfeited game 2.</strong> Fischer made four demands. Two were easy and the organisers agreed: <b>an automatic car</b>, and <b>fresh oranges every day</b>. Two they refused: <b>no cameras</b> and <b>no audience</b>. So he didn't turn up. The hall waited — ten minutes, twenty, thirty — and the crowd assumed he was just late again, the way he had been for game 1. He wasn't. He had already bought <b>three tickets back to New York</b>, for himself and the two people with him.</p>
+    <p class="tip">Half an hour in, the organisers caved and telephoned: no cameras, play in a side room. Fischer said fine — <b>put the clock back to zero</b>. They said no. He forfeited, and went <b>0–2 down</b> without having lost a real fight.</p>
+    <p class="tip"><strong>And then he came back.</strong> Game 3 was played in a back room with no cameras; the moves were relayed to the audience next door, with a grandmaster explaining them. Spassky, meanwhile, had spent the free days <b>playing tennis and fishing</b> — he had beaten Fischer five times already and thought the man was more interested in arguing about conditions than in chess.</p>
+    <div class="said">
+      <div class="cn">“下棋之前，你比赛前，太放松不行，太紧张也不行。”</div>
+      <div class="en">Before a game you can't be too relaxed — and you can't be too tense either.</div>
+      <div class="when">📅 7 Nov 2026 · class, 17:55</div>
+    </div>
+    <p class="tip"><strong>A new opening every single game.</strong> Behind Spassky sat a dozen Soviet grandmasters preparing lines; Fischer had one coach and no computer. His answer was to never play the same opening twice, so there was nothing to prepare against. Here, two points down with Black, he picked the sharpest thing he owns — the <b>Modern Benoni</b>.</p>
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong> The whole game, read off Coach's own screen. Press ▶ and let it play.</p>
+    <div data-board="fischer-spassky-g3"></div>
+
+    <div class="strip">
+      <figure>
+        <img src="chess-img/2026-11-07-g3a.jpg" alt="Position after 11…Nh5">
+        <figcaption><span class="step">1</span>11…Nh5!? — wrecking his own pawns for the two bishops</figcaption>
+      </figure>
+      <figure class="key">
+        <img src="chess-img/2026-11-07-g3b.jpg" alt="Position after 18.g3">
+        <figcaption><span class="step">2</span>18.g3? — the move Coach calls the real mistake</figcaption>
+      </figure>
+      <figure>
+        <img src="chess-img/2026-11-07-g3c.jpg" alt="Final position after 41…Bd3+">
+        <figcaption><span class="step">3</span>41…Bd3+ — sealed, and resigned without resuming</figcaption>
+      </figure>
+    </div>
+
+    <p class="tip"><strong>The lesson inside the game.</strong> Fischer has the queenside pawn majority and wants to push it — but he doesn't push it yet. <b>…b6 first, then …a6, and only then …b5.</b></p>
+    <div class="said">
+      <div class="cn">“当你想冲兵的时候，你要注意对方限制兵的灵活性。所以 Fischer 不着急。”</div>
+      <div class="en">When you want to push your pawns, watch out that the opponent can't freeze them first. So Fischer was in no hurry.</div>
+      <div class="when">📅 7 Nov 2026 · class, 26:15</div>
+    </div>
+    <p class="tip"><strong>18.g3 is where it goes wrong</strong>, and it looks like nothing. It freezes White's own kingside and hands Black the light squares — and White's remaining bishop is the <b>dark</b>-squared one, so it can never come back and defend them. Twenty moves later that is the whole game.</p>
+    <p class="tip"><strong>Fischer and his light-squared bishop.</strong> Coach noticed it out loud: Fischer hardly ever gives a bishop for a knight, and when he keeps one, it is almost always the light-squared one — White or Black, game after game.</p>
+    <p class="tip"><strong>Sealed, and never resumed.</strong> After 41…Bd3+ the game was adjourned. Spassky took it home, looked at it, and resigned without playing on: he loses the two connected passed pawns, or the bishop, or he gets mated. It was <b>Fischer's first win over Spassky in his life</b>, after five games without one — and from there the match was a different match.</p>
+    <p class="tip"><strong>Coach's other point, which isn't about chess.</strong> Spassky gave way again and again off the board, and it cost him on it. But without those concessions Fischer would have flown home and there would have been no match of the century at all.</p>
+  </div>
+
+  <!-- ===== a homework for later ===== -->
+  <h2>🤖 A homework with no deadline</h2>
+  <div class="card">
+    <p class="tip">Coach set one more piece of homework, and then said it was for <b>when you're grown up, or whenever you have time</b>: Fischer and <b>Karpov never played</b> their match, and it has bothered him ever since.</p>
+    <div class="said">
+      <div class="cn">“你们用 AI，把所有菲舍尔的对局输进去，把所有卡尔波夫的对局输进去，然后让他俩对抗，模拟他俩下十番棋会怎么样。”</div>
+      <div class="en">Use AI. Feed in every one of Fischer's games, feed in every one of Karpov's, then set them against each other and simulate a ten-game match. What happens?</div>
+      <div class="when">📅 7 Nov 2026 · class, 33:23</div>
+    </div>
+    <p class="tip"><em>“这个是个课题”</em> — he called it a research project, and said he would genuinely like to know the answer.</p>
+  </div>
+
+  <!-- ===== opening ===== -->
+  <h2>📖 The Smith–Morra Gambit</h2>
+  <div class="card">
+    <p class="why">B21 Sicilian · 1.e4 c5 2.d4 cxd4 3.c3 · Black's side · a gambit a week, and this week it's the Sicilian one</p>
+    <p class="tip"><strong>A gambit every week.</strong> King's Gambit, Scotch Gambit, Halloween Gambit last week — <em>“感恩节 Gambit 肯定有，还有圣诞节 Gambit”</em>, there's bound to be a Thanksgiving one and a Christmas one too. This week: White throws the d-pawn <b>and</b> the c-pawn at you on move three.</p>
+    <p class="tip"><strong>But first, why play the Sicilian at all.</strong> Coach's real message was about not getting stuck in one opening for life:</p>
+    <div class="said">
+      <div class="cn">“1.e4 永远是 1…e5？对不对。天天吃麦当劳，肯德基也不吃，馒头也不尝一尝。”</div>
+      <div class="en">1.e4 and always 1…e5? That's eating McDonald's every day — never trying KFC, never even tasting a mantou.</div>
+      <div class="when">📅 7 Nov 2026 · class, 37:56</div>
+    </div>
+    <p class="tip">He ran through what's inside the Sicilian — the <b>Dragon</b>, the <b>Najdorf</b> (Fischer's), the <b>Scheveningen</b> (Kasparov's, for thirty years) — and mentioned a grandmaster's book called <em>The Sicilian Labyrinth</em>, named for exactly how complicated it is. While you're young, he said, <b>try all of them</b> and then pick.</p>
+
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong> Take the pawn, and here's the setup to aim for:</p>
+    <div data-board="smith-morra-main"></div>
+    <p class="tip"><strong>Steinitz's rule, which Coach quoted:</strong> the best way to answer a gambit is to <b>accept it</b>. Then know what's coming — White's pieces go to the same squares every time: <b>Nf3, Bc4, Bf4, Qe2, Rd1</b>, and then <b>e5</b>.</p>
+
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong> The trap he wants you to never fall into — and the one move that deletes it:</p>
+    <div data-board="smith-morra-trap"></div>
+    <p class="tip"><strong>Play …e6 before …Nf6.</strong> With the pawn on e6 the bishop on c4 is biting on granite and the whole trap stops existing. Coach's description of what that does to the person playing White is the best line in the lesson:</p>
+    <div class="said">
+      <div class="cn">“你走 E6，下西西里弃兵的这个棋手心里面就难受半天。因为这个 trap 用不上了。”</div>
+      <div class="en">Play …e6 and the Smith–Morra player sits there miserable for ages, because his trap is no use any more.</div>
+      <div class="when">📅 7 Nov 2026 · class, 42:06</div>
+    </div>
+    <p class="tip">Then <b>…a6</b>, to stop Nb5 and get ready for …b5 yourself. If you'd rather keep it simple there's also <b>…Bb4</b> and castle — solid, and the computer is happy with Black a pawn up.</p>
+
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong> And if you don't want the pawn at all:</p>
+    <div data-board="smith-morra-decline"></div>
+    <p class="tip"><strong>The verdict.</strong> <em>Unclear</em> — White is a pawn down with more space and faster pieces, Black is a pawn up with no weaknesses. <em>“两个人都可以下”</em>: both sides can play it.</p>
+  </div>
+
+  <!-- ===== takeaways ===== -->
+  <h2>🎯 What to take away</h2>
+  <div class="card">
+    <ul>
+      <li><b>One class a week is not training.</b> The training is the puzzle you do on Tuesday.</li>
+      <li><b>Showy or safe?</b> Qf5 gets the applause, Qf3 gets the point. Play the showy one only when you've calculated it.</li>
+      <li><b>Don't push the pawns the moment you can.</b> Fischer spent three moves making sure they couldn't be stopped first.</li>
+      <li><b>18.g3 cost a world championship game.</b> A pawn move that weakens squares your own bishop can't cover is not a small thing.</li>
+      <li><b>Against the Smith–Morra: take the pawn, then …e6 before …Nf6.</b> That one move order kills the trap.</li>
+      <li><b>Don't eat McDonald's every day.</b> Try the openings now, while nothing is riding on it.</li>
+    </ul>
+  </div>
+
+</div>
+<script>
+window.BOARDS = {"fischer-spassky-g3": {"title": "Spassky – Fischer, Reykjavik 1972, game 3", "meta": "A77 Modern Benoni · World Championship, game 3 · 16 July 1972 · Fischer had Black · 0–1", "nodes": [{"san": "d4", "from": "d2", "to": "d4", "ply": 1, "fen": "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 2, "fen": "rnbqkb1r/pppppppp/5n2/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 1 2"}, {"san": "c4", "from": "c2", "to": "c4", "ply": 3, "fen": "rnbqkb1r/pppppppp/5n2/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2"}, {"san": "e6", "from": "e7", "to": "e6", "ply": 4, "fen": "rnbqkb1r/pppp1ppp/4pn2/8/2PP4/8/PP2PPPP/RNBQKBNR w KQkq - 0 3"}, {"san": "Nf3", "from": "g1", "to": "f3", "ply": 5, "fen": "rnbqkb1r/pppp1ppp/4pn2/8/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 1 3"}, {"san": "c5", "from": "c7", "to": "c5", "ply": 6, "fen": "rnbqkb1r/pp1p1ppp/4pn2/2p5/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 4", "note": "<b>3…c5!?</b> — the <b>Modern Benoni</b>. Fischer is 0–2 down and still playing the sharpest thing he has. Coach: White gets the space, Black gets the <b>queenside pawn majority</b> — an unbalanced position on purpose."}, {"san": "d5", "from": "d4", "to": "d5", "ply": 7, "fen": "rnbqkb1r/pp1p1ppp/4pn2/2pP4/2P5/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 4"}, {"san": "exd5", "from": "e6", "to": "d5", "ply": 8, "fen": "rnbqkb1r/pp1p1ppp/5n2/2pp4/2P5/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 5"}, {"san": "cxd5", "from": "c4", "to": "d5", "ply": 9, "fen": "rnbqkb1r/pp1p1ppp/5n2/2pP4/8/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 5"}, {"san": "d6", "from": "d7", "to": "d6", "ply": 10, "fen": "rnbqkb1r/pp3ppp/3p1n2/2pP4/8/5N2/PP2PPPP/RNBQKB1R w KQkq - 0 6"}, {"san": "Nc3", "from": "b1", "to": "c3", "ply": 11, "fen": "rnbqkb1r/pp3ppp/3p1n2/2pP4/8/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 1 6"}, {"san": "g6", "from": "g7", "to": "g6", "ply": 12, "fen": "rnbqkb1r/pp3p1p/3p1np1/2pP4/8/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 0 7"}, {"san": "Nd2", "from": "f3", "to": "d2", "ply": 13, "fen": "rnbqkb1r/pp3p1p/3p1np1/2pP4/8/2N5/PP1NPPPP/R1BQKB1R b KQkq - 1 7"}, {"san": "Nbd7", "from": "b8", "to": "d7", "ply": 14, "fen": "r1bqkb1r/pp1n1p1p/3p1np1/2pP4/8/2N5/PP1NPPPP/R1BQKB1R w KQkq - 2 8"}, {"san": "e4", "from": "e2", "to": "e4", "ply": 15, "fen": "r1bqkb1r/pp1n1p1p/3p1np1/2pP4/4P3/2N5/PP1N1PPP/R1BQKB1R b KQkq - 0 8"}, {"san": "Bg7", "from": "f8", "to": "g7", "ply": 16, "fen": "r1bqk2r/pp1n1pbp/3p1np1/2pP4/4P3/2N5/PP1N1PPP/R1BQKB1R w KQkq - 1 9"}, {"san": "Be2", "from": "f1", "to": "e2", "ply": 17, "fen": "r1bqk2r/pp1n1pbp/3p1np1/2pP4/4P3/2N5/PP1NBPPP/R1BQK2R b KQkq - 2 9"}, {"san": "O-O", "from": "e8", "to": "g8", "ply": 18, "fen": "r1bq1rk1/pp1n1pbp/3p1np1/2pP4/4P3/2N5/PP1NBPPP/R1BQK2R w KQ - 3 10"}, {"san": "O-O", "from": "e1", "to": "g1", "ply": 19, "fen": "r1bq1rk1/pp1n1pbp/3p1np1/2pP4/4P3/2N5/PP1NBPPP/R1BQ1RK1 b - - 4 10"}, {"san": "Re8", "from": "f8", "to": "e8", "ply": 20, "fen": "r1bqr1k1/pp1n1pbp/3p1np1/2pP4/4P3/2N5/PP1NBPPP/R1BQ1RK1 w - - 5 11"}, {"san": "Qc2", "from": "d1", "to": "c2", "ply": 21, "fen": "r1bqr1k1/pp1n1pbp/3p1np1/2pP4/4P3/2N5/PPQNBPPP/R1B2RK1 b - - 6 11"}, {"san": "Nh5", "from": "f6", "to": "h5", "ply": 22, "fen": "r1bqr1k1/pp1n1pbp/3p2p1/2pP3n/4P3/2N5/PPQNBPPP/R1B2RK1 w - - 7 12", "note": "<b>11…Nh5!?</b> — the bold one. It <b>wrecks his own kingside pawns</b> to win the <b>bishop pair</b>. <em>“他认为像是3点5分”</em> — Coach: Fischer reckoned a bishop was worth three and a half."}, {"san": "Bxh5", "from": "e2", "to": "h5", "ply": 23, "fen": "r1bqr1k1/pp1n1pbp/3p2p1/2pP3B/4P3/2N5/PPQN1PPP/R1B2RK1 b - - 0 12"}, {"san": "gxh5", "from": "g6", "to": "h5", "ply": 24, "fen": "r1bqr1k1/pp1n1pbp/3p4/2pP3p/4P3/2N5/PPQN1PPP/R1B2RK1 w - - 0 13"}, {"san": "Nc4", "from": "d2", "to": "c4", "ply": 25, "fen": "r1bqr1k1/pp1n1pbp/3p4/2pP3p/2N1P3/2N5/PPQ2PPP/R1B2RK1 b - - 1 13"}, {"san": "Ne5", "from": "d7", "to": "e5", "ply": 26, "fen": "r1bqr1k1/pp3pbp/3p4/2pPn2p/2N1P3/2N5/PPQ2PPP/R1B2RK1 w - - 2 14", "note": "<b>13…Ne5</b> — offering the knight trade. Spassky won't take: in a closed position he wants the knight, not the bishop."}, {"san": "Ne3", "from": "c4", "to": "e3", "ply": 27, "fen": "r1bqr1k1/pp3pbp/3p4/2pPn2p/4P3/2N1N3/PPQ2PPP/R1B2RK1 b - - 3 14"}, {"san": "Qh4", "from": "d8", "to": "h4", "ply": 28, "fen": "r1b1r1k1/pp3pbp/3p4/2pPn2p/4P2q/2N1N3/PPQ2PPP/R1B2RK1 w - - 4 15"}, {"san": "Bd2", "from": "c1", "to": "d2", "ply": 29, "fen": "r1b1r1k1/pp3pbp/3p4/2pPn2p/4P2q/2N1N3/PPQB1PPP/R4RK1 b - - 5 15"}, {"san": "Ng4", "from": "e5", "to": "g4", "ply": 30, "fen": "r1b1r1k1/pp3pbp/3p4/2pP3p/4P1nq/2N1N3/PPQB1PPP/R4RK1 w - - 6 16", "note": "<b>15…Ng4</b> — Coach: here Spassky had a real chance with <b>16.f3!</b>, keeping the knights on. Instead he swapped."}, {"san": "Nxg4", "from": "e3", "to": "g4", "ply": 31, "fen": "r1b1r1k1/pp3pbp/3p4/2pP3p/4P1Nq/2N5/PPQB1PPP/R4RK1 b - - 0 16"}, {"san": "hxg4", "from": "h5", "to": "g4", "ply": 32, "fen": "r1b1r1k1/pp3pbp/3p4/2pP4/4P1pq/2N5/PPQB1PPP/R4RK1 w - - 0 17", "note": "<b>16…hxg4</b> — and the trade has <b>fixed Black's doubled pawns</b> for him. Coach called 16.Nxg4 a <em>relaxed, gone-fishing move</em>."}, {"san": "Bf4", "from": "d2", "to": "f4", "ply": 33, "fen": "r1b1r1k1/pp3pbp/3p4/2pP4/4PBpq/2N5/PPQ2PPP/R4RK1 b - - 1 17"}, {"san": "Qf6", "from": "h4", "to": "f6", "ply": 34, "fen": "r1b1r1k1/pp3pbp/3p1q2/2pP4/4PBp1/2N5/PPQ2PPP/R4RK1 w - - 2 18"}, {"san": "g3", "from": "g2", "to": "g3", "ply": 35, "fen": "r1b1r1k1/pp3pbp/3p1q2/2pP4/4PBp1/2N3P1/PPQ2P1P/R4RK1 b - - 0 18", "note": "<b>18.g3?</b> — the mistake, and not a small one. It <b>freezes the kingside</b> and leaves White weak on the light squares, which is exactly where Fischer's remaining bishop lives."}, {"san": "Bd7", "from": "c8", "to": "d7", "ply": 36, "fen": "r3r1k1/pp1b1pbp/3p1q2/2pP4/4PBp1/2N3P1/PPQ2P1P/R4RK1 w - - 1 19"}, {"san": "a4", "from": "a2", "to": "a4", "ply": 37, "fen": "r3r1k1/pp1b1pbp/3p1q2/2pP4/P3PBp1/2N3P1/1PQ2P1P/R4RK1 b - - 0 19"}, {"san": "b6", "from": "b7", "to": "b6", "ply": 38, "fen": "r3r1k1/p2b1pbp/1p1p1q2/2pP4/P3PBp1/2N3P1/1PQ2P1P/R4RK1 w - - 0 20", "note": "<b>19…b6</b> — <b>Fischer is in no hurry.</b> Coach: when you want to push pawns, first make sure the opponent can't freeze them. b6, then a6, <em>then</em> b5."}, {"san": "Rfe1", "from": "f1", "to": "e1", "ply": 39, "fen": "r3r1k1/p2b1pbp/1p1p1q2/2pP4/P3PBp1/2N3P1/1PQ2P1P/R3R1K1 b - - 1 20"}, {"san": "a6", "from": "a7", "to": "a6", "ply": 40, "fen": "r3r1k1/3b1pbp/pp1p1q2/2pP4/P3PBp1/2N3P1/1PQ2P1P/R3R1K1 w - - 0 21"}, {"san": "Re2", "from": "e1", "to": "e2", "ply": 41, "fen": "r3r1k1/3b1pbp/pp1p1q2/2pP4/P3PBp1/2N3P1/1PQ1RP1P/R5K1 b - - 1 21"}, {"san": "b5", "from": "b6", "to": "b5", "ply": 42, "fen": "r3r1k1/3b1pbp/p2p1q2/1ppP4/P3PBp1/2N3P1/1PQ1RP1P/R5K1 w - - 0 22", "note": "<b>21…b5!</b> — now the <b>queenside majority is rolling</b>, and White's extra centre pawn can't move."}, {"san": "Rae1", "from": "a1", "to": "e1", "ply": 43, "fen": "r3r1k1/3b1pbp/p2p1q2/1ppP4/P3PBp1/2N3P1/1PQ1RP1P/4R1K1 b - - 1 22"}, {"san": "Qg6", "from": "f6", "to": "g6", "ply": 44, "fen": "r3r1k1/3b1pbp/p2p2q1/1ppP4/P3PBp1/2N3P1/1PQ1RP1P/4R1K1 w - - 2 23"}, {"san": "b3", "from": "b2", "to": "b3", "ply": 45, "fen": "r3r1k1/3b1pbp/p2p2q1/1ppP4/P3PBp1/1PN3P1/2Q1RP1P/4R1K1 b - - 0 23"}, {"san": "Re7", "from": "e8", "to": "e7", "ply": 46, "fen": "r5k1/3brpbp/p2p2q1/1ppP4/P3PBp1/1PN3P1/2Q1RP1P/4R1K1 w - - 1 24", "note": "<b>23…Re7</b> — Coach thinks this one is <b>soft</b>: <b>23…Rc8</b>, preparing …c4, would open the queenside for the bishop straight away."}, {"san": "Qd3", "from": "c2", "to": "d3", "ply": 47, "fen": "r5k1/3brpbp/p2p2q1/1ppP4/P3PBp1/1PNQ2P1/4RP1P/4R1K1 b - - 2 24"}, {"san": "Rb8", "from": "a8", "to": "b8", "ply": 48, "fen": "1r4k1/3brpbp/p2p2q1/1ppP4/P3PBp1/1PNQ2P1/4RP1P/4R1K1 w - - 3 25"}, {"san": "axb5", "from": "a4", "to": "b5", "ply": 49, "fen": "1r4k1/3brpbp/p2p2q1/1PpP4/4PBp1/1PNQ2P1/4RP1P/4R1K1 b - - 0 25"}, {"san": "axb5", "from": "a6", "to": "b5", "ply": 50, "fen": "1r4k1/3brpbp/3p2q1/1ppP4/4PBp1/1PNQ2P1/4RP1P/4R1K1 w - - 0 26"}, {"san": "b4", "from": "b3", "to": "b4", "ply": 51, "fen": "1r4k1/3brpbp/3p2q1/1ppP4/1P2PBp1/2NQ2P1/4RP1P/4R1K1 b - - 0 26", "note": "<b>26.b4</b> — forced, and the one good moment White gets. Taking it is bad: after …cxb4 the knight comes back and lands on <b>c6</b>."}, {"san": "c4", "from": "c5", "to": "c4", "ply": 52, "fen": "1r4k1/3brpbp/3p2q1/1p1P4/1Pp1PBp1/2NQ2P1/4RP1P/4R1K1 w - - 0 27"}, {"san": "Qd2", "from": "d3", "to": "d2", "ply": 53, "fen": "1r4k1/3brpbp/3p2q1/1p1P4/1Pp1PBp1/2N3P1/3QRP1P/4R1K1 b - - 1 27"}, {"san": "Rbe8", "from": "b8", "to": "e8", "ply": 54, "fen": "4r1k1/3brpbp/3p2q1/1p1P4/1Pp1PBp1/2N3P1/3QRP1P/4R1K1 w - - 2 28"}, {"san": "Re3", "from": "e2", "to": "e3", "ply": 55, "fen": "4r1k1/3brpbp/3p2q1/1p1P4/1Pp1PBp1/2N1R1P1/3Q1P1P/4R1K1 b - - 3 28"}, {"san": "h5", "from": "h7", "to": "h5", "ply": 56, "fen": "4r1k1/3brpb1/3p2q1/1p1P3p/1Pp1PBp1/2N1R1P1/3Q1P1P/4R1K1 w - - 0 29"}, {"san": "R3e2", "from": "e3", "to": "e2", "ply": 57, "fen": "4r1k1/3brpb1/3p2q1/1p1P3p/1Pp1PBp1/2N3P1/3QRP1P/4R1K1 b - - 1 29"}, {"san": "Kh7", "from": "g8", "to": "h7", "ply": 58, "fen": "4r3/3brpbk/3p2q1/1p1P3p/1Pp1PBp1/2N3P1/3QRP1P/4R1K1 w - - 2 30", "note": "<b>29…Kh7</b> — then back to g8 and round again. <em>Fischer testing whether Spassky has any fight left</em>. He hadn't: <em>“passive”</em>, said Coach, <em>just waiting</em>."}, {"san": "Re3", "from": "e2", "to": "e3", "ply": 59, "fen": "4r3/3brpbk/3p2q1/1p1P3p/1Pp1PBp1/2N1R1P1/3Q1P1P/4R1K1 b - - 3 30"}, {"san": "Kg8", "from": "h7", "to": "g8", "ply": 60, "fen": "4r1k1/3brpb1/3p2q1/1p1P3p/1Pp1PBp1/2N1R1P1/3Q1P1P/4R1K1 w - - 4 31"}, {"san": "R3e2", "from": "e3", "to": "e2", "ply": 61, "fen": "4r1k1/3brpb1/3p2q1/1p1P3p/1Pp1PBp1/2N3P1/3QRP1P/4R1K1 b - - 5 31"}, {"san": "Bxc3", "from": "g7", "to": "c3", "ply": 62, "fen": "4r1k1/3brp2/3p2q1/1p1P3p/1Pp1PBp1/2b3P1/3QRP1P/4R1K1 w - - 0 32", "note": "<b>31…Bxc3</b> — Fischer giving a <b>bishop for a knight</b>, which Coach says he almost never does. He wins a pawn for it, and keeps the <b>light-squared</b> bishop — the one White can no longer meet."}, {"san": "Qxc3", "from": "d2", "to": "c3", "ply": 63, "fen": "4r1k1/3brp2/3p2q1/1p1P3p/1Pp1PBp1/2Q3P1/4RP1P/4R1K1 b - - 0 32"}, {"san": "Rxe4", "from": "e7", "to": "e4", "ply": 64, "fen": "4r1k1/3b1p2/3p2q1/1p1P3p/1Pp1rBp1/2Q3P1/4RP1P/4R1K1 w - - 0 33"}, {"san": "Rxe4", "from": "e2", "to": "e4", "ply": 65, "fen": "4r1k1/3b1p2/3p2q1/1p1P3p/1Pp1RBp1/2Q3P1/5P1P/4R1K1 b - - 0 33"}, {"san": "Rxe4", "from": "e8", "to": "e4", "ply": 66, "fen": "6k1/3b1p2/3p2q1/1p1P3p/1Pp1rBp1/2Q3P1/5P1P/4R1K1 w - - 0 34"}, {"san": "Rxe4", "from": "e1", "to": "e4", "ply": 67, "fen": "6k1/3b1p2/3p2q1/1p1P3p/1Pp1RBp1/2Q3P1/5P1P/6K1 b - - 0 34"}, {"san": "Qxe4", "from": "g6", "to": "e4", "ply": 68, "fen": "6k1/3b1p2/3p4/1p1P3p/1Pp1qBp1/2Q3P1/5P1P/6K1 w - - 0 35"}, {"san": "Bh6", "from": "f4", "to": "h6", "ply": 69, "fen": "6k1/3b1p2/3p3B/1p1P3p/1Pp1q1p1/2Q3P1/5P1P/6K1 b - - 1 35", "note": "<b>35.Bh6</b> — White's bishop is on the dark squares, so it <b>cannot defend the light ones</b>. That is 18.g3 coming home."}, {"san": "Qg6", "from": "e4", "to": "g6", "ply": 70, "fen": "6k1/3b1p2/3p2qB/1p1P3p/1Pp3p1/2Q3P1/5P1P/6K1 w - - 2 36"}, {"san": "Bc1", "from": "h6", "to": "c1", "ply": 71, "fen": "6k1/3b1p2/3p2q1/1p1P3p/1Pp3p1/2Q3P1/5P1P/2B3K1 b - - 3 36"}, {"san": "Qb1", "from": "g6", "to": "b1", "ply": 72, "fen": "6k1/3b1p2/3p4/1p1P3p/1Pp3p1/2Q3P1/5P1P/1qB3K1 w - - 4 37"}, {"san": "Kf1", "from": "g1", "to": "f1", "ply": 73, "fen": "6k1/3b1p2/3p4/1p1P3p/1Pp3p1/2Q3P1/5P1P/1qB2K2 b - - 5 37"}, {"san": "Bf5", "from": "d7", "to": "f5", "ply": 74, "fen": "6k1/5p2/3p4/1p1P1b1p/1Pp3p1/2Q3P1/5P1P/1qB2K2 w - - 6 38", "note": "<b>37…Bf5!</b> — Marin: <em>the only convincing sequence</em>. The bishop and queen walk in together."}, {"san": "Ke2", "from": "f1", "to": "e2", "ply": 75, "fen": "6k1/5p2/3p4/1p1P1b1p/1Pp3p1/2Q3P1/4KP1P/1qB5 b - - 7 38"}, {"san": "Qe4+", "from": "b1", "to": "e4", "ply": 76, "fen": "6k1/5p2/3p4/1p1P1b1p/1Pp1q1p1/2Q3P1/4KP1P/2B5 w - - 8 39"}, {"san": "Qe3", "from": "c3", "to": "e3", "ply": 77, "fen": "6k1/5p2/3p4/1p1P1b1p/1Pp1q1p1/4Q1P1/4KP1P/2B5 b - - 9 39"}, {"san": "Qc2+", "from": "e4", "to": "c2", "ply": 78, "fen": "6k1/5p2/3p4/1p1P1b1p/1Pp3p1/4Q1P1/2q1KP1P/2B5 w - - 10 40"}, {"san": "Qd2", "from": "e3", "to": "d2", "ply": 79, "fen": "6k1/5p2/3p4/1p1P1b1p/1Pp3p1/6P1/2qQKP1P/2B5 b - - 11 40"}, {"san": "Qb3", "from": "c2", "to": "b3", "ply": 80, "fen": "6k1/5p2/3p4/1p1P1b1p/1Pp3p1/1q4P1/3QKP1P/2B5 w - - 12 41"}, {"san": "Qd4", "from": "d2", "to": "d4", "ply": 81, "fen": "6k1/5p2/3p4/1p1P1b1p/1PpQ2p1/1q4P1/4KP1P/2B5 b - - 13 41"}, {"san": "Bd3+", "from": "f5", "to": "d3", "ply": 82, "fen": "6k1/5p2/3p4/1p1P3p/1PpQ2p1/1q1b2P1/4KP1P/2B5 w - - 14 42", "note": "<b>41…Bd3+!</b> — and this is where it stopped. The game was <b>adjourned here</b>; Spassky looked at it overnight and <b>resigned without resuming</b>. He loses the two connected passed pawns, or the bishop, or gets mated."}], "flip": true, "tail": "<b>Fischer's first ever win over Spassky</b>, after five games without one. Coach: it flipped the whole match — Spassky's state <em>“一落千丈”</em>, fell off a cliff — and Fischer never looked back.", "startFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "openingNote": "Fischer had just forfeited game 2 and was <b>0–2 down</b>. He had never beaten Spassky in his life. This is the game that turned it."}, "smith-morra-main": {"title": "The Smith–Morra accepted — Coach's line for Black", "meta": "B21 Sicilian · 1.e4 c5 2.d4 cxd4 3.c3 · take the pawn, then build", "nodes": [{"san": "e4", "from": "e2", "to": "e4", "ply": 1, "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"}, {"san": "c5", "from": "c7", "to": "c5", "ply": 2, "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"}, {"san": "d4", "from": "d2", "to": "d4", "ply": 3, "fen": "rnbqkbnr/pp1ppppp/8/2p5/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2"}, {"san": "cxd4", "from": "c5", "to": "d4", "ply": 4, "fen": "rnbqkbnr/pp1ppppp/8/8/3pP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3"}, {"san": "c3", "from": "c2", "to": "c3", "ply": 5, "fen": "rnbqkbnr/pp1ppppp/8/8/3pP3/2P5/PP3PPP/RNBQKBNR b KQkq - 0 3"}, {"san": "dxc3", "from": "d4", "to": "c3", "ply": 6, "fen": "rnbqkbnr/pp1ppppp/8/8/4P3/2p5/PP3PPP/RNBQKBNR w KQkq - 0 4", "note": "<b>3…dxc3</b> — take it. Coach quoted Steinitz: <em>the best way to meet a gambit is to accept it</em>."}, {"san": "Nxc3", "from": "b1", "to": "c3", "ply": 7, "fen": "rnbqkbnr/pp1ppppp/8/8/4P3/2N5/PP3PPP/R1BQKBNR b KQkq - 0 4", "note": "<b>4.Nxc3</b> — White is a pawn down and perfectly happy: open c- and d-files, and both bishops ready to come out."}, {"san": "Nc6", "from": "b8", "to": "c6", "ply": 8, "fen": "r1bqkbnr/pp1ppppp/2n5/8/4P3/2N5/PP3PPP/R1BQKBNR w KQkq - 1 5"}, {"san": "Nf3", "from": "g1", "to": "f3", "ply": 9, "fen": "r1bqkbnr/pp1ppppp/2n5/8/4P3/2N2N2/PP3PPP/R1BQKB1R b KQkq - 2 5", "note": "<b>5.Nf3</b> — White's whole setup, in order: <b>Nf3, Bc4, Bf4, Qe2, Rd1</b> — and then <b>e5</b>."}, {"san": "e6", "from": "e7", "to": "e6", "ply": 10, "fen": "r1bqkbnr/pp1p1ppp/2n1p3/8/4P3/2N2N2/PP3PPP/R1BQKB1R w KQkq - 0 6"}, {"san": "Bc4", "from": "f1", "to": "c4", "ply": 11, "fen": "r1bqkbnr/pp1p1ppp/2n1p3/8/2B1P3/2N2N2/PP3PPP/R1BQK2R b KQkq - 1 6", "note": "<b>6.Bc4</b> — the bishop stares at f7. This is the main tabiya."}, {"san": "a6", "from": "a7", "to": "a6", "ply": 12, "fen": "r1bqkbnr/1p1p1ppp/p1n1p3/8/2B1P3/2N2N2/PP3PPP/R1BQK2R w KQkq - 0 7", "note": "<b>6…a6!</b> — first job: <b>stop Nb5</b>, and get ready for …b5 yourself."}, {"san": "O-O", "from": "e1", "to": "g1", "ply": 13, "fen": "r1bqkbnr/1p1p1ppp/p1n1p3/8/2B1P3/2N2N2/PP3PPP/R1BQ1RK1 b kq - 1 7"}, {"san": "d6", "from": "d7", "to": "d6", "ply": 14, "fen": "r1bqkbnr/1p3ppp/p1npp3/8/2B1P3/2N2N2/PP3PPP/R1BQ1RK1 w kq - 0 8"}, {"san": "Qe2", "from": "d1", "to": "e2", "ply": 15, "fen": "r1bqkbnr/1p3ppp/p1npp3/8/2B1P3/2N2N2/PP2QPPP/R1B2RK1 b kq - 1 8"}, {"san": "Be7", "from": "f8", "to": "e7", "ply": 16, "fen": "r1bqk1nr/1p2bppp/p1npp3/8/2B1P3/2N2N2/PP2QPPP/R1B2RK1 w kq - 2 9", "note": "<b>8…Be7</b> — Black has no weaknesses, is a pawn up, and is simply solid."}, {"san": "Rd1", "from": "f1", "to": "d1", "ply": 17, "fen": "r1bqk1nr/1p2bppp/p1npp3/8/2B1P3/2N2N2/PP2QPPP/R1BR2K1 b kq - 3 9", "note": "<b>9.Rd1</b> — the last piece of White's setup. Now <b>e5</b> is the threat, so Black's …e5 comes with tempo later."}, {"san": "Qc7", "from": "d8", "to": "c7", "ply": 18, "fen": "r1b1k1nr/1pq1bppp/p1npp3/8/2B1P3/2N2N2/PP2QPPP/R1BR2K1 w kq - 4 10"}, {"san": "Bf4", "from": "c1", "to": "f4", "ply": 19, "fen": "r1b1k1nr/1pq1bppp/p1npp3/8/2B1PB2/2N2N2/PP2QPPP/R2R2K1 b kq - 5 10"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 20, "fen": "r1b1k2r/1pq1bppp/p1nppn2/8/2B1PB2/2N2N2/PP2QPPP/R2R2K1 w kq - 6 11"}, {"san": "Rac1", "from": "a1", "to": "c1", "ply": 21, "fen": "r1b1k2r/1pq1bppp/p1nppn2/8/2B1PB2/2N2N2/PP2QPPP/2RR2K1 b kq - 7 11"}, {"san": "O-O", "from": "e8", "to": "g8", "ply": 22, "fen": "r1b2rk1/1pq1bppp/p1nppn2/8/2B1PB2/2N2N2/PP2QPPP/2RR2K1 w - - 8 12"}, {"san": "Bb3", "from": "c4", "to": "b3", "ply": 23, "fen": "r1b2rk1/1pq1bppp/p1nppn2/8/4PB2/1BN2N2/PP2QPPP/2RR2K1 b - - 9 12"}, {"san": "Qb8", "from": "c7", "to": "b8", "ply": 24, "fen": "rqb2rk1/1p2bppp/p1nppn2/8/4PB2/1BN2N2/PP2QPPP/2RR2K1 w - - 10 13", "note": "<b>12…Qb8</b> — unclear, and Coach is fine with that: <em>White has space and faster pieces, Black has the pawn and no weaknesses. Both sides can play it.</em>"}], "flip": true, "tail": "Another good way: <b>6…Bb4!?</b> 7.O-O Nge7, the pin line — solid, and the engine says Black is fine being a pawn up.", "startFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "openingNote": "White gives a pawn on move 3 for open lines and a head start. Coach's advice for Black: take it, play <b>…e6</b> early, and don't panic."}, "smith-morra-trap": {"title": "The trap — and how to sidestep it", "meta": "B21 · why Coach wants …e6 before …Nf6", "nodes": [{"san": "e4", "from": "e2", "to": "e4", "ply": 1, "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"}, {"san": "c5", "from": "c7", "to": "c5", "ply": 2, "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"}, {"san": "d4", "from": "d2", "to": "d4", "ply": 3, "fen": "rnbqkbnr/pp1ppppp/8/2p5/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2"}, {"san": "cxd4", "from": "c5", "to": "d4", "ply": 4, "fen": "rnbqkbnr/pp1ppppp/8/8/3pP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3"}, {"san": "c3", "from": "c2", "to": "c3", "ply": 5, "fen": "rnbqkbnr/pp1ppppp/8/8/3pP3/2P5/PP3PPP/RNBQKBNR b KQkq - 0 3"}, {"san": "dxc3", "from": "d4", "to": "c3", "ply": 6, "fen": "rnbqkbnr/pp1ppppp/8/8/4P3/2p5/PP3PPP/RNBQKBNR w KQkq - 0 4"}, {"san": "Nxc3", "from": "b1", "to": "c3", "ply": 7, "fen": "rnbqkbnr/pp1ppppp/8/8/4P3/2N5/PP3PPP/R1BQKBNR b KQkq - 0 4"}, {"san": "Nc6", "from": "b8", "to": "c6", "ply": 8, "fen": "r1bqkbnr/pp1ppppp/2n5/8/4P3/2N5/PP3PPP/R1BQKBNR w KQkq - 1 5"}, {"san": "Nf3", "from": "g1", "to": "f3", "ply": 9, "fen": "r1bqkbnr/pp1ppppp/2n5/8/4P3/2N2N2/PP3PPP/R1BQKB1R b KQkq - 2 5"}, {"san": "d6", "from": "d7", "to": "d6", "ply": 10, "fen": "r1bqkbnr/pp2pppp/2np4/8/4P3/2N2N2/PP3PPP/R1BQKB1R w KQkq - 0 6", "note": "<b>5…d6</b> — natural, and this is the move order that lets the trap exist. Coach's fix is <b>5…e6</b> instead."}, {"san": "Bc4", "from": "f1", "to": "c4", "ply": 11, "fen": "r1bqkbnr/pp2pppp/2np4/8/2B1P3/2N2N2/PP3PPP/R1BQK2R b KQkq - 1 6"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 12, "fen": "r1bqkb1r/pp2pppp/2np1n2/8/2B1P3/2N2N2/PP3PPP/R1BQK2R w KQkq - 2 7", "note": "<b>6…Nf6?!</b> — the one to avoid. Now comes the point of the bishop on c4."}, {"san": "e5", "from": "e4", "to": "e5", "ply": 13, "fen": "r1bqkb1r/pp2pppp/2np1n2/4P3/2B5/2N2N2/PP3PPP/R1BQK2R b KQkq - 0 7", "note": "<b>7.e5!</b> — hitting the knight and the d6 pawn at once."}, {"san": "Nxe5", "from": "c6", "to": "e5", "ply": 14, "fen": "r1bqkb1r/pp2pppp/3p1n2/4n3/2B5/2N2N2/PP3PPP/R1BQK2R w KQkq - 0 8", "note": "<b>7…Nxe5??</b> — losing on the spot. <b>7…dxe5 8.Qxd8+ Nxd8 9.Nxe5</b> is only unpleasant, not fatal."}, {"san": "Nxe5", "from": "f3", "to": "e5", "ply": 15, "fen": "r1bqkb1r/pp2pppp/3p1n2/4N3/2B5/2N5/PP3PPP/R1BQK2R b KQkq - 0 8"}, {"san": "dxe5", "from": "d6", "to": "e5", "ply": 16, "fen": "r1bqkb1r/pp2pppp/5n2/4p3/2B5/2N5/PP3PPP/R1BQK2R w KQkq - 0 9"}, {"san": "Bxf7+", "from": "c4", "to": "f7", "ply": 17, "fen": "r1bqkb1r/pp2pBpp/5n2/4p3/8/2N5/PP3PPP/R1BQK2R b KQkq - 0 9", "note": "<b>9.Bxf7+!</b> — and the queen goes."}, {"san": "Kxf7", "from": "e8", "to": "f7", "ply": 18, "fen": "r1bq1b1r/pp2pkpp/5n2/4p3/8/2N5/PP3PPP/R1BQK2R w KQ - 0 10"}, {"san": "Qxd8", "from": "d1", "to": "d8", "ply": 19, "fen": "r1bQ1b1r/pp2pkpp/5n2/4p3/8/2N5/PP3PPP/R1B1K2R b KQ - 0 10", "note": "<b>10.Qxd8</b> — White is winning. Play <b>…e6</b> on move five and none of this is on the board."}], "flip": true, "startFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "openingNote": "Coach: play …e6 first and the Smith–Morra player <em>“心里面就难受半天”</em> — sits there miserable, because his trap is useless."}, "smith-morra-decline": {"title": "Don't want the pawn? Decline into the Alapin", "meta": "B21 → B22 · 3…Nf6 · the same position by another road", "nodes": [{"san": "e4", "from": "e2", "to": "e4", "ply": 1, "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"}, {"san": "c5", "from": "c7", "to": "c5", "ply": 2, "fen": "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"}, {"san": "d4", "from": "d2", "to": "d4", "ply": 3, "fen": "rnbqkbnr/pp1ppppp/8/2p5/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2"}, {"san": "cxd4", "from": "c5", "to": "d4", "ply": 4, "fen": "rnbqkbnr/pp1ppppp/8/8/3pP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3"}, {"san": "c3", "from": "c2", "to": "c3", "ply": 5, "fen": "rnbqkbnr/pp1ppppp/8/8/3pP3/2P5/PP3PPP/RNBQKBNR b KQkq - 0 3"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 6, "fen": "rnbqkb1r/pp1ppppp/5n2/8/3pP3/2P5/PP3PPP/RNBQKBNR w KQkq - 1 4", "note": "<b>3…Nf6</b> — refusing the pawn and heading somewhere familiar."}, {"san": "e5", "from": "e4", "to": "e5", "ply": 7, "fen": "rnbqkb1r/pp1ppppp/5n2/4P3/3p4/2P5/PP3PPP/RNBQKBNR b KQkq - 0 4", "note": "<b>4.e5</b> — kicking the knight."}, {"san": "Nd5", "from": "f6", "to": "d5", "ply": 8, "fen": "rnbqkb1r/pp1ppppp/8/3nP3/3p4/2P5/PP3PPP/RNBQKBNR w KQkq - 1 5"}, {"san": "Nf3", "from": "g1", "to": "f3", "ply": 9, "fen": "rnbqkb1r/pp1ppppp/8/3nP3/3p4/2P2N2/PP3PPP/RNBQKB1R b KQkq - 2 5"}, {"san": "Nc6", "from": "b8", "to": "c6", "ply": 10, "fen": "r1bqkb1r/pp1ppppp/2n5/3nP3/3p4/2P2N2/PP3PPP/RNBQKB1R w KQkq - 3 6"}, {"san": "cxd4", "from": "c3", "to": "d4", "ply": 11, "fen": "r1bqkb1r/pp1ppppp/2n5/3nP3/3P4/5N2/PP3PPP/RNBQKB1R b KQkq - 0 6", "note": "<b>6.cxd4</b> — and this is an ordinary <b>Alapin Sicilian</b>. Coach: <em>almost exactly the same</em>, so one lot of preparation covers both."}], "flip": true, "startFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "openingNote": "If you'd rather not hold the extra pawn: give it back at once and transpose."}};
+</script>
+<script src="gameboard.js" defer></script>
+<script src="boardsound.js" defer></script>
+</body>
+</html>
