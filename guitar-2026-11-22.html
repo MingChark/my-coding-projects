@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guitar Lesson — 22 Nov 2026</title>
+<style>
+  html { background: #fdf2e3; }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.72)),
+                url('family-bg.svg') center / cover no-repeat;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Comic Sans MS","Trebuchet MS",sans-serif; background: transparent;
+         color: #2c3e50; margin: 0; padding: 26px 16px 70px; min-height: 100vh; line-height: 1.5; }
+  .page { max-width: 1000px; margin: 0 auto; }
+  a.back { display:inline-block; text-decoration:none; color:#9c4221; font-size:17px;
+           background:rgba(255,255,255,.9); padding:7px 16px; border-radius:18px;
+           box-shadow:0 3px 8px rgba(0,0,0,.15); }
+  h1 { font-size:38px; color:#9c4221; margin:20px 0 4px; text-shadow:2px 2px 0 rgba(255,255,255,.85); }
+  p.subtitle { font-size:18px; color:#34495e; margin:0; text-shadow:1px 1px 0 rgba(255,255,255,.85); }
+  .badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .badge { background:#9c4221; color:#fff; font-size:14px; padding:5px 13px; border-radius:14px; }
+  .badge.teacher { background:#2c7a7b; } .badge.alt { background:#b7791f; }
+  h2 { font-size:26px; color:#9c4221; margin:40px 0 6px; text-shadow:1px 1px 0 rgba(255,255,255,.85); }
+  .card { background:rgba(255,255,255,.95); border-radius:20px; box-shadow:0 8px 20px rgba(0,0,0,.18);
+          padding:20px 24px; margin-top:16px; }
+  .card p { font-size:17px; margin:0 0 11px; } .card p:last-child { margin-bottom:0; }
+  .card b { color:#9c4221; }
+  .why { font-family:"Trebuchet MS",sans-serif; font-size:14px; color:#7b5230;
+         background:#fdf0e0; border-radius:10px; padding:7px 12px; display:inline-block; }
+
+  /* ---- the marked-up score ---- */
+  .scorewrap { position:relative; margin-top:14px; border-radius:14px; overflow:hidden;
+               box-shadow:0 8px 20px rgba(0,0,0,.22); background:#fff; line-height:0; }
+  .scorewrap img { width:100%; display:block; }
+  .band { position:absolute; border-radius:7px; cursor:pointer;
+          background:rgba(255,214,61,.26); outline:2px solid rgba(214,158,20,.55);
+          transition:background .15s, outline-color .15s; }
+  .band:hover, .band.on { background:rgba(255,160,60,.38); outline-color:#d35400; }
+  .band .pin { position:absolute; left:-13px; top:-13px; width:28px; height:28px;
+               border-radius:50%; background:#9c4221; color:#fff; font-size:15px;
+               font-family:"Trebuchet MS",sans-serif; font-weight:bold;
+               display:flex; align-items:center; justify-content:center; line-height:1;
+               box-shadow:0 2px 6px rgba(0,0,0,.35); }
+  .band.on .pin { background:#d35400; }
+  .legend { font-family:"Trebuchet MS",sans-serif; font-size:14px; color:#6b4a2f; margin-top:9px; }
+
+  /* ---- one comment ---- */
+  .note { background:rgba(255,255,255,.96); border-radius:18px; box-shadow:0 6px 16px rgba(0,0,0,.16);
+          padding:17px 20px; margin:16px 0; scroll-margin-top:14px; }
+  .note.on { outline:3px solid #d35400; }
+  .nhead { display:flex; align-items:center; flex-wrap:wrap; gap:11px; margin-bottom:10px; }
+  .npin { width:30px; height:30px; border-radius:50%; background:#9c4221; color:#fff;
+          font-family:"Trebuchet MS",sans-serif; font-weight:bold; font-size:16px;
+          display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .nwhere { font-size:19px; font-weight:bold; color:#9c4221; }
+  .nwhen { font-family:"Trebuchet MS",sans-serif; font-size:13px; color:#7b5230;
+           background:#fdf0e0; border-radius:9px; padding:3px 9px; }
+  .said { background:#f0f7f7; border-left:5px solid #2c7a7b; border-radius:0 12px 12px 0;
+          padding:10px 14px; margin:10px 0; }
+  .said .q { font-size:17px; color:#1d4e4f; }
+  .said .q em { color:#2c7a7b; }
+  .means { font-size:16.5px; margin:10px 0 0; }
+  .means b { color:#9c4221; }
+  .closeup { margin-top:12px; border-radius:12px; overflow:hidden; border:2px solid #e8d5bb;
+             background:#fff; }
+  .closeup img { width:100%; display:block; }
+  .cap { font-family:"Trebuchet MS",sans-serif; font-size:13px; color:#7b5230;
+         background:#fdf0e0; padding:6px 11px; }
+
+  .pieces { display:flex; flex-wrap:wrap; gap:12px; margin-top:14px; }
+  .piece { background:rgba(255,255,255,.95); border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,.14);
+           padding:11px 15px; flex:1 1 260px; }
+  .piece .pn { font-size:17px; font-weight:bold; color:#9c4221; }
+  .piece .pm { font-family:"Trebuchet MS",sans-serif; font-size:13.5px; color:#5b6b7c; margin-top:2px; }
+  .piece.here { border:3px solid #d35400; }
+
+  .gallery { display:flex; flex-wrap:wrap; gap:12px; margin-top:14px; }
+  .gallery a { flex:1 1 200px; max-width:260px; text-decoration:none; }
+  .gallery img { width:100%; display:block; border-radius:10px; border:2px solid #e8d5bb;
+                 box-shadow:0 4px 10px rgba(0,0,0,.15); background:#fff; }
+  .gallery .gl { font-family:"Trebuchet MS",sans-serif; font-size:13px; color:#7b5230;
+                 text-align:center; margin-top:5px; }
+
+  ul.todo { font-size:17px; line-height:1.8; padding-left:24px; margin:0; }
+  ul.todo b { color:#9c4221; }
+
+  @media (max-width:560px) {
+    h1 { font-size:30px; } .card { padding:16px 15px; } .note { padding:14px 14px; }
+    .band .pin { width:23px; height:23px; font-size:13px; left:-10px; top:-10px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="guitar.html">← All guitar lessons</a>
+
+  <h1>🎸 Andantino, and the metronome</h1>
+  <p class="subtitle">The end of the Waltz, a new piece — and one new rule for every week from now on</p>
+  <div class="badges">
+    <span class="badge">Recorded Sun 22 Nov 2026</span>
+    <span class="badge teacher">👨‍🏫 Teacher Bowen</span>
+    <span class="badge alt">22 minutes · two pieces</span>
+  </div>
+
+  <h2>🎼 The page</h2>
+  <div class="card">
+    <p class="why">Page 11 of the folder · the tail of <b>No. 5, Waltz</b> (bars 24–32) and then <b>No. 6, Andantino</b> · F. Carulli · 2/4</p>
+    <p><b>One page, two pieces.</b> The top two lines are the <b>last of the Waltz</b> — the piece from
+       <a href="guitar-2026-10-25.html">last lesson</a> — finishing on <em>D. C. al Fine</em>. Then the boxed
+       <b>6</b>, and the <b>Andantino</b> starts.</p>
+    <p><b>How we know which piece it is.</b> No guesswork this time: at <b>7:13</b> Teacher Bowen says it
+       straight out — <em>“All right, number six.”</em> — and the homework at the end is
+       <em>“practise and learn the whole thing of six.”</em></p>
+  </div>
+
+  <h2>⏱️ The new rule</h2>
+  <div class="card">
+    <div class="said"><div class="q">“From this week on, I want you to practise with a metronome.”</div></div>
+    <div class="legend">📅 22 Nov 2026 · 04:13</div>
+    <p><b>And set it to the eighth note</b>, not the beat: <em>“this is going to be your eighth notes”</em> (04:32).
+       In 2/4 that means <b>two clicks per beat, four per bar</b> — so every note of a run has a click of its own
+       and there is nowhere to rush.</p>
+    <p>He then played the whole piece through with it, twice, before letting Jason try.</p>
+  </div>
+
+  <h2>🖍️ The page, marked up</h2>
+  <div class="card">
+    <p>Tap any <b>highlighted line</b> to jump to what Teacher Bowen said about it. He worked down the page
+       in order, so the numbers follow the lesson.</p>
+    <div class="scorewrap" id="score">
+      <img src="guitar-img/score-p06.jpg" alt="Page 11 of the folder: the end of Paganini's Waltz and the start of Carulli's Andantino, with Jason's pencil markings">
+      <div class="band" data-note="n1" style="left:6.0%; top:9.6%; width:90.0%; height:7.6%"><span class="pin">1</span></div>
+      <div class="band" data-note="n2" style="left:6.0%; top:23.8%; width:90.0%; height:7.4%"><span class="pin">2</span></div>
+      <div class="band" data-note="n3" style="left:10.0%; top:46.4%; width:86.0%; height:7.0%"><span class="pin">3</span></div>
+      <div class="band" data-note="n4" style="left:6.0%; top:64.0%; width:90.0%; height:7.0%"><span class="pin">4</span></div>
+      <div class="band" data-note="n5" style="left:6.0%; top:83.4%; width:90.0%; height:7.0%"><span class="pin">5</span></div>
+    </div>
+    <div class="legend">The pencil is Jason's own, written during lessons — the letters under the Waltz
+      (<b>A B C B</b>, <b>D C B A</b>, <b>F F E A</b>) are note names, and the <b>p i m a</b> over the Andantino
+      are right-hand fingers.</div>
+  </div>
+
+  <h2>🗣️ What Teacher Bowen said</h2>
+
+  <div class="note" id="n1">
+    <div class="nhead"><div class="npin">1</div><div class="nwhere">Waltz, bars 24–28 · skip the repeat</div>
+      <span class="nwhen">📅 22 Nov 2026 · 00:30</span></div>
+    <div class="said"><div class="q">“We don't do this repeat — we just go back to the beginning. And then keep the playing.”</div></div>
+    <p class="means">The line opens with a repeat sign and ends at <em>D. C. al Fine</em>. He wants the repeat left out:
+       play it once, then straight back to the top of the piece. He also asked for it <b>a little louder</b>
+       — the line is marked <b>f</b>.</p>
+  </div>
+
+  <div class="note" id="n2">
+    <div class="nhead"><div class="npin">2</div><div class="nwhere">Waltz, bars 29–32 · the last two bars, on their own</div>
+      <span class="nwhen">📅 22 Nov 2026 · 01:00</span></div>
+    <div class="said"><div class="q">“Let's do the last two measures of the first section.”</div></div>
+    <p class="means">Then again from <em>“the F, D and F”</em> (01:29) — the note names Jason has pencilled under
+       this line. They ran these two bars perhaps a dozen times before moving on.</p>
+  </div>
+
+  <div class="note" id="n3">
+    <div class="nhead"><div class="npin">3</div><div class="nwhere">Andantino, bars 1–4 · the right hand</div>
+      <span class="nwhen">📅 22 Nov 2026 · 11:08</span></div>
+    <div class="said"><div class="q">“Follow the fingers on the … okay? So try to make sure you're <em>not repeating</em> any of the right fingers.”</div></div>
+    <p class="means">This is the whole technical point of the piece. The printed <b>p i m a</b> over the first bars is not
+       a suggestion: in an arpeggio each right-hand finger takes one note and then gets out of the way, so
+       <b>no finger plays twice in a row</b>. When Jason got it, the comment was simply <em>“nice slide”</em> (11:14).</p>
+  </div>
+
+  <div class="note" id="n4">
+    <div class="nhead"><div class="npin">4</div><div class="nwhere">Andantino, bars 5–7 · G sharp, and hold the shape</div>
+      <span class="nwhen">📅 22 Nov 2026 · 11:56 — and again at 15:08</span></div>
+    <div class="said"><div class="q">“G sharp.”</div></div>
+    <p class="means">The same note, twice, a few minutes apart: the accidental in this line is the one that keeps getting
+       played natural. The other instruction here was <em>“keep all the fingers”</em> (16:20) — once a
+       left-hand shape is down, leave it down rather than lifting and replacing it for every note.</p>
+  </div>
+
+  <div class="note" id="n5">
+    <div class="nhead"><div class="npin">5</div><div class="nwhere">Andantino, bar 8 on · to the end</div>
+      <span class="nwhen">📅 22 Nov 2026 · 17:08</span></div>
+    <div class="said"><div class="q">“So we're going to do the same thing for the G, right? Two beats. And then … here we go to the end.”</div></div>
+    <p class="means">Same pattern, new bass note, and the long note gets its <b>full two beats</b> — which is exactly what
+       the metronome is for. One more correction on the way through: <em>“two different fingers”</em> (18:08).</p>
+  </div>
+
+  <h2>📝 Homework</h2>
+  <div class="card">
+    <div class="said"><div class="q">“Practise and learn the whole thing of six. And also all the other five — especially five.”</div></div>
+    <div class="legend">📅 22 Nov 2026 · 18:38</div>
+    <ul>
+      <li><b>Metronome, every time</b>, set to the <b>eighth note</b>.</li>
+      <li><b>All of No. 6</b>, the Andantino — not just the first page.</li>
+      <li><b>Keep the other five going</b>, and <b>No. 5</b> above all — the Waltz from last lesson.</li>
+    </ul>
+    <p class="legend">The lesson finished with the verdict that Jason is doing pretty well so far, and a mention of
+      a <b>recital</b> coming up.</p>
+  </div>
+
+</div>
+<script>
+/* Tapping a stretch of music scrolls to its note, and vice versa. Nothing
+   here is needed to read the page — it only saves scrolling. */
+(function () {
+  var bands = document.querySelectorAll(".band");
+  function clear() {
+    document.querySelectorAll(".band.on, .note.on").forEach(function (e) { e.classList.remove("on"); });
+  }
+  bands.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var note = document.getElementById(b.dataset.note);
+      if (!note) return;
+      clear();
+      b.classList.add("on"); note.classList.add("on");
+      note.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+  document.querySelectorAll(".note .npin").forEach(function (p) {
+    p.style.cursor = "pointer";
+    p.addEventListener("click", function () {
+      var id = p.closest(".note").id;
+      var band = document.querySelector('.band[data-note="' + id + '"]');
+      if (!band) return;
+      clear();
+      band.classList.add("on"); p.closest(".note").classList.add("on");
+      document.getElementById("score").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Class — 21 Nov 2026</title>
+  <style>
+    html { background: #d3ecfb; }
+    /* Background lives in a fixed, composited layer.
+       Using background-attachment:fixed on the body element repaints the
+       viewport every scroll frame (jank), and rescales when a mobile
+       URL bar collapses (jump). It also left the white wash on the
+       default 'scroll' attachment while the image stayed put, so the
+       two layers slid against each other. */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.62)),
+                  url('family-bg.svg') center / cover no-repeat;
+    }
+    body {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: transparent;
+      color: #2c3e50;
+      margin: 0;
+      padding: 30px 18px 70px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      line-height: 1.5;
+    }
+    .page { max-width: 900px; margin: 0 auto; }
+    a.back {
+      display: inline-block; text-decoration: none; color: #1b4f72;
+      font-size: 17px; background: rgba(255,255,255,.9);
+      padding: 7px 16px; border-radius: 18px; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    }
+    h1 {
+      font-size: 40px; color: #1b4f72; margin: 22px 0 4px;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.85);
+    }
+    p.subtitle {
+      font-size: 19px; color: #34495e; margin: 0 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .badge { background: #1b4f72; color: #fff; font-size: 14px; padding: 5px 13px; border-radius: 14px; }
+    .badge.alt { background: #63c15c; }
+    .badge.coach { background: #8e44ad; }
+
+    h2 {
+      font-size: 27px; color: #1b4f72; margin: 44px 0 6px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.85);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.94);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      padding: 22px 24px;
+      margin: 18px 0;
+    }
+    .card.star { border: 3px solid #63c15c; background: linear-gradient(160deg,#fffef5,#eaf8e6); }
+
+    .rulehead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .num { font-size: 30px; color: #63c15c; font-weight: bold; line-height: 1; }
+    .ruletitle { font-size: 23px; color: #1b4f72; font-weight: bold; }
+    .why { font-size: 17px; margin: 10px 0 0; }
+
+    .said {
+      margin-top: 14px; padding: 12px 16px;
+      background: #f4ecfa; border-left: 6px solid #8e44ad;
+      border-radius: 0 12px 12px 0;
+    }
+    .said .cn {
+      font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      font-size: 18px; color: #4a235a;
+    }
+    .said .en { font-size: 16px; color: #5b2c6f; font-style: italic; margin-top: 3px; }
+    .said .when { font-size: 13px; color: #7d3c98; margin-top: 6px; }
+
+    .strip { display: flex; gap: 12px; margin-top: 18px; }
+    .strip figure { flex: 1 1 0; min-width: 0; margin: 0; text-align: center; }
+    .strip img {
+      width: 100%; height: auto; display: block;
+      border-radius: 10px; border: 3px solid #d5dbdb;
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
+    }
+    .strip figure.key img { border-color: #63c15c; }
+    .strip figcaption { font-size: 14px; margin-top: 7px; }
+    .strip figure.key figcaption { font-weight: bold; color: #217a1f; }
+    .step {
+      display: inline-block; background: #d5dbdb; color: #2c3e50;
+      font-size: 12px; padding: 2px 9px; border-radius: 10px; margin-bottom: 5px;
+    }
+    .strip figure.key .step { background: #63c15c; color: #fff; }
+
+    .movelist {
+      font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+      font-size: 15px; background: #eef3f7; border-radius: 12px;
+      padding: 14px 16px; margin-top: 14px; overflow-x: auto;
+      line-height: 1.9; color: #1b4f72;
+    }
+    .tip { font-size: 17px; margin-top: 12px; }
+    .tip strong { color: #1b4f72; }
+
+    @media (max-width: 700px) {
+      .strip { flex-wrap: wrap; }
+      .strip figure { flex: 1 1 44%; }
+      h1 { font-size: 31px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="chess.html">← All chess records</a>
+
+  <h1>♟️ Saturday Chess Class</h1>
+  <p class="subtitle">“Spassky stood up and applauded — and nobody filmed it”</p>
+  <div class="badges">
+    <span class="badge">📅 Sat 21 Nov 2026</span>
+    <span class="badge coach">👨‍🏫 Coach IM Li Wenliang (李文良)</span>
+    <span class="badge alt">45 minutes · the last class of 2026</span>
+  </div>
+
+  <div class="card">
+    <p class="tip"><strong>That's the term.</strong> This was the <b>last chess class of 2026</b> — back after
+      Thanksgiving and Christmas. So Coach set holiday homework that isn't puzzles:</p>
+    <div class="said">
+      <div class="cn">“不管谁赢，我要求你们每天跟踪他们的对局，哪怕看二十分钟。”</div>
+      <div class="en">Whoever wins, I want you following their games every day over the holiday — even twenty minutes.</div>
+      <div class="when">📅 21 Nov 2026 · class, 00:26 — on the world championship match</div>
+    </div>
+    <p class="tip"><strong>And be fussy about who you watch.</strong> His one instruction: the commentary to follow is
+      <b>Svidler and Leko</b> — <em>“其他的什么网红的都不要看了”</em>, none of the internet-celebrity ones, the
+      ones that are there to be funny.</p>
+  </div>
+
+  <!-- ===== homework ===== -->
+  <h2>📝 Homework 85–90 — the answers</h2>
+  <div class="card star">
+    <p class="tip">He went through <b>all six</b>, and the <a href="hw-boards-85-90.html">playable boards</a> now
+      carry <b>his</b> answers. Every first move he gave matched the line already stored — three weeks running now.</p>
+    <ul>
+      <li><b>85 — Rook takes g2</b>, and <b>Rg3</b> counts too. Coach liked Rg3 better as an idea — <em>“更有想象力”</em>,
+        more imaginative, giving up rook <em>and</em> bishop for a forced mate — but was honest that <b>Rxg2 is the
+        one that actually wins</b>: <em>“当然 G2 好”</em>.</li>
+      <li><b>86 — Rook takes d2.</b> <em>“特别简单”</em> — dead simple. Pull the queen off and <b>…Qf3</b> can't be met.
+        <b>Rb1 is the mistake</b> the room kept offering him.</li>
+      <li><b>87 — Knight e3.</b> <b>The hardest on the sheet</b>, he said. It <b>blocks</b>: it cuts the rook off the
+        queening square and shuts the king out at the same time, and the knight can never get back.</li>
+      <li><b>88 — h5</b>, a <b>Decoy</b> that drives the queen off g4. And the honest part: <em>“没有赢，但是有 better
+        position”</em> — <b>it isn't a win</b>, just a better game, because Black has an outpost and White has two
+        isolated pawns.</li>
+      <li><b>89 — Rook d1.</b> <em>“这道题有点难”</em>. Give the rook up to <b>decoy the king</b> onto the square that
+        blocks his own rook, and the pawn behind walks in.</li>
+      <li><b>90 — Knight c2.</b> And the answer to “why can't White just take it?” is <b>mate</b>.</li>
+    </ul>
+    <p class="tip"><strong>Four children got all six.</strong> Four of the sheet's six turn on the same tactic, and he
+      gave it the best explanation of the year:</p>
+    <div class="said">
+      <div class="cn">“我们一下完课，老师只要是拿了一大把 lollipop 的话，小朋友就被 decoy 到那里去了，对不对？”</div>
+      <div class="en">The moment class ends, if the teacher holds up a big handful of lollipops, the children all get
+        decoyed over there — right?</div>
+      <div class="when">📅 21 Nov 2026 · class, 06:40 — on what a Decoy actually is</div>
+    </div>
+    <p class="tip"><strong>And 88 is back on the site because of this class.</strong> That diagram had been left off the
+      board page: the photo of it wouldn't come out, and as read it came out <b>winning for White</b> — the opposite of
+      what the sheet prints. The recording settled it. On Coach's screen the square the photo showed as a
+      <b>bishop on d4 is a pawn</b>. One piece, and the position goes from lost to level — which is exactly where
+      <em>“better position, not a win”</em> lands.</p>
+  </div>
+
+  <!-- ===== the game ===== -->
+  <h2>⭐ Fischer – Spassky, Reykjavik 1972 · game 6</h2>
+  <div class="card star">
+    <p class="why">D59 Queen's Gambit Declined, Tartakower · World Championship, game 6 · 23 July 1972 · Fischer had White · 1–0</p>
+    <p class="tip"><strong>The last of the Fischer story</strong>, and Coach saved the best for it. After game 3 the
+      match had swung back: a draw, then Fischer won game 5 with Black. <b>2½–2½</b>, all square, and this is game six.</p>
+    <p class="tip"><strong>1.c4.</strong> In his entire career Fischer had opened with the c-pawn <b>twice</b>. He
+      chose the sixth game of a world championship for the third. Spassky's team had spent the days before preparing
+      the Sicilian.</p>
+    <div class="said">
+      <div class="cn">“你天天下 1.e4 1…e5，天天吃馒头不吃大米饭，是不是？换一换口味。”</div>
+      <div class="en">If you play 1.e4 and 1…e5 every day — that's eating mantou every day and never rice, isn't it?
+        Change the flavour.</div>
+      <div class="when">📅 21 Nov 2026 · class, 19:00</div>
+    </div>
+    <p class="tip"><strong>The part that hurts.</strong> Spassky's own coach <b>Bondarevsky</b> had made this very
+      variation his life's work, and Spassky had never lost a game in it — but Bondarevsky <b>didn't travel to
+      Reykjavik</b>. On move 14 Fischer played <b>Furman's novelty</b>, the move Karpov's coach had beaten
+      <b>Geller</b> with in 1970. Geller <em>was</em> in Reykjavik, as Spassky's second, and had worked out the
+      answer — <b>14…Qb7!</b>, giving the pawn back. Spassky hadn't reviewed it, and forgot.</p>
+    <div class="said">
+      <div class="cn">“哎呀，小朋友忘谱挺可怕的……斯巴斯基都给忘了。”</div>
+      <div class="en">Forgetting your preparation is a frightening thing — and Spassky forgot his.</div>
+      <div class="when">📅 21 Nov 2026 · class, 26:30</div>
+    </div>
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong> All 41 moves, read off Coach's own screen:</p>
+    <div data-board="fischer-spassky-g6"></div>
+
+    <div class="strip">
+      <figure>
+        <img src="chess-img/2026-11-21-g6a.jpg" alt="Position after 9.Bxe7">
+        <figcaption><span class="step">1</span>9.Bxe7 — the Tartakower, and both sides are still in the book</figcaption>
+      </figure>
+      <figure class="key">
+        <img src="chess-img/2026-11-21-g6b.jpg" alt="Final position after 41.Qf4">
+        <figcaption><span class="step">2</span>41.Qf4 — and this is the position Spassky applauded</figcaption>
+      </figure>
+    </div>
+
+    <p class="tip"><strong>No fireworks.</strong> Coach pointed this out twice: there is <b>one pawn sacrifice in the
+      whole game</b> and nothing else given away. It was still voted the best game of the match. What wins it is
+      <b>20…d4?</b> — a move that looks active and quietly opens the a2–g8 diagonal for the white bishop. After it,
+      Coach says, Spassky is simply lost and never comes back.</p>
+    <p class="tip"><strong>The move worth stealing.</strong> At move 34 Fischer plays <b>R1f2</b> — a rook shuffling
+      one square sideways, doing nothing. Then 35.R2f3, and back again.</p>
+    <div class="said">
+      <div class="cn">“你是世界冠军，但是我在 middle game 我不走棋，你都没有办法防守住这个棋。”</div>
+      <div class="en">You are the world champion — and in the middlegame I can decline to do anything at all, and you
+        still can't hold this position.</div>
+      <div class="when">📅 21 Nov 2026 · class, 35:01 — on the waiting moves</div>
+    </div>
+    <p class="tip"><strong>Then the applause.</strong> Fischer finished with 38.Rxf6, and when it was over
+      <b>Spassky stood up and applauded with the audience</b>. Fischer said afterwards that it was extraordinary
+      sportsmanship. Nobody has ever seen it: Fischer had banned the cameras, so the most famous standing ovation in
+      chess was never filmed. Coach's consolation — the directors of <b>The Queen's Gambit</b> put the scene into the
+      series, with a girl in Fischer's place.</p>
+    <p class="tip"><strong>One more thing.</strong> At the 1988 Olympiad opening ceremony in Greece, Coach says,
+      <b>32 ballet dancers re-enacted this game</b> move by move on a giant board. Fischer went 3½–2½ up here and was
+      never caught; the match ended at game 21.</p>
+  </div>
+
+  <!-- ===== opening ===== -->
+  <h2>📖 The Vienna Game — what to do about it</h2>
+  <div class="card">
+    <p class="why">C25 · 1.e4 e5 2.Nc3 · Black's side · from Coach's own study file</p>
+    <p class="tip"><strong>Why this one.</strong> The Vienna turns up constantly in Bay Area junior events — he named a
+      student in another class who plays nothing else as White. The trap is that it looks harmless.</p>
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong> Coach's recommendation, all the way:</p>
+    <div data-board="vienna-main"></div>
+    <p class="tip"><strong>Two moves to memorise.</strong> <b>2…Nf6</b>, and then after 3.f4 it has to be
+      <b>3…d5!</b> — <em>not</em> 3…exf4, because after 4.e5 your knight has nowhere good to go. Then <b>5…f5!</b>,
+      and Coach's verdict is that it's suddenly <b>White</b> who has the problems.</p>
+    <p class="tip" style="margin-bottom:6px"><strong>▶ Live board.</strong> And if White develops quietly with 5.Nf3:</p>
+    <div data-board="vienna-nf3"></div>
+    <p class="tip"><strong>Don't check — develop.</strong> <b>5…Bc5!</b>, then …Bb4 once White has committed d4, then
+      <b>…c5</b> to pull the d-pawn away. The bishop pair comes off and Black is perfectly comfortable.</p>
+  </div>
+
+  <!-- ===== takeaways ===== -->
+  <h2>🎯 What to take away</h2>
+  <div class="card">
+    <ul>
+      <li><b>A Decoy is a handful of lollipops.</b> You give something up so the defender has to go and get it.</li>
+      <li><b>The symbol under a diagram is not a promise.</b> Coach said 88 isn't a win, and he was right — the book says −+.</li>
+      <li><b>Fischer changed opening for the biggest game of his life.</b> Don't lock yourself into one.</li>
+      <li><b>Review your preparation before you use it.</b> Spassky had the answer in the building and forgot it.</li>
+      <li><b>A waiting move can be the strongest move on the board.</b></li>
+      <li><b>Against the Vienna: 2…Nf6, and 3…d5 — never 3…exf4.</b></li>
+      <li><b>Over the holiday:</b> twenty minutes of the world championship a day, with Svidler and Leko.</li>
+    </ul>
+  </div>
+
+</div>
+<script>
+window.BOARDS = {"fischer-spassky-g6": {"title": "Fischer – Spassky, Reykjavik 1972, game 6", "meta": "D59 Queen's Gambit Declined, Tartakower · World Championship, game 6 · 23 July 1972 · Fischer had White · 1–0", "nodes": [{"san": "c4", "from": "c2", "to": "c4", "ply": 1, "fen": "rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1", "note": "<b>1.c4</b> — and this is the whole story. Coach: in his <b>entire career</b> Fischer had opened 1.c4 <b>twice</b>. This is the third time, and he chose the sixth game of a world championship to do it."}, {"san": "e6", "from": "e7", "to": "e6", "ply": 2, "fen": "rnbqkbnr/pppp1ppp/4p3/8/2P5/8/PP1PPPPP/RNBQKBNR w KQkq - 0 2"}, {"san": "Nf3", "from": "g1", "to": "f3", "ply": 3, "fen": "rnbqkbnr/pppp1ppp/4p3/8/2P5/5N2/PP1PPPPP/RNBQKB1R b KQkq - 1 2"}, {"san": "d5", "from": "d7", "to": "d5", "ply": 4, "fen": "rnbqkbnr/ppp2ppp/4p3/3p4/2P5/5N2/PP1PPPPP/RNBQKB1R w KQkq - 0 3"}, {"san": "d4", "from": "d2", "to": "d4", "ply": 5, "fen": "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R b KQkq - 0 3"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 6, "fen": "rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/5N2/PP2PPPP/RNBQKB1R w KQkq - 1 4"}, {"san": "Nc3", "from": "b1", "to": "c3", "ply": 7, "fen": "rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/2N2N2/PP2PPPP/R1BQKB1R b KQkq - 2 4"}, {"san": "Be7", "from": "f8", "to": "e7", "ply": 8, "fen": "rnbqk2r/ppp1bppp/4pn2/3p4/2PP4/2N2N2/PP2PPPP/R1BQKB1R w KQkq - 3 5"}, {"san": "Bg5", "from": "c1", "to": "g5", "ply": 9, "fen": "rnbqk2r/ppp1bppp/4pn2/3p2B1/2PP4/2N2N2/PP2PPPP/R2QKB1R b KQkq - 4 5"}, {"san": "O-O", "from": "e8", "to": "g8", "ply": 10, "fen": "rnbq1rk1/ppp1bppp/4pn2/3p2B1/2PP4/2N2N2/PP2PPPP/R2QKB1R w KQ - 5 6"}, {"san": "e3", "from": "e2", "to": "e3", "ply": 11, "fen": "rnbq1rk1/ppp1bppp/4pn2/3p2B1/2PP4/2N1PN2/PP3PPP/R2QKB1R b KQ - 0 6"}, {"san": "h6", "from": "h7", "to": "h6", "ply": 12, "fen": "rnbq1rk1/ppp1bpp1/4pn1p/3p2B1/2PP4/2N1PN2/PP3PPP/R2QKB1R w KQ - 0 7"}, {"san": "Bh4", "from": "g5", "to": "h4", "ply": 13, "fen": "rnbq1rk1/ppp1bpp1/4pn1p/3p4/2PP3B/2N1PN2/PP3PPP/R2QKB1R b KQ - 1 7"}, {"san": "b6", "from": "b7", "to": "b6", "ply": 14, "fen": "rnbq1rk1/p1p1bpp1/1p2pn1p/3p4/2PP3B/2N1PN2/PP3PPP/R2QKB1R w KQ - 0 8"}, {"san": "cxd5", "from": "c4", "to": "d5", "ply": 15, "fen": "rnbq1rk1/p1p1bpp1/1p2pn1p/3P4/3P3B/2N1PN2/PP3PPP/R2QKB1R b KQ - 0 8"}, {"san": "Nxd5", "from": "f6", "to": "d5", "ply": 16, "fen": "rnbq1rk1/p1p1bpp1/1p2p2p/3n4/3P3B/2N1PN2/PP3PPP/R2QKB1R w KQ - 0 9"}, {"san": "Bxe7", "from": "h4", "to": "e7", "ply": 17, "fen": "rnbq1rk1/p1p1Bpp1/1p2p2p/3n4/3P4/2N1PN2/PP3PPP/R2QKB1R b KQ - 0 9"}, {"san": "Qxe7", "from": "d8", "to": "e7", "ply": 18, "fen": "rnb2rk1/p1p1qpp1/1p2p2p/3n4/3P4/2N1PN2/PP3PPP/R2QKB1R w KQ - 0 10"}, {"san": "Nxd5", "from": "c3", "to": "d5", "ply": 19, "fen": "rnb2rk1/p1p1qpp1/1p2p2p/3N4/3P4/4PN2/PP3PPP/R2QKB1R b KQ - 0 10"}, {"san": "exd5", "from": "e6", "to": "d5", "ply": 20, "fen": "rnb2rk1/p1p1qpp1/1p5p/3p4/3P4/4PN2/PP3PPP/R2QKB1R w KQ - 0 11"}, {"san": "Rc1", "from": "a1", "to": "c1", "ply": 21, "fen": "rnb2rk1/p1p1qpp1/1p5p/3p4/3P4/4PN2/PP3PPP/2RQKB1R b K - 1 11"}, {"san": "Be6", "from": "c8", "to": "e6", "ply": 22, "fen": "rn3rk1/p1p1qpp1/1p2b2p/3p4/3P4/4PN2/PP3PPP/2RQKB1R w K - 2 12"}, {"san": "Qa4", "from": "d1", "to": "a4", "ply": 23, "fen": "rn3rk1/p1p1qpp1/1p2b2p/3p4/Q2P4/4PN2/PP3PPP/2R1KB1R b K - 3 12"}, {"san": "c5", "from": "c7", "to": "c5", "ply": 24, "fen": "rn3rk1/p3qpp1/1p2b2p/2pp4/Q2P4/4PN2/PP3PPP/2R1KB1R w K - 0 13"}, {"san": "Qa3", "from": "a4", "to": "a3", "ply": 25, "fen": "rn3rk1/p3qpp1/1p2b2p/2pp4/3P4/Q3PN2/PP3PPP/2R1KB1R b K - 1 13"}, {"san": "Rc8", "from": "f8", "to": "c8", "ply": 26, "fen": "rnr3k1/p3qpp1/1p2b2p/2pp4/3P4/Q3PN2/PP3PPP/2R1KB1R w K - 2 14"}, {"san": "Bb5", "from": "f1", "to": "b5", "ply": 27, "fen": "rnr3k1/p3qpp1/1p2b2p/1Bpp4/3P4/Q3PN2/PP3PPP/2R1K2R b K - 3 14", "note": "<b>14.Bb5!?</b> — not Fischer's own: it is <b>Furman's</b> novelty, Karpov's coach, the move he beat <b>Geller</b> with in 1970. Fischer had done the homework."}, {"san": "a6", "from": "a7", "to": "a6", "ply": 28, "fen": "rnr3k1/4qpp1/pp2b2p/1Bpp4/3P4/Q3PN2/PP3PPP/2R1K2R w K - 0 15", "note": "<b>14…a6?!</b> — and here is the heartbreak. Geller was <b>in Reykjavik as Spassky's second</b> and had worked out the answer: <b>14…Qb7!</b>, giving the pawn back. Spassky had never reviewed it, and <b>forgot</b>. Geller used it himself a year later to beat Timman."}, {"san": "dxc5", "from": "d4", "to": "c5", "ply": 29, "fen": "rnr3k1/4qpp1/pp2b2p/1BPp4/8/Q3PN2/PP3PPP/2R1K2R b K - 0 15"}, {"san": "bxc5", "from": "b6", "to": "c5", "ply": 30, "fen": "rnr3k1/4qpp1/p3b2p/1Bpp4/8/Q3PN2/PP3PPP/2R1K2R w K - 0 16"}, {"san": "O-O", "from": "e1", "to": "g1", "ply": 31, "fen": "rnr3k1/4qpp1/p3b2p/1Bpp4/8/Q3PN2/PP3PPP/2R2RK1 b - - 1 16"}, {"san": "Ra7", "from": "a8", "to": "a7", "ply": 32, "fen": "1nr3k1/r3qpp1/p3b2p/1Bpp4/8/Q3PN2/PP3PPP/2R2RK1 w - - 2 17", "note": "<b>16…Ra7</b> — Coach calls it a weak move, though not yet fatal. The rook and queen defend each other and nothing else."}, {"san": "Be2", "from": "b5", "to": "e2", "ply": 33, "fen": "1nr3k1/r3qpp1/p3b2p/2pp4/8/Q3PN2/PP2BPPP/2R2RK1 b - - 3 17"}, {"san": "Nd7", "from": "b8", "to": "d7", "ply": 34, "fen": "2r3k1/r2nqpp1/p3b2p/2pp4/8/Q3PN2/PP2BPPP/2R2RK1 w - - 4 18"}, {"san": "Nd4", "from": "f3", "to": "d4", "ply": 35, "fen": "2r3k1/r2nqpp1/p3b2p/2pp4/3N4/Q3P3/PP2BPPP/2R2RK1 b - - 5 18"}, {"san": "Qf8", "from": "e7", "to": "f8", "ply": 36, "fen": "2r2qk1/r2n1pp1/p3b2p/2pp4/3N4/Q3P3/PP2BPPP/2R2RK1 w - - 6 19"}, {"san": "Nxe6", "from": "d4", "to": "e6", "ply": 37, "fen": "2r2qk1/r2n1pp1/p3N2p/2pp4/8/Q3P3/PP2BPPP/2R2RK1 b - - 0 19"}, {"san": "fxe6", "from": "f7", "to": "e6", "ply": 38, "fen": "2r2qk1/r2n2p1/p3p2p/2pp4/8/Q3P3/PP2BPPP/2R2RK1 w - - 0 20"}, {"san": "e4", "from": "e3", "to": "e4", "ply": 39, "fen": "2r2qk1/r2n2p1/p3p2p/2pp4/4P3/Q7/PP2BPPP/2R2RK1 b - - 0 20", "note": "<b>20.e4!</b> — probing the pawn centre at its weakest point."}, {"san": "d4", "from": "d5", "to": "d4", "ply": 40, "fen": "2r2qk1/r2n2p1/p3p2p/2p5/3pP3/Q7/PP2BPPP/2R2RK1 w - - 0 21", "note": "<b>20…d4?</b> — and that is the losing move. It opens the <b>a2–g8 diagonal</b> for the white bishop. Coach: after this Spassky is lost and never gets back — <em>“走完这个棋就输了”</em>."}, {"san": "f4", "from": "f2", "to": "f4", "ply": 41, "fen": "2r2qk1/r2n2p1/p3p2p/2p5/3pPP2/Q7/PP2B1PP/2R2RK1 b - - 0 21"}, {"san": "Qe7", "from": "f8", "to": "e7", "ply": 42, "fen": "2r3k1/r2nq1p1/p3p2p/2p5/3pPP2/Q7/PP2B1PP/2R2RK1 w - - 1 22"}, {"san": "e5", "from": "e4", "to": "e5", "ply": 43, "fen": "2r3k1/r2nq1p1/p3p2p/2p1P3/3p1P2/Q7/PP2B1PP/2R2RK1 b - - 0 22", "note": "<b>22.e5</b> — the pawn Fischer gives up. Coach: <b>this is the only sacrifice in the whole game</b>, and Spassky dare not take it — his own pawns would be too weak."}, {"san": "Rb8", "from": "c8", "to": "b8", "ply": 44, "fen": "1r4k1/r2nq1p1/p3p2p/2p1P3/3p1P2/Q7/PP2B1PP/2R2RK1 w - - 1 23"}, {"san": "Bc4", "from": "e2", "to": "c4", "ply": 45, "fen": "1r4k1/r2nq1p1/p3p2p/2p1P3/2Bp1P2/Q7/PP4PP/2R2RK1 b - - 2 23"}, {"san": "Kh8", "from": "g8", "to": "h8", "ply": 46, "fen": "1r5k/r2nq1p1/p3p2p/2p1P3/2Bp1P2/Q7/PP4PP/2R2RK1 w - - 3 24"}, {"san": "Qh3", "from": "a3", "to": "h3", "ply": 47, "fen": "1r5k/r2nq1p1/p3p2p/2p1P3/2Bp1P2/7Q/PP4PP/2R2RK1 b - - 4 24"}, {"san": "Nf8", "from": "d7", "to": "f8", "ply": 48, "fen": "1r3n1k/r3q1p1/p3p2p/2p1P3/2Bp1P2/7Q/PP4PP/2R2RK1 w - - 5 25"}, {"san": "b3", "from": "b2", "to": "b3", "ply": 49, "fen": "1r3n1k/r3q1p1/p3p2p/2p1P3/2Bp1P2/1P5Q/P5PP/2R2RK1 b - - 0 25"}, {"san": "a5", "from": "a6", "to": "a5", "ply": 50, "fen": "1r3n1k/r3q1p1/4p2p/p1p1P3/2Bp1P2/1P5Q/P5PP/2R2RK1 w - - 0 26"}, {"san": "f5", "from": "f4", "to": "f5", "ply": 51, "fen": "1r3n1k/r3q1p1/4p2p/p1p1PP2/2Bp4/1P5Q/P5PP/2R2RK1 b - - 0 26", "note": "<b>26.f5!</b> — now the attack. Fischer has fixed the weaknesses first and put the bishop and queen on the two long diagonals."}, {"san": "exf5", "from": "e6", "to": "f5", "ply": 52, "fen": "1r3n1k/r3q1p1/7p/p1p1Pp2/2Bp4/1P5Q/P5PP/2R2RK1 w - - 0 27"}, {"san": "Rxf5", "from": "f1", "to": "f5", "ply": 53, "fen": "1r3n1k/r3q1p1/7p/p1p1PR2/2Bp4/1P5Q/P5PP/2R3K1 b - - 0 27"}, {"san": "Nh7", "from": "f8", "to": "h7", "ply": 54, "fen": "1r5k/r3q1pn/7p/p1p1PR2/2Bp4/1P5Q/P5PP/2R3K1 w - - 1 28"}, {"san": "Rcf1", "from": "c1", "to": "f1", "ply": 55, "fen": "1r5k/r3q1pn/7p/p1p1PR2/2Bp4/1P5Q/P5PP/5RK1 b - - 2 28"}, {"san": "Qd8", "from": "e7", "to": "d8", "ply": 56, "fen": "1r1q3k/r5pn/7p/p1p1PR2/2Bp4/1P5Q/P5PP/5RK1 w - - 3 29"}, {"san": "Qg3", "from": "h3", "to": "g3", "ply": 57, "fen": "1r1q3k/r5pn/7p/p1p1PR2/2Bp4/1P4Q1/P5PP/5RK1 b - - 4 29"}, {"san": "Re7", "from": "a7", "to": "e7", "ply": 58, "fen": "1r1q3k/4r1pn/7p/p1p1PR2/2Bp4/1P4Q1/P5PP/5RK1 w - - 5 30"}, {"san": "h4", "from": "h2", "to": "h4", "ply": 59, "fen": "1r1q3k/4r1pn/7p/p1p1PR2/2Bp3P/1P4Q1/P5P1/5RK1 b - - 0 30", "note": "<b>30.h4!</b> — a small move with a big point: after it <b>neither</b> the black queen nor the knight can ever use <b>g5</b>."}, {"san": "Rbb7", "from": "b8", "to": "b7", "ply": 60, "fen": "3q3k/1r2r1pn/7p/p1p1PR2/2Bp3P/1P4Q1/P5P1/5RK1 w - - 1 31"}, {"san": "e6", "from": "e5", "to": "e6", "ply": 61, "fen": "3q3k/1r2r1pn/4P2p/p1p2R2/2Bp3P/1P4Q1/P5P1/5RK1 b - - 0 31"}, {"san": "Rbc7", "from": "b7", "to": "c7", "ply": 62, "fen": "3q3k/2r1r1pn/4P2p/p1p2R2/2Bp3P/1P4Q1/P5P1/5RK1 w - - 1 32"}, {"san": "Qe5", "from": "g3", "to": "e5", "ply": 63, "fen": "3q3k/2r1r1pn/4P2p/p1p1QR2/2Bp3P/1P6/P5P1/5RK1 b - - 2 32"}, {"san": "Qe8", "from": "d8", "to": "e8", "ply": 64, "fen": "4q2k/2r1r1pn/4P2p/p1p1QR2/2Bp3P/1P6/P5P1/5RK1 w - - 3 33"}, {"san": "a4", "from": "a2", "to": "a4", "ply": 65, "fen": "4q2k/2r1r1pn/4P2p/p1p1QR2/P1Bp3P/1P6/6P1/5RK1 b - - 0 33"}, {"san": "Qd8", "from": "e8", "to": "d8", "ply": 66, "fen": "3q3k/2r1r1pn/4P2p/p1p1QR2/P1Bp3P/1P6/6P1/5RK1 w - - 1 34"}, {"san": "R1f2", "from": "f1", "to": "f2", "ply": 67, "fen": "3q3k/2r1r1pn/4P2p/p1p1QR2/P1Bp3P/1P6/5RP1/6K1 b - - 2 34", "note": "<b>34.R1f2!</b> — a <b>waiting move</b>. Coach stopped here: <em>you are the world champion, and in the middlegame I can decline to do anything at all and you still cannot hold this.</em> He called it psychological warfare, worth three or four hundred rating points."}, {"san": "Qe8", "from": "d8", "to": "e8", "ply": 68, "fen": "4q2k/2r1r1pn/4P2p/p1p1QR2/P1Bp3P/1P6/5RP1/6K1 w - - 3 35"}, {"san": "R2f3", "from": "f2", "to": "f3", "ply": 69, "fen": "4q2k/2r1r1pn/4P2p/p1p1QR2/P1Bp3P/1P3R2/6P1/6K1 b - - 4 35"}, {"san": "Qd8", "from": "e8", "to": "d8", "ply": 70, "fen": "3q3k/2r1r1pn/4P2p/p1p1QR2/P1Bp3P/1P3R2/6P1/6K1 w - - 5 36"}, {"san": "Bd3", "from": "c4", "to": "d3", "ply": 71, "fen": "3q3k/2r1r1pn/4P2p/p1p1QR2/P2p3P/1P1B1R2/6P1/6K1 b - - 6 36"}, {"san": "Qe8", "from": "d8", "to": "e8", "ply": 72, "fen": "4q2k/2r1r1pn/4P2p/p1p1QR2/P2p3P/1P1B1R2/6P1/6K1 w - - 7 37"}, {"san": "Qe4", "from": "e5", "to": "e4", "ply": 73, "fen": "4q2k/2r1r1pn/4P2p/p1p2R2/P2pQ2P/1P1B1R2/6P1/6K1 b - - 8 37", "note": "<b>37.Qe4!</b> — the manoeuvring is over. Everything now points at f6 and h7."}, {"san": "Nf6", "from": "h7", "to": "f6", "ply": 74, "fen": "4q2k/2r1r1p1/4Pn1p/p1p2R2/P2pQ2P/1P1B1R2/6P1/6K1 w - - 9 38"}, {"san": "Rxf6", "from": "f5", "to": "f6", "ply": 75, "fen": "4q2k/2r1r1p1/4PR1p/p1p5/P2pQ2P/1P1B1R2/6P1/6K1 b - - 0 38", "note": "<b>38.Rxf6!</b> — the finish. Black's knight is the last defender and it goes."}, {"san": "gxf6", "from": "g7", "to": "f6", "ply": 76, "fen": "4q2k/2r1r3/4Pp1p/p1p5/P2pQ2P/1P1B1R2/6P1/6K1 w - - 0 39"}, {"san": "Rxf6", "from": "f3", "to": "f6", "ply": 77, "fen": "4q2k/2r1r3/4PR1p/p1p5/P2pQ2P/1P1B4/6P1/6K1 b - - 0 39"}, {"san": "Kg8", "from": "h8", "to": "g8", "ply": 78, "fen": "4q1k1/2r1r3/4PR1p/p1p5/P2pQ2P/1P1B4/6P1/6K1 w - - 1 40"}, {"san": "Bc4", "from": "d3", "to": "c4", "ply": 79, "fen": "4q1k1/2r1r3/4PR1p/p1p5/P1BpQ2P/1P6/6P1/6K1 b - - 2 40"}, {"san": "Kh8", "from": "g8", "to": "h8", "ply": 80, "fen": "4q2k/2r1r3/4PR1p/p1p5/P1BpQ2P/1P6/6P1/6K1 w - - 3 41"}, {"san": "Qf4", "from": "e4", "to": "f4", "ply": 81, "fen": "4q2k/2r1r3/4PR1p/p1p5/P1Bp1Q1P/1P6/6P1/6K1 b - - 4 41", "note": "<b>41.Qf4</b> — and Spassky resigned. Then he <b>stood up and applauded</b>, with the audience. It was never filmed: Fischer had banned the cameras."}], "tail": "Voted the <b>best game of the match</b>, and there is no brilliant sacrifice in it — one pawn, and then accuracy. Coach: at the 1988 Olympiad opening ceremony in Greece, <b>32 ballet dancers re-enacted this game</b> on a giant board as a tribute to Fischer.", "startFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "openingNote": "The match stood <b>2½–2½</b>. Spassky's team had prepared for a Sicilian. Press ▶ and watch the first move."}, "vienna-main": {"title": "The Vienna Gambit — Coach's answer for Black", "meta": "C25 · 1.e4 e5 2.Nc3 · Black's side · from his own study file", "nodes": [{"san": "e4", "from": "e2", "to": "e4", "ply": 1, "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"}, {"san": "e5", "from": "e7", "to": "e5", "ply": 2, "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"}, {"san": "Nc3", "from": "b1", "to": "c3", "ply": 3, "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 2"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 4, "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 3", "note": "<b>2…Nf6!</b> — Coach's recommendation, and he said so twice: <em>“我认为…下 Nf6 是最好的”</em>. It hits e4 and fights for d5 at once."}, {"san": "f4", "from": "f2", "to": "f4", "ply": 5, "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/4PP2/2N5/PPPP2PP/R1BQKBNR b KQkq - 0 3", "note": "<b>3.f4</b> — the <b>Vienna Gambit</b>. White throws the f-pawn to open the file and pull your e-pawn off the centre."}, {"san": "d5", "from": "d7", "to": "d5", "ply": 6, "fen": "rnbqkb1r/ppp2ppp/5n2/3pp3/4PP2/2N5/PPPP2PP/R1BQKBNR w KQkq - 0 4", "note": "<b>3…d5!</b> — the move you must know. <b>Do not take on f4</b>: after 3…exf4 4.e5 the knight has nowhere good to go."}, {"san": "fxe5", "from": "f4", "to": "e5", "ply": 7, "fen": "rnbqkb1r/ppp2ppp/5n2/3pP3/4P3/2N5/PPPP2PP/R1BQKBNR b KQkq - 0 4"}, {"san": "Nxe4", "from": "f6", "to": "e4", "ply": 8, "fen": "rnbqkb1r/ppp2ppp/8/3pP3/4n3/2N5/PPPP2PP/R1BQKBNR w KQkq - 0 5"}, {"san": "Qf3", "from": "d1", "to": "f3", "ply": 9, "fen": "rnbqkb1r/ppp2ppp/8/3pP3/4n3/2N2Q2/PPPP2PP/R1B1KBNR b KQkq - 1 5", "note": "<b>5.Qf3</b> — White's most testing try, hitting the knight and covering Qh4+."}, {"san": "f5", "from": "f7", "to": "f5", "ply": 10, "fen": "rnbqkb1r/ppp3pp/8/3pPp2/4n3/2N2Q2/PPPP2PP/R1B1KBNR w KQkq f6 0 6", "note": "<b>5…f5!</b> — Coach's choice, and the point of the whole line: <em>after f5 it is White who has the problems.</em>"}, {"san": "d3", "from": "d2", "to": "d3", "ply": 11, "fen": "rnbqkb1r/ppp3pp/8/3pPp2/4n3/2NP1Q2/PPP3PP/R1B1KBNR b KQkq - 0 6"}, {"san": "Nxc3", "from": "e4", "to": "c3", "ply": 12, "fen": "rnbqkb1r/ppp3pp/8/3pPp2/8/2nP1Q2/PPP3PP/R1B1KBNR w KQkq - 0 7"}, {"san": "bxc3", "from": "b2", "to": "c3", "ply": 13, "fen": "rnbqkb1r/ppp3pp/8/3pPp2/8/2PP1Q2/P1P3PP/R1B1KBNR b KQkq - 0 7", "note": "<b>7.bxc3</b> — and now the pawn break that stops those pawns ever joining up."}, {"san": "d4", "from": "d5", "to": "d4", "ply": 14, "fen": "rnbqkb1r/ppp3pp/8/4Pp2/3p4/2PP1Q2/P1P3PP/R1B1KBNR w KQkq - 0 8", "note": "<b>7…d4!</b> — there it is. White's c- and d-pawns can never link."}, {"san": "Qg3", "from": "f3", "to": "g3", "ply": 15, "fen": "rnbqkb1r/ppp3pp/8/4Pp2/3p4/2PP2Q1/P1P3PP/R1B1KBNR b KQkq - 1 8"}, {"san": "Be6", "from": "c8", "to": "e6", "ply": 16, "fen": "rn1qkb1r/ppp3pp/4b3/4Pp2/3p4/2PP2Q1/P1P3PP/R1B1KBNR w KQkq - 2 9"}, {"san": "Be2", "from": "f1", "to": "e2", "ply": 17, "fen": "rn1qkb1r/ppp3pp/4b3/4Pp2/3p4/2PP2Q1/P1P1B1PP/R1B1K1NR b KQkq - 3 9"}, {"san": "Nc6", "from": "b8", "to": "c6", "ply": 18, "fen": "r2qkb1r/ppp3pp/2n1b3/4Pp2/3p4/2PP2Q1/P1P1B1PP/R1B1K1NR w KQkq - 4 10"}, {"san": "Bf3", "from": "e2", "to": "f3", "ply": 19, "fen": "r2qkb1r/ppp3pp/2n1b3/4Pp2/3p4/2PP1BQ1/P1P3PP/R1B1K1NR b KQkq - 5 10"}, {"san": "Qd7", "from": "d8", "to": "d7", "ply": 20, "fen": "r3kb1r/pppq2pp/2n1b3/4Pp2/3p4/2PP1BQ1/P1P3PP/R1B1K1NR w KQkq - 6 11", "note": "<b>10…Qd7</b> — unclear, and Black has no problems at all."}], "flip": true, "startFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "openingNote": "The Vienna turns up constantly in Bay Area junior tournaments. This is what Coach wants you to play against it."}, "vienna-nf3": {"title": "If White plays 5.Nf3 instead", "meta": "C25 · the quieter one · Black's side", "nodes": [{"san": "e4", "from": "e2", "to": "e4", "ply": 1, "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"}, {"san": "e5", "from": "e7", "to": "e5", "ply": 2, "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"}, {"san": "Nc3", "from": "b1", "to": "c3", "ply": 3, "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 2"}, {"san": "Nf6", "from": "g8", "to": "f6", "ply": 4, "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 2 3"}, {"san": "f4", "from": "f2", "to": "f4", "ply": 5, "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/4PP2/2N5/PPPP2PP/R1BQKBNR b KQkq - 0 3"}, {"san": "d5", "from": "d7", "to": "d5", "ply": 6, "fen": "rnbqkb1r/ppp2ppp/5n2/3pp3/4PP2/2N5/PPPP2PP/R1BQKBNR w KQkq - 0 4"}, {"san": "fxe5", "from": "f4", "to": "e5", "ply": 7, "fen": "rnbqkb1r/ppp2ppp/5n2/3pP3/4P3/2N5/PPPP2PP/R1BQKBNR b KQkq - 0 4"}, {"san": "Nxe4", "from": "f6", "to": "e4", "ply": 8, "fen": "rnbqkb1r/ppp2ppp/8/3pP3/4n3/2N5/PPPP2PP/R1BQKBNR w KQkq - 0 5"}, {"san": "Nf3", "from": "g1", "to": "f3", "ply": 9, "fen": "rnbqkb1r/ppp2ppp/8/3pP3/4n3/2N2N2/PPPP2PP/R1BQKB1R b KQkq - 1 5", "note": "<b>5.Nf3</b> — the older, calmer move."}, {"san": "Bc5", "from": "f8", "to": "c5", "ply": 10, "fen": "rnbqk2r/ppp2ppp/8/2bpP3/4n3/2N2N2/PPPP2PP/R1BQKB1R w KQkq - 2 6", "note": "<b>5…Bc5!</b> — Coach: don't check, develop. The bishop eyes the centre and d4."}, {"san": "d4", "from": "d2", "to": "d4", "ply": 11, "fen": "rnbqk2r/ppp2ppp/8/2bpP3/3Pn3/2N2N2/PPP3PP/R1BQKB1R b KQkq - 0 6"}, {"san": "Bb4", "from": "c5", "to": "b4", "ply": 12, "fen": "rnbqk2r/ppp2ppp/8/3pP3/1b1Pn3/2N2N2/PPP3PP/R1BQKB1R w KQkq - 1 7", "note": "<b>6…Bb4</b> — pinning the knight. Why not go here at once? Because the bishop wants White to have committed <b>d4</b> first."}, {"san": "Bd2", "from": "c1", "to": "d2", "ply": 13, "fen": "rnbqk2r/ppp2ppp/8/3pP3/1b1Pn3/2N2N2/PPPB2PP/R2QKB1R b KQkq - 2 7"}, {"san": "c5", "from": "c7", "to": "c5", "ply": 14, "fen": "rnbqk2r/pp3ppp/8/2ppP3/1b1Pn3/2N2N2/PPPB2PP/R2QKB1R w KQkq - 0 8", "note": "<b>7…c5!</b> — <em>“把他兵引开 decoy 之后”</em>: pull the d-pawn away, then hit the centre."}, {"san": "Bd3", "from": "f1", "to": "d3", "ply": 15, "fen": "rnbqk2r/pp3ppp/8/2ppP3/1b1Pn3/2NB1N2/PPPB2PP/R2QK2R b KQkq - 1 8"}, {"san": "Nxd2", "from": "e4", "to": "d2", "ply": 16, "fen": "rnbqk2r/pp3ppp/8/2ppP3/1b1P4/2NB1N2/PPPn2PP/R2QK2R w KQkq - 0 9"}, {"san": "Qxd2", "from": "d1", "to": "d2", "ply": 17, "fen": "rnbqk2r/pp3ppp/8/2ppP3/1b1P4/2NB1N2/PPPQ2PP/R3K2R b KQkq - 0 9", "note": "<b>9.Qxd2</b> — the trade has killed White's bishop pair, which is what Black was after."}, {"san": "cxd4", "from": "c5", "to": "d4", "ply": 18, "fen": "rnbqk2r/pp3ppp/8/3pP3/1b1p4/2NB1N2/PPPQ2PP/R3K2R w KQkq - 0 10"}, {"san": "Nxd4", "from": "f3", "to": "d4", "ply": 19, "fen": "rnbqk2r/pp3ppp/8/3pP3/1b1N4/2NB4/PPPQ2PP/R3K2R b KQkq - 0 10"}, {"san": "O-O", "from": "e8", "to": "g8", "ply": 20, "fen": "rnbq1rk1/pp3ppp/8/3pP3/1b1N4/2NB4/PPPQ2PP/R3K2R w KQ - 1 11", "note": "<b>10…0-0</b> — and Black is fine: the centre is open and there is nothing wrong with the position."}], "flip": true, "startFen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "openingNote": "The same start, but White develops rather than coming with the queen."}};
+</script>
+<script src="gameboard.js" defer></script>
+<script src="boardsound.js" defer></script>
+</body>
+</html>
